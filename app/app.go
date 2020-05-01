@@ -1,7 +1,7 @@
 package app
 
 import (
-	"github.com/Pylons-tech/pylons/x/pylons"
+	"github.com/Pylons-tech/pylons_sdk/x/pylons"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"

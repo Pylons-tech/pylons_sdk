@@ -9,11 +9,11 @@ import (
 	"sync"
 	"time"
 
-	testing "github.com/Pylons-tech/pylons/cmd/fixtures_test/evtesting"
+	testing "github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test/evtesting"
 
 	"strings"
 
-	"github.com/Pylons-tech/pylons/app"
+	"github.com/Pylons-tech/pylons_sdk/app"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	amino "github.com/tendermint/go-amino"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"

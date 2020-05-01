@@ -1,8 +1,8 @@
 package pylons
 
 import (
-	"github.com/Pylons-tech/pylons/x/pylons/msgs"
-	"github.com/Pylons-tech/pylons/x/pylons/types"
+	"github.com/Pylons-tech/pylons_sdk/x/pylons/msgs"
+	"github.com/Pylons-tech/pylons_sdk/x/pylons/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 )
 

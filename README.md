@@ -4,8 +4,8 @@ pylons SDK provides packages to build blockchain games on pylons eco system.
 
 # Packages
 
-"github.com/Pylons-tech/pylons/cmd/fixtures_test"
-"github.com/Pylons-tech/pylons/cmd/test"
+"github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test"
+"github.com/Pylons-tech/pylons_sdk/cmd/test"
 
 e.g. Utility functions within pylons/cmd tests
 
@@ -31,7 +31,7 @@ e.g. Utility functions within pylons/cmd tests
 
 
 
-"github.com/Pylons-tech/pylons/x/pylons/handlers"
+"github.com/Pylons-tech/pylons_sdk/x/pylons/handlers"
 
 Structs
 
@@ -46,7 +46,7 @@ Structs
 - handlers.FiatItemResponse{}
 - handlers.UpdateItemStringResp{}
 
-"github.com/Pylons-tech/pylons/x/pylons/msgs"
+"github.com/Pylons-tech/pylons_sdk/x/pylons/msgs"
 
 All msg types
 - MsgCheckExecution
@@ -82,7 +82,7 @@ Utility functions
 - msgs.DefaultCostPerBlock
 
 
-"github.com/Pylons-tech/pylons/x/pylons/types"
+"github.com/Pylons-tech/pylons_sdk/x/pylons/types"
 
 
 structs
@@ -122,11 +122,11 @@ Utility functions
 - types.GenEntriesFirstItemNameUpgrade(desItemName),
 - types.GenOneOutput
 
-"github.com/Pylons-tech/pylons/app"
+"github.com/Pylons-tech/pylons_sdk/app"
 
 - app.MakeCodec()
 
-"github.com/Pylons-tech/pylons/x/pylons/queriers"
+"github.com/Pylons-tech/pylons_sdk/x/pylons/queriers"
 
 - queriers.ExecResp
 - queriers.ItemResp

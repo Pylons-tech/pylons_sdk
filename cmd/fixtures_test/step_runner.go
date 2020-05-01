@@ -4,13 +4,13 @@ import (
 	"encoding/json"
 	"strings"
 
-	testing "github.com/Pylons-tech/pylons/cmd/fixtures_test/evtesting"
+	testing "github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test/evtesting"
 
-	intTest "github.com/Pylons-tech/pylons/cmd/test"
-	"github.com/Pylons-tech/pylons/x/pylons/msgs"
+	intTest "github.com/Pylons-tech/pylons_sdk/cmd/test"
+	"github.com/Pylons-tech/pylons_sdk/x/pylons/msgs"
 
-	"github.com/Pylons-tech/pylons/x/pylons/handlers"
-	"github.com/Pylons-tech/pylons/x/pylons/types"
+	"github.com/Pylons-tech/pylons_sdk/x/pylons/handlers"
+	"github.com/Pylons-tech/pylons_sdk/x/pylons/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

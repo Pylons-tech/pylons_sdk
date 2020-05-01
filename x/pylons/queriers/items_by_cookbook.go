@@ -1,7 +1,7 @@
 package queriers
 
 import (
-	"github.com/Pylons-tech/pylons/x/pylons/types"
+	"github.com/Pylons-tech/pylons_sdk/x/pylons/types"
 )
 
 // query endpoints supported by the nameservice Querier

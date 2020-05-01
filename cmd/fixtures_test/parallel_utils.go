@@ -1,9 +1,9 @@
 package fixtureTest
 
 import (
-	testing "github.com/Pylons-tech/pylons/cmd/fixtures_test/evtesting"
+	testing "github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test/evtesting"
 
-	intTest "github.com/Pylons-tech/pylons/cmd/test"
+	intTest "github.com/Pylons-tech/pylons_sdk/cmd/test"
 )
 
 type Status int
