@@ -1,0 +1,17 @@
+{
+    "CoinInputs":[
+        {
+            "Coin": "loudcoin",
+            "Count": "150"
+        }
+    ],
+    "ItemInputRefs": [],
+    "CoinOutputs": [{
+        "denom":"pylon",
+        "amount": "1"
+    }],
+    "ItemOutputNames": [],
+    "ExtraInfo":"loud to pylon trading created by loud game",
+    "Sender":"eugen",
+    "CookbookName": "Legend of Undead Dragon"
+}

@@ -1,0 +1,25 @@
+{
+    "ID": "LOUD-sell-a-sword-recipe-v0.0.0-1583631194",
+    "CoinInputs":[],
+    "ItemInputRefs":[
+        "./recipes/item_input/sword.json"
+    ],
+    "Entries": {
+        "CoinOutputs": [{
+            "Coin":"loudcoin",
+            "Count": "int(attack * double(rand_int(2)+20))"
+        }]
+    },
+    "Outputs": [
+        {
+            "ResultEntries": ["0"],
+            "Weight": "1"
+        }
+    ],
+    "ExtraInfo":"",
+    "Sender":"eugen",
+    "Name": "LOUD's sword sell recipe",
+    "CookbookName": "Legend of Undead Dragon",
+    "Description": "this recipe is used to sell a sword.",
+    "BlockInterval":"0"
+}

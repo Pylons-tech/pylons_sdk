@@ -31,7 +31,7 @@ func RunCheckExecution(step FixtureStep, t *testing.T) {
 		}
 		err := intTest.GetAminoCdc().UnmarshalJSON(newByteValue, &execType)
 		if err != nil {
-			t.Fatal("error reading using GetAminoCdc ", execType, err)
+			t.Fatal("error reading using GetAminoCdc execType", execType, err)
 		}
 		t.MustNil(err)
 
@@ -72,7 +72,7 @@ func RunFiatItem(step FixtureStep, t *testing.T) {
 		var itemType types.Item
 		err := intTest.GetAminoCdc().UnmarshalJSON(newByteValue, &itemType)
 		if err != nil {
-			t.Fatal("error reading using GetAminoCdc ", itemType, err)
+			t.Fatal("error reading using GetAminoCdc itemType", itemType, err)
 		}
 		t.MustNil(err)
 
@@ -113,7 +113,7 @@ func RunUpdateItemString(step FixtureStep, t *testing.T) {
 		var sTypeMsg msgs.MsgUpdateItemString
 		err := json.Unmarshal(newByteValue, &sTypeMsg)
 		if err != nil {
-			t.Fatal("error reading using GetAminoCdc ", sTypeMsg, string(newByteValue), err)
+			t.Fatal("error reading using GetAminoCdc sTypeMsg", sTypeMsg, string(newByteValue), err)
 		}
 		t.MustNil(err)
 
@@ -143,7 +143,7 @@ func RunCreateCookbook(step FixtureStep, t *testing.T) {
 		var cbType types.Cookbook
 		err := intTest.GetAminoCdc().UnmarshalJSON(newByteValue, &cbType)
 		if err != nil {
-			t.Fatal("error reading using GetAminoCdc ", cbType, string(newByteValue), err)
+			t.Fatal("error reading using GetAminoCdc cbType", cbType, string(newByteValue), err)
 		}
 		t.MustNil(err)
 
@@ -191,7 +191,7 @@ func RunCreateRecipe(step FixtureStep, t *testing.T) {
 		var rcpTempl types.Recipe
 		err := intTest.GetAminoCdc().UnmarshalJSON(newByteValue, &rcpTempl)
 		if err != nil {
-			t.Fatal("error reading using GetAminoCdc ", rcpTempl, err)
+			t.Fatal("error reading using GetAminoCdc rcpTempl", rcpTempl, err)
 		}
 		t.MustNil(err)
 
@@ -247,7 +247,7 @@ func RunExecuteRecipe(step FixtureStep, t *testing.T) {
 
 		err := intTest.GetAminoCdc().UnmarshalJSON(newByteValue, &execType)
 		if err != nil {
-			t.Fatal("error reading using GetAminoCdc ", execType, err)
+			t.Fatal("error reading using GetAminoCdc execType", execType, err)
 		}
 		t.MustNil(err)
 
@@ -306,7 +306,7 @@ func RunCreateTrade(step FixtureStep, t *testing.T) {
 		var trdType types.Trade
 		err := intTest.GetAminoCdc().UnmarshalJSON(newByteValue, &trdType)
 		if err != nil {
-			t.Fatal("error reading using GetAminoCdc ", trdType, string(newByteValue), err)
+			t.Fatal("error reading using GetAminoCdc trdType", trdType, string(newByteValue), err)
 		}
 		t.MustTrue(err == nil)
 
@@ -356,7 +356,7 @@ func RunFulfillTrade(step FixtureStep, t *testing.T) {
 
 		err := intTest.GetAminoCdc().UnmarshalJSON(newByteValue, &trdType)
 		if err != nil {
-			t.Fatal("error reading using GetAminoCdc ", trdType, err)
+			t.Fatal("error reading using GetAminoCdc trdType", trdType, err)
 		}
 		t.MustNil(err)
 
@@ -400,7 +400,7 @@ func RunDisableTrade(step FixtureStep, t *testing.T) {
 
 		err := intTest.GetAminoCdc().UnmarshalJSON(newByteValue, &trdType)
 		if err != nil {
-			t.Fatal("error reading using GetAminoCdc ", trdType, err)
+			t.Fatal("error reading using GetAminoCdc trdType", trdType, err)
 		}
 		t.MustNil(err)
 

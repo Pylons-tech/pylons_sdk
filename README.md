@@ -2,6 +2,13 @@
 
 pylons SDK provides packages to build blockchain games on pylons eco system.
 
+# SDK publish preparation
+
+Check below things before publishing
+```
+make fixture_tests
+```
+
 # Packages
 
 "github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test"

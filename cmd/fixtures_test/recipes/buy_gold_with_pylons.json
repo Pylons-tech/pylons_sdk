@@ -1,0 +1,27 @@
+{
+    "ID": "LOUD-buy-gold-from-pylons-recipe-v0.0.1-1579652622",
+    "CoinInputs":[{
+        "Coin": "pylon",
+        "Count": "100"
+    }],    
+    "ItemInputRefs":[],
+    "Entries":{
+        "CoinOutputs":[ {
+            "Coin":"loudcoin",
+            "Count": "5000"
+        }],
+        "ItemOutputs":[]
+    },
+    "Outputs": [
+        {
+            "ResultEntries": ["0"],
+            "Weight": "1"
+        }
+    ],
+    "ExtraInfo":"",
+    "Sender":"eugen",
+    "Name": "LOUD's buy gold with pylons recipe",
+    "CookbookName": "Legend of Undead Dragon",
+    "Description": "this recipe is used to get enough coins to test game.",
+    "BlockInterval":"0"
+}

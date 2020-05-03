@@ -1,0 +1,54 @@
+{
+    "ID": "LOUD-fight-fire-dragon-with-iron-sword-recipe-v0.0.0-1583631194",
+    "CoinInputs":[],
+    "ItemInputRefs":[
+        "./recipes/item_input/character_fire.json",
+        "./recipes/item_input/iron_sword.json"
+    ],
+    "Entries":{
+        "CoinOutputs":[{
+            "Coin":"loudcoin",
+            "Count": "10000"
+        }],
+        "ItemOutputs":[
+            {
+                "ModifyItem": {
+                    "ItemInputRef": 0,
+                    "ModifyParamsRef": "./recipes/upgrader/character_after_fighting_special_dragon.json"
+                }
+            },
+            {
+                "ModifyItem": {
+                    "ItemInputRef": 1 
+                }
+            },
+            {
+                "Ref": "./recipes/item_output/drop_from_fire_dragon.json"  
+            }
+        ]
+    },
+    "Outputs": [
+        {
+            "ResultEntries": [],
+            "Weight": "300 * 30 / int(input1.attack) - HP"
+        },
+        {
+            "ResultEntries": ["0", "1"],
+            "Weight": "HP / 10"
+        },
+        {
+            "ResultEntries": ["0", "1", "2"],
+            "Weight": "HP * 8 / 10"
+        },
+        {
+            "ResultEntries": ["0", "1", "2", "3"],
+            "Weight": "HP / 10"
+        }
+    ],
+    "ExtraInfo":"",
+    "Sender":"eugen",
+    "Name": "LOUD's fight with fire dragon with a sword recipe",
+    "CookbookName": "Legend of Undead Dragon",
+    "Description": "this recipe is used to fight with fire dragon with a sword.",
+    "BlockInterval":"0"
+}

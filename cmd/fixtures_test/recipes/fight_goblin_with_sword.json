@@ -1,0 +1,54 @@
+{
+    "ID": "LOUD-fight-goblin-with-a-sword-recipe-v0.0.0-1583631194",
+    "CoinInputs":[],
+    "ItemInputRefs":[
+        "./recipes/item_input/character.json",
+        "./recipes/item_input/sword.json"
+    ],
+    "Entries":{
+        "CoinOutputs":[{
+            "Coin":"loudcoin",
+            "Count": "50"
+        }],
+        "ItemOutputs":[
+            {
+                "ModifyItem": {
+                    "ItemInputRef": 0,
+                    "ModifyParamsRef": "./recipes/upgrader/character_after_fighting_goblin.json"
+                }
+            },
+            {
+                "ModifyItem": {
+                    "ItemInputRef": 1 
+                }
+            },
+            {
+                "Ref": "./recipes/item_output/goblin_ear.json"  
+            }
+        ]
+    },
+    "Outputs": [
+        {
+            "ResultEntries": [],
+            "Weight": "10 * 1 / int(input1.attack) - HP"
+        },
+        {
+            "ResultEntries": ["0", "1"],
+            "Weight": "HP / 10"
+        },
+        {
+            "ResultEntries": ["0", "1", "2"],
+            "Weight": "HP * 8 / 10"
+        },
+        {
+            "ResultEntries": ["0", "1", "2", "3"],
+            "Weight": "HP / 10"
+        }
+    ],
+    "ExtraInfo":"",
+    "Sender":"eugen",
+    "Name": "LOUD's fight with goblin with a sword recipe",
+    "CookbookName": "Legend of Undead Dragon",
+    "Description": "this recipe is used to fight with goblin with a sword.",
+    "BlockInterval":"0"
+}

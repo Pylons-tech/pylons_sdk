@@ -1,0 +1,43 @@
+{
+    "ID": "LOUD-dev-get-test-items-recipe-v0.0.0-1583801800",
+    "CoinInputs":[{
+        "Coin": "pylon",
+        "Count": "1"
+    }],
+    "ItemInputRefs": [],
+    "Entries":{
+        "CoinOutputs":[],
+        "ItemOutputs":[
+            {
+                "Ref": "./recipes/item_output/goblin_ear.json"
+            },
+            {
+                "Ref": "./recipes/item_output/troll_toes.json"
+            },
+            {
+                "Ref": "./recipes/item_output/wolf_tail.json"
+            },
+            {
+                "Ref": "./recipes/item_output/drop_from_acid_dragon.json"
+            },
+            {
+                "Ref": "./recipes/item_output/drop_from_fire_dragon.json"
+            },
+            {
+                "Ref": "./recipes/item_output/drop_from_ice_dragon.json"
+            }
+        ]
+    },
+    "Outputs": [
+        {
+            "ResultEntries": ["0", "1", "2"],
+            "Weight": "1"
+        }
+    ],
+    "ExtraInfo":"",
+    "Sender":"eugen",
+    "Name": "LOUD's Dev Get Test Items recipe",
+    "CookbookName": "Legend of Undead Dragon",
+    "Description": "this recipe is used to create character.",
+    "BlockInterval":"0"
+}

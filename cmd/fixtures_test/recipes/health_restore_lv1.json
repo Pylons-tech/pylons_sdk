@@ -1,0 +1,33 @@
+{
+    "ID": "LOUD-health-restore-recipe-v0.0.1-1579652622",
+    "CoinInputs":[{
+        "Coin": "loudcoin",
+        "Count": "10"
+    }],    
+    "ItemInputRefs":[
+        "./recipes/item_input/character.json"
+    ],
+    "Entries":{
+        "CoinOutputs":[],
+        "ItemOutputs":[
+            {
+                "ModifyItem": {
+                    "ItemInputRef": 0,
+                    "ModifyParamsRef": "./recipes/upgrader/character_restore_health.json"
+                }
+            }
+        ]
+    },
+    "Outputs": [
+        {
+            "ResultEntries": ["0"],
+            "Weight": "1"
+        }
+    ],
+    "ExtraInfo":"",
+    "Sender":"eugen",
+    "Name": "LOUD's health restore recipe",
+    "CookbookName": "Legend of Undead Dragon",
+    "Description": "this recipe is used to get enough coins to test game.",
+    "BlockInterval":"0"
+}

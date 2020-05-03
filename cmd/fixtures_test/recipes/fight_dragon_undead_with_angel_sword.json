@@ -1,0 +1,47 @@
+{
+    "ID": "LOUD-fight-undead-dragon-with-angel-sword-recipe-v0.0.0-1583631194",
+    "CoinInputs":[],
+    "ItemInputRefs":[
+        "./recipes/item_input/character.json",
+        "./recipes/item_input/angel_sword.json"
+    ],
+    "Entries":{
+        "CoinOutputs":[{
+            "Coin":"loudcoin",
+            "Count": "50000"
+        }],
+        "ItemOutputs":[
+            {
+                "ModifyItem": {
+                    "ItemInputRef": 0,
+                    "ModifyParamsRef": "./recipes/upgrader/character_after_fighting_undead_dragon.json"
+                }
+            },
+            {
+                "ModifyItem": {
+                    "ItemInputRef": 1 
+                }
+            }
+        ]
+    },
+    "Outputs": [
+        {
+            "ResultEntries": [],
+            "Weight": "1000 * 100 / int(input1.attack) - HP"
+        },
+        {
+            "ResultEntries": ["0", "1"],
+            "Weight": "HP / 10"
+        },
+        {
+            "ResultEntries": ["0", "1", "2"],
+            "Weight": "HP * 9 / 10"
+        }
+    ],
+    "ExtraInfo":"",
+    "Sender":"eugen",
+    "Name": "LOUD's fight with undead dragon with a sword recipe",
+    "CookbookName": "Legend of Undead Dragon",
+    "Description": "this recipe is used to fight with undead dragon with a sword.",
+    "BlockInterval":"0"
+}

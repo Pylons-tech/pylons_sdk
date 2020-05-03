@@ -1,0 +1,26 @@
+{
+    "ID": "LOUD-wooden-sword-lv1-buy-recipe-v0.0.0-1579053457",
+    "CoinInputs":[{
+        "Coin": "loudcoin",
+        "Count": "100"
+    }],
+    "ItemInputRefs": [],
+    "Entries":{
+        "CoinOutputs":[],
+        "ItemOutputs":[{
+            "Ref": "./recipes/item_output/wooden_sword_lv1.json"
+        }]
+    },
+    "Outputs": [
+        {
+            "ResultEntries": ["0"],
+            "Weight": "1"
+        }
+    ],
+    "ExtraInfo":"",
+    "Sender":"eugen",
+    "Name": "LOUD's Wooden sword lv1 buy recipe",
+    "CookbookName": "Legend of Undead Dragon",
+    "Description": "this recipe is used to buy wooden sword lv1.",
+    "BlockInterval":"0"
+}

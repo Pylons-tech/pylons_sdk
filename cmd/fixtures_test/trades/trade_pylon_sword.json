@@ -1,0 +1,14 @@
+{
+    "CoinInputs":[
+        {
+            "Coin": "pylon",
+            "Count": "1"
+        }
+    ],
+    "ItemInputRefs": null,
+    "CoinOutputs": null,
+    "ItemOutputNames": ["Wooden sword"],
+    "ExtraInfo":"pylon to sword trading created by loud game",
+    "Sender":"eugen",
+    "CookbookName": "tradecookbook"
+  }

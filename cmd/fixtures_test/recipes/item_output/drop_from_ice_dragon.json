@@ -1,0 +1,20 @@
+{
+    "Doubles":[
+        {
+            "Rate":"1.0",
+            "Key":"attack",
+            "Program": "0.0"
+        }
+    ],
+    "Longs":[
+        {
+            "Rate":"1.0",
+            "Key":"level",
+            "Program": "1"
+        }
+    ],
+    "Strings":[
+        { "Key":"Name", "Value":"icy shards", "Rate":"1.0" },
+        { "Key":"DropFrom", "Value":"Ice Dragon", "Rate":"1.0" }
+    ]
+}

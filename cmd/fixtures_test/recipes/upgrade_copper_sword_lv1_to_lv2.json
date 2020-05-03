@@ -1,0 +1,33 @@
+{
+    "ID": "LOUD-upgrade-copper-sword-lv1-to-lv2-recipe-v0.0.0-1579053457",
+    "CoinInputs":[{
+        "Coin": "loudcoin",
+        "Count": "250"
+    }],    
+    "ItemInputRefs":[
+        "./recipes/item_input/copper_sword_lv1.json"
+    ],
+    "Entries":{
+        "CoinOutputs":[],
+        "ItemOutputs":[
+            {
+                "ModifyItem": {
+                    "ItemInputRef": 0,
+                    "ModifyParamsRef": "./recipes/upgrader/level.json"
+                }
+            }
+        ]
+    },
+    "Outputs": [
+        {
+            "ResultEntries": ["0"],
+            "Weight": "1"
+        }
+    ],
+    "ExtraInfo":"",
+    "Sender":"eugen",
+    "Name": "LOUD's Copper sword lv1 to lv2 upgrade recipe",
+    "CookbookName": "Legend of Undead Dragon",
+    "Description": "this recipe is used to upgrade copper sword level.",
+    "BlockInterval":"0"
+}

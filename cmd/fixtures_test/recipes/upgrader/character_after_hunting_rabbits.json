@@ -1,0 +1,16 @@
+{
+    "Doubles": [{
+        "Key": "XP",
+        "Program": "XP + 2.0 + double(rand_int(3))"
+    }],
+    "Longs": [
+        {
+            "Key": "level", 
+            "Program": "level + int(XP / double(level * 10))"
+        },
+        {
+            "Key": "HP", 
+            "Program": "min_int(HP + block_since(lastUpdate), MaxHP)"
+        }
+    ]
+}
