@@ -2,6 +2,7 @@ package intTest
 
 import (
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -54,6 +55,9 @@ func RunPylonsCli(args []string, stdinInput string) ([]byte, error) { // run pyl
 	cmd.Stdin = strings.NewReader(stdinInput)
 	res, err := cmd.CombinedOutput()
 	cliMux.Unlock()
+	if err != nil {
+		return res, errors.New(fmt.Sprintf("%s - %s", err.Error(), string(res)))
+	}
 	return res, err
 }
 

@@ -173,11 +173,14 @@ func GetTxDataFromTxHash(txhash string, t *testing.T) ([]byte, error) {
 }
 
 func WaitAndGetTxData(txhash string, maximum_wait_block int64, t *testing.T) ([]byte, error) {
-	tx, err := GetRawTxResponse(txhash, t)
-	if err != nil {
-		return []byte{}, err
+	var tx sdk.TxResponse
+	var txHandleResBytes []byte
+	var err error
+
+	tx, err = GetRawTxResponse(txhash, t)
+	if err == nil {
+		txHandleResBytes, err = GetTxDataFromRawTxResponse(tx, t)
 	}
-	txHandleResBytes, err := GetTxDataFromRawTxResponse(tx, t)
 	if err != nil { // maybe transaction is not contained in block
 		if maximum_wait_block == 0 {
 			hmrError, err := GetHumanReadableErrorFromTxResponse(tx, t)
@@ -186,8 +189,8 @@ func WaitAndGetTxData(txhash string, maximum_wait_block int64, t *testing.T) ([]
 				ltl = TxLogs[len(TxLogs)-1]
 			}
 			return txHandleResBytes, errors.New(
-				fmt.Sprintf("didn't get result waiting for maximum_wait_block.\nhmrError=%s, err=%s\nLast TxLog=%+v",
-					hmrError, err.Error(), ltl))
+				fmt.Sprintf("didn't get result waiting for maximum_wait_block.\nhmrError=%s, err=%+v\nLast TxLog=%+v",
+					hmrError, err, ltl.String()))
 		} else {
 			WaitForNextBlock()
 			return WaitAndGetTxData(txhash, maximum_wait_block-1, t)

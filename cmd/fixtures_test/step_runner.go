@@ -165,7 +165,7 @@ func RunCreateCookbook(step FixtureStep, t *testing.T) {
 		intTest.ErrValidation(t, "error waiting for creating cookbook %+v", err)
 
 		txHandleResBytes, err := intTest.WaitAndGetTxData(txhash, 3, t)
-		intTest.ErrValidationWithOutputLog(t, "error getting transaction data for creating cookbook %+v", txHandleResBytes, err)
+		intTest.ErrValidationWithOutputLog(t, "error getting transaction data for creating cookbook %+v ----- %+v", txHandleResBytes, err)
 
 		CheckErrorOnTxFromTxHash(txhash, t)
 		resp := handlers.CreateCBResponse{}

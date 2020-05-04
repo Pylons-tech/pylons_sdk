@@ -3,6 +3,7 @@ package intTest
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -12,6 +13,7 @@ import (
 
 	testing "github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test/evtesting"
 
+	"github.com/Pylons-tech/pylons_sdk/x/pylons/msgs"
 	"github.com/Pylons-tech/pylons_sdk/x/pylons/types"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
@@ -30,8 +32,33 @@ type SuccessTxResp struct {
 type TxLog struct {
 	TxHash       string
 	broadcastLog []byte
-	txOutputLog  []byte
 	txFileLog    string
+	txMsg        sdk.Msg
+}
+
+func (txl TxLog) String() string {
+	txMsgLog := ""
+	switch txl.txMsg.(type) {
+	case msgs.MsgCreateRecipe:
+		txMsg := txl.txMsg.(msgs.MsgCreateRecipe)
+		txMsgLog = "msgs.MsgCreateRecipe: " + txMsg.Name
+	case msgs.MsgCreateCookbook:
+		txMsg := txl.txMsg.(msgs.MsgCreateCookbook)
+		txMsgLog = "msgs.MsgCreateCookbook: " + txMsg.Name
+	case msgs.MsgCreateTrade:
+		txMsg := txl.txMsg.(msgs.MsgCreateTrade)
+		txMsgLog = "msgs.MsgCreateTrade: " + txMsg.ExtraInfo
+	case msgs.MsgUpdateItemString:
+		txMsg := txl.txMsg.(msgs.MsgUpdateItemString)
+		txMsgLog = "msgs.MsgUpdateItemString: " + txMsg.Field + " " + txMsg.Value + " " + txMsg.ItemID
+	case msgs.MsgGetPylons:
+		txMsg := txl.txMsg.(msgs.MsgGetPylons)
+		txMsgLog = "msgs.MsgGetPylons: " + txMsg.Amount.String() + " " + txMsg.Requester.String()
+	default:
+		output, _ := GetAminoCdc().MarshalJSON(txl.txMsg)
+		txMsgLog = string(output)
+	}
+	return fmt.Sprintf("\nbroadcastLog: %s\ntxFileLog: %s\ntxOutputLog: %s", txl.broadcastLog, txl.txFileLog, txMsgLog)
 }
 
 var nonceMux sync.Mutex
@@ -85,7 +112,7 @@ func TestQueryListRecipe(t *testing.T) ([]types.Recipe, error) {
 	return listRCPResp.Recipes, err
 }
 
-func broadcastTxFile(signedTxFile string, signedTxOutput []byte, t *testing.T) string {
+func broadcastTxFile(signedTxFile string, msg sdk.Msg, t *testing.T) string {
 	if len(CLIOpts.RestEndpoint) == 0 { // broadcast using cli
 		// pylonscli tx broadcast signedCreateCookbookTx.json
 		txBroadcastArgs := []string{"tx", "broadcast", signedTxFile}
@@ -93,7 +120,7 @@ func broadcastTxFile(signedTxFile string, signedTxOutput []byte, t *testing.T) s
 
 		TxLogs = append(TxLogs, TxLog{
 			broadcastLog: output,
-			txOutputLog:  signedTxOutput,
+			txMsg:        msg,
 			txFileLog:    signedTxFile,
 		})
 
@@ -163,7 +190,7 @@ func TestTxWithMsg(t *testing.T, msgValue sdk.Msg, signer string) string {
 	err = ioutil.WriteFile(signedTxFile, output, 0644)
 	ErrValidation(t, "error writing signed transaction %+v", err)
 
-	txhash := broadcastTxFile(signedTxFile, output, t)
+	txhash := broadcastTxFile(signedTxFile, msgValue, t)
 
 	CleanFile(rawTxFile, t)
 	CleanFile(signedTxFile, t)
@@ -233,7 +260,7 @@ func TestTxWithMsgWithNonce(t *testing.T, msgValue sdk.Msg, signer string, isBec
 
 	nonceMux.Unlock()
 
-	txhash := broadcastTxFile(signedTxFile, output, t)
+	txhash := broadcastTxFile(signedTxFile, msgValue, t)
 
 	CleanFile(rawTxFile, t)
 	CleanFile(signedTxFile, t)
