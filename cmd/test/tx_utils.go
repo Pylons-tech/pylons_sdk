@@ -27,11 +27,20 @@ type SuccessTxResp struct {
 	TxHash string `json:"txhash"`
 }
 
+type TxLog struct {
+	TxHash       string
+	broadcastLog []byte
+	txOutputLog  []byte
+	txFileLog    string
+}
+
 var nonceMux sync.Mutex
 
 const (
 	DefaultCoinPerRequest = 500
 )
+
+var TxLogs []TxLog
 
 func fileExists(filename string) bool {
 	info, err := os.Stat(filename)
@@ -76,11 +85,17 @@ func TestQueryListRecipe(t *testing.T) ([]types.Recipe, error) {
 	return listRCPResp.Recipes, err
 }
 
-func broadcastTxFile(signedTxFile string, t *testing.T) string {
+func broadcastTxFile(signedTxFile string, signedTxOutput []byte, t *testing.T) string {
 	if len(CLIOpts.RestEndpoint) == 0 { // broadcast using cli
 		// pylonscli tx broadcast signedCreateCookbookTx.json
 		txBroadcastArgs := []string{"tx", "broadcast", signedTxFile}
 		output, err := RunPylonsCli(txBroadcastArgs, "")
+
+		TxLogs = append(TxLogs, TxLog{
+			broadcastLog: output,
+			txOutputLog:  signedTxOutput,
+			txFileLog:    signedTxFile,
+		})
 
 		successTxResp := SuccessTxResp{}
 
@@ -91,6 +106,7 @@ func broadcastTxFile(signedTxFile string, t *testing.T) string {
 		// t.Log("successTxResp", string(output), err)
 
 		t.MustTrue(len(successTxResp.TxHash) == 64)
+		TxLogs[len(TxLogs)-1].TxHash = successTxResp.TxHash
 		t.MustTrue(len(successTxResp.Height) > 0)
 		return successTxResp.TxHash
 	} else { // broadcast using rest endpoint
@@ -147,7 +163,7 @@ func TestTxWithMsg(t *testing.T, msgValue sdk.Msg, signer string) string {
 	err = ioutil.WriteFile(signedTxFile, output, 0644)
 	ErrValidation(t, "error writing signed transaction %+v", err)
 
-	txhash := broadcastTxFile(signedTxFile, t)
+	txhash := broadcastTxFile(signedTxFile, output, t)
 
 	CleanFile(rawTxFile, t)
 	CleanFile(signedTxFile, t)
@@ -217,7 +233,7 @@ func TestTxWithMsgWithNonce(t *testing.T, msgValue sdk.Msg, signer string, isBec
 
 	nonceMux.Unlock()
 
-	txhash := broadcastTxFile(signedTxFile, t)
+	txhash := broadcastTxFile(signedTxFile, output, t)
 
 	CleanFile(rawTxFile, t)
 	CleanFile(signedTxFile, t)

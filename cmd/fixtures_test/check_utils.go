@@ -149,10 +149,13 @@ func CheckItemWithLongValues(item types.Item, longValues map[string]int) bool {
 	return true
 }
 
-func CheckErrorOnTx(txhash string, t *testing.T) {
-	hmrErrMsg := intTest.GetHumanReadableErrorFromTxHash(txhash, t)
+func CheckErrorOnTxFromTxHash(txhash string, t *testing.T) {
+	hmrErrMsg, err := intTest.GetHumanReadableErrorFromTxHash(txhash, t)
+	if err != nil {
+		t.Fatal("Error checking hmrErrMsg on Tx by TxHash. txhash=", txhash, "hmrErrMsg=", hmrErrMsg, "err=", err)
+	}
 	if len(hmrErrMsg) > 0 {
-		t.Fatal("txhash=", txhash, "hmrErrMsg=", hmrErrMsg)
+		t.Fatal("hmrErrMsg is presented. txhash=", txhash, "hmrErrMsg=", hmrErrMsg)
 	}
 }
 

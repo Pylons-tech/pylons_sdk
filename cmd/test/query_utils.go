@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"fmt"
 
 	testing "github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test/evtesting"
 
@@ -108,48 +109,54 @@ func ListItemsViaCLI(account string) ([]types.Item, error) {
 	return itemResp.Items, err
 }
 
-func GetTxError(txhash string, t *testing.T) ([]byte, error) {
+func GetRawTxResponse(txhash string, t *testing.T) (sdk.TxResponse, error) {
+	var tx sdk.TxResponse
 	output, err := RunPylonsCli([]string{"query", "tx", txhash}, "")
 	if err != nil {
-		return []byte{}, err
+		return tx, err
 	}
-	var tx sdk.TxResponse
 	err = GetAminoCdc().UnmarshalJSON([]byte(output), &tx)
+	return tx, err
+}
+
+func GetTxErrorFromRawTxResponse(tx sdk.TxResponse, t *testing.T) []byte {
+	if len(tx.Logs) > 0 {
+		return []byte(tx.Logs[0].Log)
+	}
+	return []byte{}
+}
+
+func GetTxErrorFromTxHash(txhash string, t *testing.T) ([]byte, error) {
+	tx, err := GetRawTxResponse(txhash, t)
 	if err != nil {
 		return []byte{}, err
 	}
-	if len(tx.Logs) > 0 {
-		return []byte(tx.Logs[0].Log), nil
-	}
-	return []byte{}, nil
+	return GetTxErrorFromRawTxResponse(tx, t), nil
 }
 
-func GetHumanReadableErrorFromTxHash(txhash string, t *testing.T) string {
-	txErrorBytes, err := GetTxError(txhash, t)
-	t.MustNil(err)
+func GetHumanReadableErrorFromTxResponse(tx sdk.TxResponse, t *testing.T) (string, error) {
+	txErrorBytes := GetTxErrorFromRawTxResponse(tx, t)
+	if len(txErrorBytes) == 0 {
+		return "", nil
+	}
 	hmrErr := struct {
 		Codespace string `json:"codespace"`
 		Code      int    `json:"code"`
 		Message   string `json:"message"`
 	}{}
-	if len(txErrorBytes) == 0 {
-		return ""
-	}
-	err = json.Unmarshal(txErrorBytes, &hmrErr)
-	t.MustNil(err)
-	return hmrErr.Message
+	err := json.Unmarshal(txErrorBytes, &hmrErr)
+	return hmrErr.Message, err
 }
 
-func GetTxData(txhash string, t *testing.T) ([]byte, error) {
-	output, err := RunPylonsCli([]string{"query", "tx", txhash}, "")
+func GetHumanReadableErrorFromTxHash(txhash string, t *testing.T) (string, error) {
+	tx, err := GetRawTxResponse(txhash, t)
 	if err != nil {
-		return output, err
+		return "", err
 	}
-	var tx sdk.TxResponse
-	err = GetAminoCdc().UnmarshalJSON([]byte(output), &tx)
-	if err != nil {
-		return []byte{}, err
-	}
+	return GetHumanReadableErrorFromTxResponse(tx, t)
+}
+
+func GetTxDataFromRawTxResponse(tx sdk.TxResponse, t *testing.T) ([]byte, error) {
 	bs, err := hex.DecodeString(tx.Data)
 	if err != nil {
 		return []byte{}, err
@@ -157,11 +164,30 @@ func GetTxData(txhash string, t *testing.T) ([]byte, error) {
 	return bs, nil
 }
 
+func GetTxDataFromTxHash(txhash string, t *testing.T) ([]byte, error) {
+	tx, err := GetRawTxResponse(txhash, t)
+	if err != nil {
+		return []byte{}, err
+	}
+	return GetTxDataFromRawTxResponse(tx, t)
+}
+
 func WaitAndGetTxData(txhash string, maximum_wait_block int64, t *testing.T) ([]byte, error) {
-	txHandleResBytes, err := GetTxData(txhash, t)
+	tx, err := GetRawTxResponse(txhash, t)
+	if err != nil {
+		return []byte{}, err
+	}
+	txHandleResBytes, err := GetTxDataFromRawTxResponse(tx, t)
 	if err != nil { // maybe transaction is not contained in block
 		if maximum_wait_block == 0 {
-			return txHandleResBytes, errors.New("didn't get result waiting for maximum_wait_block")
+			hmrError, err := GetHumanReadableErrorFromTxResponse(tx, t)
+			var ltl TxLog
+			if len(TxLogs) > 0 {
+				ltl = TxLogs[len(TxLogs)-1]
+			}
+			return txHandleResBytes, errors.New(
+				fmt.Sprintf("didn't get result waiting for maximum_wait_block.\nhmrError=%s, err=%s\nLast TxLog=%+v",
+					hmrError, err.Error(), ltl))
 		} else {
 			WaitForNextBlock()
 			return WaitAndGetTxData(txhash, maximum_wait_block-1, t)
