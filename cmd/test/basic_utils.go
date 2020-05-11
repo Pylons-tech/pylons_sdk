@@ -23,10 +23,18 @@ import (
 type CLIOptions struct {
 	CustomNode   string
 	RestEndpoint string
+	MaxWaitBlock int64
 }
 
 var CLIOpts CLIOptions
 var cliMux sync.Mutex
+
+func GetMaxWaitBlock() int64 {
+	if CLIOpts.MaxWaitBlock == 0 {
+		return 3
+	}
+	return CLIOpts.MaxWaitBlock
+}
 
 func ReadFile(fileURL string, t *testing.T) []byte {
 	jsonFile, err := os.Open(fileURL)

@@ -45,7 +45,7 @@ func RunCheckExecution(step FixtureStep, t *testing.T) {
 		err = intTest.WaitForNextBlock()
 		intTest.ErrValidation(t, "error waiting for check execution %+v", err)
 
-		txHandleResBytes, err := intTest.WaitAndGetTxData(txhash, 3, t)
+		txHandleResBytes, err := intTest.WaitAndGetTxData(txhash, intTest.GetMaxWaitBlock(), t)
 		intTest.ErrValidation(t, "error getting tx result bytes %+v", err)
 
 		CheckErrorOnTxFromTxHash(txhash, t)
@@ -88,7 +88,7 @@ func RunFiatItem(step FixtureStep, t *testing.T) {
 		err = intTest.WaitForNextBlock()
 		intTest.ErrValidation(t, "error waiting for fiat item %+v", err)
 
-		txHandleResBytes, err := intTest.WaitAndGetTxData(txhash, 3, t)
+		txHandleResBytes, err := intTest.WaitAndGetTxData(txhash, intTest.GetMaxWaitBlock(), t)
 		intTest.ErrValidation(t, "error getting tx result bytes %+v", err)
 
 		CheckErrorOnTxFromTxHash(txhash, t)
@@ -122,7 +122,7 @@ func RunUpdateItemString(step FixtureStep, t *testing.T) {
 		err = intTest.WaitForNextBlock()
 		intTest.ErrValidation(t, "error waiting for set item field string %+v", err)
 
-		txHandleResBytes, err := intTest.WaitAndGetTxData(txhash, 3, t)
+		txHandleResBytes, err := intTest.WaitAndGetTxData(txhash, intTest.GetMaxWaitBlock(), t)
 		intTest.ErrValidation(t, "error getting tx result bytes %+v", err)
 
 		CheckErrorOnTxFromTxHash(txhash, t)
@@ -164,7 +164,7 @@ func RunCreateCookbook(step FixtureStep, t *testing.T) {
 		err = intTest.WaitForNextBlock()
 		intTest.ErrValidation(t, "error waiting for creating cookbook %+v", err)
 
-		txHandleResBytes, err := intTest.WaitAndGetTxData(txhash, 3, t)
+		txHandleResBytes, err := intTest.WaitAndGetTxData(txhash, intTest.GetMaxWaitBlock(), t)
 		intTest.ErrValidationWithOutputLog(t, "error getting transaction data for creating cookbook %+v ----- %+v", txHandleResBytes, err)
 
 		CheckErrorOnTxFromTxHash(txhash, t)
@@ -213,7 +213,7 @@ func RunCreateRecipe(step FixtureStep, t *testing.T) {
 		err = intTest.WaitForNextBlock()
 		intTest.ErrValidation(t, "error waiting for creating recipe %+v", err)
 
-		txHandleResBytes, err := intTest.WaitAndGetTxData(txhash, 3, t)
+		txHandleResBytes, err := intTest.WaitAndGetTxData(txhash, intTest.GetMaxWaitBlock(), t)
 		t.MustNil(err)
 
 		CheckErrorOnTxFromTxHash(txhash, t)
@@ -264,7 +264,7 @@ func RunExecuteRecipe(step FixtureStep, t *testing.T) {
 			t.MustNil(err)
 			t.MustTrue(strings.Contains(hmrErrMsg, step.Output.TxResult.ErrorLog))
 		} else {
-			txHandleResBytes, err := intTest.WaitAndGetTxData(txhash, 3, t)
+			txHandleResBytes, err := intTest.WaitAndGetTxData(txhash, intTest.GetMaxWaitBlock(), t)
 			t.MustNil(err)
 			CheckErrorOnTxFromTxHash(txhash, t)
 			resp := handlers.ExecuteRecipeResp{}
@@ -327,7 +327,7 @@ func RunCreateTrade(step FixtureStep, t *testing.T) {
 		err = intTest.WaitForNextBlock()
 		intTest.ErrValidation(t, "error while creating trade %+v", err)
 
-		txHandleResBytes, err := intTest.WaitAndGetTxData(txhash, 3, t)
+		txHandleResBytes, err := intTest.WaitAndGetTxData(txhash, intTest.GetMaxWaitBlock(), t)
 
 		CheckErrorOnTxFromTxHash(txhash, t)
 		resp := handlers.CreateTradeResponse{}
@@ -369,7 +369,7 @@ func RunFulfillTrade(step FixtureStep, t *testing.T) {
 
 		if len(step.Output.TxResult.ErrorLog) > 0 {
 		} else {
-			txHandleResBytes, err := intTest.WaitAndGetTxData(txhash, 3, t)
+			txHandleResBytes, err := intTest.WaitAndGetTxData(txhash, intTest.GetMaxWaitBlock(), t)
 			t.MustNil(err)
 			CheckErrorOnTxFromTxHash(txhash, t)
 			resp := handlers.FulfillTradeResp{}
@@ -413,7 +413,7 @@ func RunDisableTrade(step FixtureStep, t *testing.T) {
 
 		if len(step.Output.TxResult.ErrorLog) > 0 {
 		} else {
-			txHandleResBytes, err := intTest.WaitAndGetTxData(txhash, 3, t)
+			txHandleResBytes, err := intTest.WaitAndGetTxData(txhash, intTest.GetMaxWaitBlock(), t)
 			t.MustNil(err)
 			CheckErrorOnTxFromTxHash(txhash, t)
 			resp := handlers.DisableTradeResp{}
