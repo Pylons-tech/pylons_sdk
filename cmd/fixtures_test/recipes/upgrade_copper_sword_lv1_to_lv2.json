@@ -27,7 +27,7 @@
     "ExtraInfo":"",
     "Sender":"eugen",
     "Name": "LOUD's Copper sword lv1 to lv2 upgrade recipe",
-    "CookbookName": "Legend of Undead Dragon",
+    "CookbookID": "LOUD-v0.0.0-1579053457",
     "Description": "this recipe is used to upgrade copper sword level.",
     "BlockInterval":"0"
 }

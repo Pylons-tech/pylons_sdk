@@ -20,7 +20,7 @@ func RunCheckExecution(step FixtureStep, t *testing.T) {
 	if step.ParamsRef != "" {
 		byteValue := ReadFile(step.ParamsRef, t)
 		// translate sender from account name to account address
-		newByteValue := UpdateSenderName(byteValue, t)
+		newByteValue := UpdateSenderKeyToAddress(byteValue, t)
 		// translate execRef to execID
 		newByteValue = UpdateExecID(newByteValue, t)
 
@@ -65,9 +65,9 @@ func RunFiatItem(step FixtureStep, t *testing.T) {
 	if step.ParamsRef != "" {
 		byteValue := ReadFile(step.ParamsRef, t)
 		// translate sender from account name to account address
-		newByteValue := UpdateSenderName(byteValue, t)
+		newByteValue := UpdateSenderKeyToAddress(byteValue, t)
 		// translate cookbook name to cookbook ID
-		newByteValue = UpdateCookbookName(newByteValue, t)
+		newByteValue = UpdateCBNameToID(newByteValue, t)
 
 		var itemType types.Item
 		err := intTest.GetAminoCdc().UnmarshalJSON(newByteValue, &itemType)
@@ -106,7 +106,7 @@ func RunUpdateItemString(step FixtureStep, t *testing.T) {
 	if step.ParamsRef != "" {
 		byteValue := ReadFile(step.ParamsRef, t)
 		// translate sender from account name to account address
-		newByteValue := UpdateSenderName(byteValue, t)
+		newByteValue := UpdateSenderKeyToAddress(byteValue, t)
 		// translate item name to item ID
 		newByteValue = UpdateItemIDFromName(newByteValue, false, t)
 
@@ -138,7 +138,7 @@ func RunCreateCookbook(step FixtureStep, t *testing.T) {
 	if step.ParamsRef != "" {
 		byteValue := ReadFile(step.ParamsRef, t)
 		// translate sender from account name to account address
-		newByteValue := UpdateSenderName(byteValue, t)
+		newByteValue := UpdateSenderKeyToAddress(byteValue, t)
 
 		var cbType types.Cookbook
 		err := intTest.GetAminoCdc().UnmarshalJSON(newByteValue, &cbType)
@@ -180,9 +180,9 @@ func RunCreateRecipe(step FixtureStep, t *testing.T) {
 	if step.ParamsRef != "" {
 		byteValue := ReadFile(step.ParamsRef, t)
 		// translate sender from account name to account address
-		newByteValue := UpdateSenderName(byteValue, t)
+		newByteValue := UpdateSenderKeyToAddress(byteValue, t)
 		// translate cookbook name to cookbook id
-		newByteValue = UpdateCookbookName(newByteValue, t)
+		newByteValue = UpdateCBNameToID(newByteValue, t)
 		// get item inputs from fileNames
 		itemInputs := GetItemInputsFromBytes(newByteValue, t)
 		// get entries from fileNames
@@ -233,7 +233,7 @@ func RunExecuteRecipe(step FixtureStep, t *testing.T) {
 	if step.ParamsRef != "" {
 		byteValue := ReadFile(step.ParamsRef, t)
 		// translate sender from account name to account address
-		newByteValue := UpdateSenderName(byteValue, t)
+		newByteValue := UpdateSenderKeyToAddress(byteValue, t)
 		// translate recipe name to recipe id
 		newByteValue = UpdateRecipeName(newByteValue, t)
 		// translate itemNames to itemIDs
@@ -301,7 +301,7 @@ func RunCreateTrade(step FixtureStep, t *testing.T) {
 	if step.ParamsRef != "" {
 		byteValue := ReadFile(step.ParamsRef, t)
 		// translate sender from account name to account address
-		newByteValue := UpdateSenderName(byteValue, t)
+		newByteValue := UpdateSenderKeyToAddress(byteValue, t)
 		// get item inputs from fileNames
 		itemInputs := GetItemInputsFromBytes(newByteValue, t)
 		var trdType types.Trade
@@ -343,7 +343,7 @@ func RunFulfillTrade(step FixtureStep, t *testing.T) {
 	if step.ParamsRef != "" {
 		byteValue := ReadFile(step.ParamsRef, t)
 		// translate sender from account name to account address
-		newByteValue := UpdateSenderName(byteValue, t)
+		newByteValue := UpdateSenderKeyToAddress(byteValue, t)
 		// translate extra info to trade id
 		newByteValue = UpdateTradeExtraInfoToID(newByteValue, t)
 		// translate itemNames to itemIDs
@@ -390,7 +390,7 @@ func RunDisableTrade(step FixtureStep, t *testing.T) {
 	if step.ParamsRef != "" {
 		byteValue := ReadFile(step.ParamsRef, t)
 		// translate sender from account name to account address
-		newByteValue := UpdateSenderName(byteValue, t)
+		newByteValue := UpdateSenderKeyToAddress(byteValue, t)
 		// translate extra info to trade id
 		newByteValue = UpdateTradeExtraInfoToID(newByteValue, t)
 

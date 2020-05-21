@@ -33,7 +33,7 @@ func UnmarshalIntoEmptyInterface(bytes []byte, t *testing.T) map[string]interfac
 	return raw
 }
 
-func UpdateSenderName(bytes []byte, t *testing.T) []byte {
+func UpdateSenderKeyToAddress(bytes []byte, t *testing.T) []byte {
 	raw := UnmarshalIntoEmptyInterface(bytes, t)
 
 	senderName, ok := raw["Sender"].(string)
@@ -44,18 +44,21 @@ func UpdateSenderName(bytes []byte, t *testing.T) []byte {
 	return newBytes
 }
 
-func UpdateCookbookName(bytes []byte, t *testing.T) []byte {
+func UpdateCBNameToID(bytes []byte, t *testing.T) []byte {
 	raw := UnmarshalIntoEmptyInterface(bytes, t)
 
 	cbName, ok := raw["CookbookName"].(string)
-	t.MustTrue(ok)
+	if !ok {
+		return bytes
+	}
 	cbID, exist, err := intTest.GetCookbookIDFromName(cbName, "")
-	t.MustTrue(exist)
-	t.MustNil(err)
-	raw["CookbookID"] = cbID
-	newBytes, err := json.Marshal(raw)
-	t.MustNil(err)
-	return newBytes
+	if exist && err != nil {
+		raw["CookbookID"] = cbID
+		newBytes, err := json.Marshal(raw)
+		t.MustNil(err)
+		return newBytes
+	}
+	return bytes
 }
 
 func UpdateRecipeName(bytes []byte, t *testing.T) []byte {

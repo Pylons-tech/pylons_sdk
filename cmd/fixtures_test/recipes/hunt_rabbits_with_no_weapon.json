@@ -31,7 +31,7 @@
     "ExtraInfo":"",
     "Sender":"eugen",
     "Name": "LOUD's hunt rabbits without sword recipe",
-    "CookbookName": "Legend of Undead Dragon",
+    "CookbookID": "LOUD-v0.0.0-1579053457",
     "Description": "this recipe is used to hunt rabbits without sword.",
     "BlockInterval":"0"
 }

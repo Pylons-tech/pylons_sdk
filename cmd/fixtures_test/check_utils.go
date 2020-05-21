@@ -52,7 +52,8 @@ type FixtureStep struct {
 }
 
 type FixtureTestOptions struct {
-	IsParallel bool
+	IsParallel        bool
+	CreateNewCookbook bool
 }
 
 var FixtureTestOpts FixtureTestOptions = FixtureTestOptions{
@@ -265,7 +266,9 @@ func ProcessSingleFixtureQueueItem(file string, idx int, step FixtureStep, t *te
 		case "update_item_string":
 			RunUpdateItemString(step, t)
 		case "create_cookbook":
-			RunCreateCookbook(step, t)
+			if FixtureTestOpts.CreateNewCookbook {
+				RunCreateCookbook(step, t)
+			}
 		case "create_recipe":
 			RunCreateRecipe(step, t)
 		case "execute_recipe":

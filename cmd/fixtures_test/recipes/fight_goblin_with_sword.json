@@ -48,7 +48,7 @@
     "ExtraInfo":"",
     "Sender":"eugen",
     "Name": "LOUD's fight with goblin with a sword recipe",
-    "CookbookName": "Legend of Undead Dragon",
+    "CookbookID": "LOUD-v0.0.0-1579053457",
     "Description": "this recipe is used to fight with goblin with a sword.",
     "BlockInterval":"0"
 }
