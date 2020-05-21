@@ -1,5 +1,5 @@
 {
-    "ID": "LOUD-hunt-rabbits-with-no-weapon-recipe-v0.0.0-1579053457",
+    "ID": "LOUD-hunt-rabbits-with-no-weapon-recipe-v0.0.0-1590029710",
     "CoinInputs":[],    
     "ItemInputRefs":[
         "./recipes/item_input/character.json"

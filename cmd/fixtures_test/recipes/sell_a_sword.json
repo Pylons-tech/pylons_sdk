@@ -1,5 +1,5 @@
 {
-    "ID": "LOUD-sell-a-sword-recipe-v0.0.0-1583631194",
+    "ID": "LOUD-sell-a-sword-recipe-v0.0.0-1590029710",
     "CoinInputs":[],
     "ItemInputRefs":[
         "./recipes/item_input/sword.json"
