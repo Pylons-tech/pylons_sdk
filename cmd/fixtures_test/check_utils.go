@@ -151,12 +151,9 @@ func CheckItemWithLongValues(item types.Item, longValues map[string]int) bool {
 }
 
 func CheckErrorOnTxFromTxHash(txhash string, t *testing.T) {
-	hmrErrMsg, err := intTest.GetHumanReadableErrorFromTxHash(txhash, t)
-	if err != nil {
-		t.Fatal("Error checking hmrErrMsg on Tx by TxHash. txhash=", txhash, "hmrErrMsg=", hmrErrMsg, "err=", err)
-	}
+	hmrErrMsg := intTest.GetHumanReadableErrorFromTxHash(txhash, t)
 	if len(hmrErrMsg) > 0 {
-		t.Fatal("hmrErrMsg is presented. txhash=", txhash, "hmrErrMsg=", hmrErrMsg)
+		t.Fatal("hmrErrMsg is available. txhash=", txhash, "hmrErrMsg=", hmrErrMsg)
 	}
 }
 
@@ -253,12 +250,12 @@ func PropertyExistCheck(step FixtureStep, t *testing.T) {
 	}
 }
 
-func ProcessSingleFixtureQueueItem(file string, idx int, step FixtureStep, t *testing.T) {
-	t.Run(strconv.Itoa(idx)+"_"+step.ID, func(t *testing.T) {
+func ProcessSingleFixtureQueueItem(file string, idx int, fixtureSteps []FixtureStep, lv1t *testing.T) {
+	step := fixtureSteps[idx]
+	lv1t.Run(strconv.Itoa(idx)+"_"+step.ID, func(t *testing.T) {
 		if FixtureTestOpts.IsParallel {
 			t.Parallel()
 		}
-		WaitForCondition(file, idx, step, t)
 
 		switch step.Action {
 		case "fiat_item":
@@ -285,7 +282,7 @@ func ProcessSingleFixtureQueueItem(file string, idx int, step FixtureStep, t *te
 			t.Fatalf("step with unrecognizable action found %s", step.Action)
 		}
 		PropertyExistCheck(step, t)
-		UpdateWorkQueueStatus(file, idx, step, DONE, t)
+		UpdateWorkQueueStatus(file, idx, fixtureSteps, DONE, t)
 	})
 }
 
@@ -308,9 +305,8 @@ func RunSingleFixtureTest(file string, t *testing.T) {
 				status:          NOT_STARTED,
 			})
 		}
-		for idx, step := range fixtureSteps {
-			UpdateWorkQueueStatus(file, idx, step, IN_PROGRESS, t)
-			ProcessSingleFixtureQueueItem(file, idx, step, t)
+		for idx, _ := range fixtureSteps {
+			UpdateWorkQueueStatus(file, idx, fixtureSteps, IN_PROGRESS, t)
 		}
 	})
 }

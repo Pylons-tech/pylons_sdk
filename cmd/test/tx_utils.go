@@ -3,71 +3,32 @@ package intTest
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strconv"
 	"sync"
+	"time"
 
 	testing "github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test/evtesting"
 
-	"github.com/Pylons-tech/pylons_sdk/x/pylons/msgs"
 	"github.com/Pylons-tech/pylons_sdk/x/pylons/types"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
-	"github.com/cosmos/cosmos-sdk/client/utils"
+	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	authtxb "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
+
+	"github.com/spf13/viper"
 )
-
-type SuccessTxResp struct {
-	Height string `json:"height"`
-	TxHash string `json:"txhash"`
-}
-
-type TxLog struct {
-	TxHash       string
-	broadcastLog []byte
-	txFileLog    string
-	txMsg        sdk.Msg
-}
-
-func (txl TxLog) String() string {
-	txMsgLog := ""
-	switch txl.txMsg.(type) {
-	case msgs.MsgCreateRecipe:
-		txMsg := txl.txMsg.(msgs.MsgCreateRecipe)
-		txMsgLog = "msgs.MsgCreateRecipe: " + txMsg.Name
-	case msgs.MsgCreateCookbook:
-		txMsg := txl.txMsg.(msgs.MsgCreateCookbook)
-		txMsgLog = "msgs.MsgCreateCookbook: " + txMsg.Name
-	case msgs.MsgCreateTrade:
-		txMsg := txl.txMsg.(msgs.MsgCreateTrade)
-		txMsgLog = "msgs.MsgCreateTrade: " + txMsg.ExtraInfo
-	case msgs.MsgUpdateItemString:
-		txMsg := txl.txMsg.(msgs.MsgUpdateItemString)
-		txMsgLog = "msgs.MsgUpdateItemString: " + txMsg.Field + " " + txMsg.Value + " " + txMsg.ItemID
-	case msgs.MsgGetPylons:
-		txMsg := txl.txMsg.(msgs.MsgGetPylons)
-		txMsgLog = "msgs.MsgGetPylons: " + txMsg.Amount.String() + " " + txMsg.Requester.String()
-	default:
-		output, _ := GetAminoCdc().MarshalJSON(txl.txMsg)
-		txMsgLog = string(output)
-	}
-	return fmt.Sprintf("\nbroadcastLog: %s\ntxFileLog: %s\ntxOutputLog: %s", txl.broadcastLog, txl.txFileLog, txMsgLog)
-}
 
 var nonceMux sync.Mutex
 
 const (
 	DefaultCoinPerRequest = 500
 )
-
-var TxLogs []TxLog
 
 func fileExists(filename string) bool {
 	info, err := os.Stat(filename)
@@ -80,9 +41,12 @@ func fileExists(filename string) bool {
 func GenTxWithMsg(messages []sdk.Msg) (auth.StdTx, error) {
 	var err error
 	cdc := GetAminoCdc()
-	cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
+	cliCtx := context.NewCLIContext().WithCodec(cdc)
 
-	txBldr := authtxb.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc)).WithChainID("pylons")
+	viper.Set("keyring-backend", "test")
+	viper.Set("chain-id", "pylonschain")
+
+	txBldr := auth.NewTxBuilderFromCLI(&bytes.Buffer{}).WithTxEncoder(utils.GetTxEncoder(cdc)).WithChainID("pylonschain")
 	if txBldr.SimulateAndExecute() {
 		txBldr, err = utils.EnrichWithGas(txBldr, cliCtx, messages)
 		if err != nil {
@@ -99,7 +63,7 @@ func GenTxWithMsg(messages []sdk.Msg) (auth.StdTx, error) {
 }
 
 func TestQueryListRecipe(t *testing.T) ([]types.Recipe, error) {
-	output, err := RunPylonsCli([]string{"query", "pylons", "list_recipe"}, "")
+	output, err, _ := RunPylonsCli([]string{"query", "pylons", "list_recipe"}, "")
 	if err != nil {
 		return []types.Recipe{types.Recipe{}}, err
 	}
@@ -112,30 +76,28 @@ func TestQueryListRecipe(t *testing.T) ([]types.Recipe, error) {
 	return listRCPResp.Recipes, err
 }
 
-func broadcastTxFile(signedTxFile string, msg sdk.Msg, t *testing.T) string {
+func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) string {
 	if len(CLIOpts.RestEndpoint) == 0 { // broadcast using cli
 		// pylonscli tx broadcast signedCreateCookbookTx.json
 		txBroadcastArgs := []string{"tx", "broadcast", signedTxFile}
-		output, err := RunPylonsCli(txBroadcastArgs, "")
+		output, err, _ := RunPylonsCli(txBroadcastArgs, "")
+		// output2, _, logstr2 := RunPylonsCli([]string{"query", "account", "cosmos10xgn8t2auxskrf2qjcht0hwq2h5chnrpx87dus"}, "")
+		// t.Log("transaction broadcast log", logstr, "\npylonscli query account log", logstr2, string(output2))
 
-		TxLogs = append(TxLogs, TxLog{
-			broadcastLog: output,
-			txMsg:        msg,
-			txFileLog:    signedTxFile,
-		})
+		txResponse := sdk.TxResponse{}
 
-		successTxResp := SuccessTxResp{}
-
-		err = json.Unmarshal(output, &successTxResp)
+		err = GetAminoCdc().UnmarshalJSON(output, &txResponse)
 		// This can happen when "pylonscli config output json" is not set or when real issue is available
 		ErrValidationWithOutputLog(t, "error in broadcasting signed transaction output: %+v, err: %+v", output, err)
 
-		// t.Log("successTxResp", string(output), err)
-
-		t.MustTrue(len(successTxResp.TxHash) == 64)
-		TxLogs[len(TxLogs)-1].TxHash = successTxResp.TxHash
-		t.MustTrue(len(successTxResp.Height) > 0)
-		return successTxResp.TxHash
+		if txResponse.Code != 0 && maxRetry > 0 {
+			t.Log("rebroadcasting after 1s...", maxRetry, "left")
+			time.Sleep(1 * time.Second)
+			return broadcastTxFile(signedTxFile, maxRetry-1, t)
+		}
+		t.MustTrue(len(txResponse.TxHash) == 64)
+		t.MustTrue(txResponse.Code == 0)
+		return txResponse.TxHash
 	} else { // broadcast using rest endpoint
 		signedTx := ReadFile(signedTxFile, t)
 		postBodyJSON := make(map[string]interface{})
@@ -184,13 +146,13 @@ func TestTxWithMsg(t *testing.T, msgValue sdk.Msg, signer string) string {
 		"--from", signer,
 		"--chain-id", "pylonschain",
 	}
-	output, err = RunPylonsCli(txSignArgs, "11111111\n")
+	output, err, _ = RunPylonsCli(txSignArgs, "")
 	ErrValidationWithOutputLog(t, "error signing transaction: %+v --- %+v", output, err)
 
 	err = ioutil.WriteFile(signedTxFile, output, 0644)
 	ErrValidation(t, "error writing signed transaction %+v", err)
 
-	txhash := broadcastTxFile(signedTxFile, msgValue, t)
+	txhash := broadcastTxFile(signedTxFile, 50, t)
 
 	CleanFile(rawTxFile, t)
 	CleanFile(signedTxFile, t)
@@ -241,7 +203,6 @@ func TestTxWithMsgWithNonce(t *testing.T, msgValue sdk.Msg, signer string, isBec
 	ioutil.WriteFile(rawTxFile, output, 0644)
 	ErrValidationWithOutputLog(t, "error writing raw transaction: %+v --- %+v", output, err)
 
-	t.Log("TX sign with nonce=", nonce)
 	// pylonscli tx sign sample_transaction.json --account-number 2 --sequence 10 --offline --from eugen
 	txSignArgs := []string{"tx", "sign", rawTxFile,
 		"--from", signer,
@@ -250,9 +211,9 @@ func TestTxWithMsgWithNonce(t *testing.T, msgValue sdk.Msg, signer string, isBec
 		"--sequence", strconv.FormatUint(nonce, 10),
 		"--account-number", strconv.FormatUint(accInfo.GetAccountNumber(), 10),
 	}
-	// t.Log("TX raw file output=", string(output))
-	output, err = RunPylonsCli(txSignArgs, "11111111\n")
-	// t.Log("TX sign result output=", string(output))
+	output, err, _ = RunPylonsCli(txSignArgs, "")
+	// output, err, logstr := RunPylonsCli(txSignArgs, "")
+	// t.Log("TX sign:: err", err, ", logstr", logstr)
 	ErrValidationWithOutputLog(t, "error signing transaction: %+v --- %+v", output, err)
 
 	err = ioutil.WriteFile(signedTxFile, output, 0644)
@@ -260,11 +221,10 @@ func TestTxWithMsgWithNonce(t *testing.T, msgValue sdk.Msg, signer string, isBec
 
 	nonceMux.Unlock()
 
-	txhash := broadcastTxFile(signedTxFile, msgValue, t)
+	txhash := broadcastTxFile(signedTxFile, 50, t)
 
 	CleanFile(rawTxFile, t)
 	CleanFile(signedTxFile, t)
 
-	t.Log("txhash = ", txhash)
 	return txhash
 }
