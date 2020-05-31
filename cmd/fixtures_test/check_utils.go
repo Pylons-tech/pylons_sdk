@@ -282,7 +282,7 @@ func ProcessSingleFixtureQueueItem(file string, idx int, fixtureSteps []FixtureS
 			t.Fatalf("step with unrecognizable action found %s", step.Action)
 		}
 		PropertyExistCheck(step, t)
-		UpdateWorkQueueStatus(file, idx, fixtureSteps, DONE, lv1t)
+		UpdateWorkQueueStatus(file, idx, fixtureSteps, DONE, t)
 	})
 }
 
