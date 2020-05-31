@@ -5,6 +5,7 @@ import (
 
 	"github.com/Pylons-tech/pylons_sdk/x/pylons/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // MsgCreateRecipe defines a CreateRecipe message
@@ -51,14 +52,13 @@ func (msg MsgCreateRecipe) Route() string { return "pylons" }
 func (msg MsgCreateRecipe) Type() string { return "create_recipe" }
 
 // ValidateBasic validates the Msg
-func (msg MsgCreateRecipe) ValidateBasic() sdk.Error {
-
+func (msg MsgCreateRecipe) ValidateBasic() error {
 	if msg.Sender.Empty() {
-		return sdk.ErrInvalidAddress(msg.Sender.String())
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Sender.String())
 	}
 
 	if len(msg.Description) < 20 {
-		return sdk.ErrInternal("the description should have more than 20 characters")
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "the description should have more than 20 characters")
 	}
 
 	return nil
