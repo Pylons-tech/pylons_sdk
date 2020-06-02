@@ -58,7 +58,7 @@ func GenTxWithMsg(messages []sdk.Msg) (auth.StdTx, error) {
 	if err != nil {
 		return auth.StdTx{}, err
 	}
-	stdSignMsg.Fee.Amount = sdk.Coins{sdk.NewInt64Coin(types.Pylon, int64(400000))}
+	stdSignMsg.Fee.Gas = 400000
 
 	return auth.NewStdTx(stdSignMsg.Msgs, stdSignMsg.Fee, nil, stdSignMsg.Memo), nil
 }
@@ -97,6 +97,9 @@ func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) string {
 			return broadcastTxFile(signedTxFile, maxRetry-1, t)
 		}
 		t.MustTrue(len(txResponse.TxHash) == 64)
+		if txResponse.Code != 0 {
+			t.Log("broadcasting failure after maxRetry limitation", string(output))
+		}
 		t.MustTrue(txResponse.Code == 0)
 		return txResponse.TxHash
 	} else { // broadcast using rest endpoint
