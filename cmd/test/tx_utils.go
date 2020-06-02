@@ -58,6 +58,7 @@ func GenTxWithMsg(messages []sdk.Msg) (auth.StdTx, error) {
 	if err != nil {
 		return auth.StdTx{}, err
 	}
+	stdSignMsg.Fee.Amount = sdk.Coins{sdk.NewInt64Coin(types.Pylon, int64(400000))}
 
 	return auth.NewStdTx(stdSignMsg.Msgs, stdSignMsg.Fee, nil, stdSignMsg.Memo), nil
 }
