@@ -15,10 +15,8 @@ pylonscli keys add michael --keyring-backend=test
 pylonscli keys add eugen --keyring-backend=test
 
 pylonsd add-genesis-account $(pylonscli keys show node0 -a --keyring-backend=test) 10000000000pylon,1000000000node0token,1000000000stake,10000000loudcoin
-pylonsd add-genesis-account $(pylonscli keys show michael -a --keyring-backend=test) 10000000000pylon,10000000michaelcoin,1000000000stake,10000000loudcoin
-pylonsd add-genesis-account $(pylonscli keys show eugen -a --keyring-backend=test) 10000000000pylon,10000000eugencoin,1000000000stake,10000000loudcoin
+pylonsd add-genesis-account $(pylonscli keys show michael -a --keyring-backend=test) 10000000000pylon,1000000000node0token,1000000000stake,10000000loudcoin
+pylonsd add-genesis-account $(pylonscli keys show eugen -a --keyring-backend=test) 10000000000pylon,1000000000node0token,1000000000stake,10000000loudcoin
 
 pylonsd gentx --name node0
 pylonsd collect-gentxs
-
-

@@ -51,7 +51,7 @@ Item consists of below fields.
 
 | No | Field         | Type   | Sample                                | Description                                         |
 |----|---------------|--------|---------------------------------------|-----------------------------------------------------|
-| 1  | CookbookName  | string | "submarine"                           | contains the name of cookbook for the item.         |
+| 1  | CookbookID    | string | "submarine-3942525"                   | contains the name of cookbook for the item.         |
 | 2  | Sender        | string | "eugen"                               | contains the owner of item.                         |
 | 3  | Doubles       | array  | defence: 1.0,  movement: 1.0          | contains double attributes of the item.             |
 | 4  | Longs         | array  | level: 1                              | contains int attributes of the item.                |
@@ -65,7 +65,7 @@ Sample item JSON
   "Doubles": [{ "Key": "defence", "Value": "1" }],
   "Longs": [{ "Key": "level", "Value": "1" }],
   "Strings": [{ "Key": "Name","Value": "Shield" }],
-  "CookbookName": "submarine",
+  "CookbookID": "submarine-3942525",
   "Sender": "eugen",
   "OwnerRecipeID": ""
 }
@@ -77,7 +77,7 @@ Recipe consists of below fields.
 
 | No | Field         | Type   | Sample                                                       | Description                                                        |
 |----|---------------|--------|--------------------------------------------------------------|--------------------------------------------------------------------|
-| 1  | CookbookName  | string | "submarine"                                                  | contains the name of cookbook for the recipe.                      |
+| 1  |  CookbookID   | string | "submarine-3942525"                                          | contains the name of cookbook for the recipe.                      |
 | 2  | Name          | string | "Knife Shield Generation Recipe"                             | name of recipe.                                                    |
 | 3  | Description   | string | "level 1 knife and level 1 shield into level 1 knife-shield" | recipe description                                                 |
 | 4  | Sender        | string | "eugen"                                                      | recipe owner name.                                                 |
@@ -114,7 +114,7 @@ Sample Recipe JSON
     "ExtraInfo":"",
     "Sender":"eugen",
     "Name": "Knife Shield Generation Recipe",
-    "CookbookName": "submarine",
+    "CookbookID": "submarine-3942525",
     "Description": "this recipe is merging level 1 knife and level 1 shield into level 1 knife-shield.",
     "BlockInterval":"0"
 }
@@ -161,7 +161,7 @@ Sample CoinInput JSON
 
 ```
 [{
-  Coin: "goldcoin"
+    Coin: "goldcoin"
 	Count: "1"
 }]
 ```
@@ -524,7 +524,7 @@ Coin to coin trading
   ],
   "ItemInputRefs": [],
   "CoinOutputs": [{
-      "denom":"eugencoin",
+      "denom":"node0token",
       "amount": "200"
   }],
   "ItemOutputNames": [],
@@ -556,7 +556,7 @@ Item to coin trading
         "./trades/item_input/trading_knife_v3.json"
     ],
     "CoinOutputs": [{
-        "denom":"eugencoin",
+        "denom":"node0token",
         "amount": "200"
     }],
     "ItemOutputNames": [],
