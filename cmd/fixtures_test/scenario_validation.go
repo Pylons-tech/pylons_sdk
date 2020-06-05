@@ -54,7 +54,7 @@ func (g *DependencyGraph) AddEdge(VSID, WSID string) bool {
 
 // This function is a variation of DFSUtil() in https://www.geeksforgeeks.org/archives/18212
 func (g *DependencyGraph) isCyclicUtil(v int, visited []bool, recStack []bool) bool {
-	if visited[v] == false {
+	if !visited[v] {
 		// Mark the current node as visited and part of recursion stack
 		visited[v] = true
 		recStack[v] = true

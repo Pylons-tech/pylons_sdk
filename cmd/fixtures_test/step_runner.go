@@ -327,6 +327,7 @@ func RunCreateTrade(step FixtureStep, t *testing.T) {
 		intTest.ErrValidation(t, "error while creating trade %+v", err)
 
 		txHandleResBytes, err := intTest.WaitAndGetTxData(txhash, intTest.GetMaxWaitBlock(), t)
+		intTest.ErrValidation(t, "error while waiting for create trade transaction %+v", err)
 
 		CheckErrorOnTxFromTxHash(txhash, t)
 		resp := handlers.CreateTradeResponse{}

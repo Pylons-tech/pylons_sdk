@@ -114,7 +114,9 @@ func WaitAndGetTxError(txhash string, maximum_wait_block int64, t *testing.T) ([
 		if maximum_wait_block == 0 {
 			return txErrorResBytes, errors.New("didn't get result waiting for maximum_wait_block")
 		} else {
-			WaitForNextBlock()
+			if err = WaitForNextBlock(); err != nil {
+				return txErrorResBytes, err
+			}
 			return WaitAndGetTxError(txhash, maximum_wait_block-1, t)
 		}
 	}
@@ -167,7 +169,9 @@ func WaitAndGetTxData(txhash string, maximum_wait_block int64, t *testing.T) ([]
 		if maximum_wait_block == 0 {
 			return txHandleResBytes, errors.New("didn't get result waiting for maximum_wait_block")
 		} else {
-			WaitForNextBlock()
+			if err = WaitForNextBlock(); err != nil {
+				return txHandleResBytes, err
+			}
 			return WaitAndGetTxData(txhash, maximum_wait_block-1, t)
 		}
 	}

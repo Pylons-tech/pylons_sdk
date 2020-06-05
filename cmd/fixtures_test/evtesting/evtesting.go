@@ -46,11 +46,11 @@ func (t *T) Fatalf(format string, args ...interface{}) {
 }
 
 func (t *T) MustTrue(value bool) {
-	if value == false {
+	if !value {
 		t.DispatchEvent("FAIL")
 	}
 	if t.useLogPkg {
-		if value == false {
+		if !value {
 			log.Fatal("MustTrue validation failed")
 		}
 	} else {
@@ -84,10 +84,6 @@ func (t *T) Run(name string, f func(t *T)) bool {
 		}
 		f(&newT)
 	})
-}
-
-func (t *T) AddEventListener(event string, listener func()) {
-	listeners[event] = listener
 }
 
 func (t *T) DispatchEvent(event string) {

@@ -84,7 +84,7 @@ func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) string {
 		output, err, _ := RunPylonsCli(txBroadcastArgs, "")
 		// output2, _, logstr2 := RunPylonsCli([]string{"query", "account", "cosmos10xgn8t2auxskrf2qjcht0hwq2h5chnrpx87dus"}, "")
 		// t.Log("transaction broadcast log", logstr, "\npylonscli query account log", logstr2, string(output2))
-
+		t.MustNil(err)
 		txResponse := sdk.TxResponse{}
 
 		err = GetAminoCdc().UnmarshalJSON(output, &txResponse)
@@ -105,7 +105,10 @@ func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) string {
 	} else { // broadcast using rest endpoint
 		signedTx := ReadFile(signedTxFile, t)
 		postBodyJSON := make(map[string]interface{})
-		json.Unmarshal(signedTx, &postBodyJSON)
+	
+		err := json.Unmarshal(signedTx, &postBodyJSON)
+		t.MustNil(err)
+	
 		postBodyJSON["tx"] = postBodyJSON["value"]
 		postBodyJSON["value"] = nil
 		postBodyJSON["mode"] = "sync"
@@ -121,7 +124,8 @@ func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) string {
 
 		var result map[string]string
 
-		json.NewDecoder(resp.Body).Decode(&result)
+		err = json.NewDecoder(resp.Body).Decode(&result)
+		t.MustNil(err)
 		defer resp.Body.Close()
 		t.Log("get_pylons_api_response", result)
 		t.MustTrue(len(result["txhash"]) == 64)
@@ -142,7 +146,7 @@ func TestTxWithMsg(t *testing.T, msgValue sdk.Msg, signer string) string {
 	output, err := GetAminoCdc().MarshalJSON(txModel)
 	t.MustNil(err)
 
-	ioutil.WriteFile(rawTxFile, output, 0644)
+	err = ioutil.WriteFile(rawTxFile, output, 0644)
 	ErrValidationWithOutputLog(t, "error writing raw transaction: %+v --- %+v", output, err)
 
 	// pylonscli tx sign raw_tx.json --from eugen --chain-id pylonschain > signed_tx.json
@@ -176,7 +180,7 @@ func TestTxWithMsgWithNonce(t *testing.T, msgValue sdk.Msg, signer string, isBec
 	}
 
 	accInfo := GetAccountInfoFromAddr(signer, t)
-	nonce := accInfo.Sequence
+	nonce := accInfo.GetSequence()
 
 	nonceMap := make(map[string]uint64)
 
@@ -189,13 +193,12 @@ func TestTxWithMsgWithNonce(t *testing.T, msgValue sdk.Msg, signer string, isBec
 			ErrValidation(t, "error reading nonce: %+v --- %+v", err)
 		}
 		nonce = nonceMap[signer]
-	} else {
-		nonce = accInfo.GetSequence()
 	}
 	nonceMap[signer] = nonce + 1
 	nonceOutput, err := json.Marshal(nonceMap)
 	t.MustNil(err)
-	ioutil.WriteFile(nonceFile, nonceOutput, 0644)
+	err = ioutil.WriteFile(nonceFile, nonceOutput, 0644)
+	t.MustNil(err)
 
 	txModel, err := GenTxWithMsg([]sdk.Msg{msgValue})
 	t.MustNil(err)
@@ -204,7 +207,7 @@ func TestTxWithMsgWithNonce(t *testing.T, msgValue sdk.Msg, signer string, isBec
 
 	rawTxFile := filepath.Join(tmpDir, "raw_tx_"+strconv.FormatUint(nonce, 10)+".json")
 	signedTxFile := filepath.Join(tmpDir, "signed_tx_"+strconv.FormatUint(nonce, 10)+".json")
-	ioutil.WriteFile(rawTxFile, output, 0644)
+	err = ioutil.WriteFile(rawTxFile, output, 0644)
 	ErrValidationWithOutputLog(t, "error writing raw transaction: %+v --- %+v", output, err)
 
 	// pylonscli tx sign sample_transaction.json --account-number 2 --sequence 10 --offline --from eugen

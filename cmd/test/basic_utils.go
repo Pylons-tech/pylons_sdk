@@ -114,7 +114,8 @@ func GetAccountInfoFromAddr(addr string, t *testing.T) auth.BaseAccount {
 		t.Fatalf("error getting account info addr=%s err=%+v, logstr=%s", addr, err, logstr)
 	}
 	var accInfo auth.BaseAccount
-	GetAminoCdc().UnmarshalJSON(accBytes, &accInfo)
+	err = GetAminoCdc().UnmarshalJSON(accBytes, &accInfo)
+	t.MustNil(err)
 	// t.Log("GetAccountInfo", accInfo)
 	return accInfo
 }
@@ -155,6 +156,9 @@ func WaitForBlockInterval(interval int64) error {
 	counter = 1
 	for counter < 300*interval {
 		ds, err, _ = GetDaemonStatus()
+		if err != nil {
+			return err
+		}
 		if ds.SyncInfo.LatestBlockHeight >= currentBlock+interval {
 			return nil
 		}

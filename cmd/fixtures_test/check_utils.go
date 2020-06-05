@@ -293,7 +293,8 @@ func RunSingleFixtureTest(file string, t *testing.T) {
 		}
 		var fixtureSteps []FixtureStep
 		byteValue := ReadFile(file, t)
-		json.Unmarshal([]byte(byteValue), &fixtureSteps)
+		err := json.Unmarshal([]byte(byteValue), &fixtureSteps)
+		t.MustNil(err)
 
 		CheckSteps(fixtureSteps, t)
 
@@ -305,7 +306,7 @@ func RunSingleFixtureTest(file string, t *testing.T) {
 				status:          NOT_STARTED,
 			})
 		}
-		for idx, _ := range fixtureSteps {
+		for idx := range fixtureSteps {
 			UpdateWorkQueueStatus(file, idx, fixtureSteps, IN_PROGRESS, t)
 		}
 	})
@@ -313,9 +314,6 @@ func RunSingleFixtureTest(file string, t *testing.T) {
 
 func RunTestScenarios(scenarioDir string, t *originT.T) {
 	newT := testing.NewT(t)
-	newT.AddEventListener("FAIL", func() {
-		workQueueFailed = true
-	})
 
 	var files []string
 

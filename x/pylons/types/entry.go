@@ -18,15 +18,11 @@ type serializeEntriesList struct {
 func (wpl EntriesList) MarshalJSON() ([]byte, error) {
 	var sel serializeEntriesList
 	for _, wp := range wpl {
-		switch wp.(type) {
+		switch wp := wp.(type) {
 		case CoinOutput:
-			if coinOutput, ok := wp.(CoinOutput); ok {
-				sel.CoinOutputs = append(sel.CoinOutputs, coinOutput)
-			}
+			sel.CoinOutputs = append(sel.CoinOutputs, wp)
 		case ItemOutput:
-			if itemOutput, ok := wp.(ItemOutput); ok {
-				sel.ItemOutputs = append(sel.ItemOutputs, itemOutput)
-			}
+			sel.ItemOutputs = append(sel.ItemOutputs, wp)
 		default:
 		}
 	}
