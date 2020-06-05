@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	// NewBasicManager is in charge of setting up basic module elemnets
+	// ModuleBasics NewBasicManager is in charge of setting up basic module elemnets
 	ModuleBasics = module.NewBasicManager(
 		genutil.AppModuleBasic{},
 		auth.AppModuleBasic{},
@@ -32,6 +32,7 @@ var (
 	)
 )
 
+// MakeCodec make codec for message marshal/unmarshal
 func MakeCodec() *codec.Codec {
 	var cdc = codec.New()
 

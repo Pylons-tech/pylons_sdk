@@ -7,6 +7,7 @@ type ExecuteRecipeResp struct {
 	Output  []byte
 }
 
+// ExecuteRecipeSerialize is a struct for execute recipe result serialization
 type ExecuteRecipeSerialize struct {
 	Type   string `json:"type"`   // COIN or ITEM
 	Coin   string `json:"coin"`   // used when type is ITEM
@@ -14,6 +15,7 @@ type ExecuteRecipeSerialize struct {
 	ItemID string `json:"itemID"` // used when type is ITEM
 }
 
+// ExecuteRecipeScheduleOutput is a struct that shows how execute recipe schedule output works
 type ExecuteRecipeScheduleOutput struct {
 	ExecID string
 }

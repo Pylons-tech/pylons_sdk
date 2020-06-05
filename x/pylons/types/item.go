@@ -5,18 +5,19 @@ import (
 	"github.com/google/uuid"
 )
 
-const TypeItem = "item"
-
+// DoubleKeyValue describes double key/value set
 type DoubleKeyValue struct {
 	Key   string
 	Value FloatString
 }
 
+// LongKeyValue describes long key/value set
 type LongKeyValue struct {
 	Key   string
 	Value int
 }
 
+// StringKeyValue describes string key/value set
 type StringKeyValue struct {
 	Key   string
 	Value string
@@ -39,6 +40,7 @@ type Item struct {
 // ItemList is a list of items
 type ItemList []Item
 
+// FindDouble is a function to get a double attribute from an item
 func (it Item) FindDouble(key string) (float64, bool) {
 	for _, v := range it.Doubles {
 		if v.Key == key {
@@ -48,6 +50,7 @@ func (it Item) FindDouble(key string) (float64, bool) {
 	return 0, false
 }
 
+// FindDoubleKey is a function get double key index
 func (it Item) FindDoubleKey(key string) (int, bool) {
 	for i, v := range it.Doubles {
 		if v.Key == key {
@@ -57,6 +60,7 @@ func (it Item) FindDoubleKey(key string) (int, bool) {
 	return 0, false
 }
 
+// FindLong is a function to get a long attribute from an item
 func (it Item) FindLong(key string) (int, bool) {
 	for _, v := range it.Longs {
 		if v.Key == key {
@@ -66,6 +70,7 @@ func (it Item) FindLong(key string) (int, bool) {
 	return 0, false
 }
 
+// FindLongKey is a function to get long key index
 func (it Item) FindLongKey(key string) (int, bool) {
 	for i, v := range it.Longs {
 		if v.Key == key {
@@ -75,6 +80,7 @@ func (it Item) FindLongKey(key string) (int, bool) {
 	return 0, false
 }
 
+// FindString is a function to get a string attribute from an item
 func (it Item) FindString(key string) (string, bool) {
 	for _, v := range it.Strings {
 		if v.Key == key {
@@ -84,6 +90,7 @@ func (it Item) FindString(key string) (string, bool) {
 	return "", false
 }
 
+// FindStringKey is a function to get string key index
 func (it Item) FindStringKey(key string) (int, bool) {
 	for i, v := range it.Strings {
 		if v.Key == key {
@@ -93,6 +100,7 @@ func (it Item) FindStringKey(key string) (int, bool) {
 	return 0, false
 }
 
+// SetString set item's string attribute
 func (it Item) SetString(key string, value string) bool {
 	for i, v := range it.Strings {
 		if v.Key == key {

@@ -9,27 +9,30 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// app module Basics object
+// AppModuleBasic is app module basics object
 type AppModuleBasic struct{}
 
+// Name returns AppModuleBasic name
 func (AppModuleBasic) Name() string {
 	return "pylons"
 }
 
+// RegisterCodec implements RegisterCodec
 func (AppModuleBasic) RegisterCodec(cdc *codec.Codec) {
 	RegisterCodec(cdc)
 }
 
+// DefaultGenesis return GenesisState in JSON
 func (AppModuleBasic) DefaultGenesis() json.RawMessage {
 	return ModuleCdc.MustMarshalJSON(DefaultGenesisState())
 }
 
-// Validation check of the Genesis
+// ValidateGenesis do validation check of the Genesis
 func (AppModuleBasic) ValidateGenesis(bz json.RawMessage) error {
 	return nil
 }
 
-// Get the root query command of this module
+// GetQueryCmd get the root query command of this module
 func (AppModuleBasic) GetQueryCmd(cdc *codec.Codec) *cobra.Command {
 	pylonsQueryCmd := &cobra.Command{
 		Use:   "pylons",
@@ -39,7 +42,7 @@ func (AppModuleBasic) GetQueryCmd(cdc *codec.Codec) *cobra.Command {
 	return pylonsQueryCmd
 }
 
-// Get the root tx command of this module
+// GetTxCmd get the root tx command of this module
 func (AppModuleBasic) GetTxCmd(cdc *codec.Codec) *cobra.Command {
 	pylonsTxCmd := &cobra.Command{
 		Use:   "pylons",

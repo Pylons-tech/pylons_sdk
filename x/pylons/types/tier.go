@@ -9,9 +9,8 @@ import (
 // Level is the kind of cookbook a developer can create
 type Level int
 
+// Basic is the free level which does allow developers to use pylons ( paid currency ) in their games
 const (
-	// Basic is the free level which does allow developers to use pylons ( paid currency ) in their
-	// games
 	Basic Level = iota
 	Premium
 )
@@ -47,6 +46,7 @@ var BasicTier = Tier{
 	Fee:   BasicFee,
 }
 
+// PremiumTier the cookbook tier which does allow paid receipes
 var PremiumTier = Tier{
 	Level: Premium,
 	Fee:   PremiumFee,

@@ -1,4 +1,4 @@
-package fixtureTest
+package fixturetest
 
 import (
 	"encoding/json"
@@ -6,7 +6,7 @@ import (
 
 	testing "github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test/evtesting"
 
-	intTest "github.com/Pylons-tech/pylons_sdk/cmd/test"
+	inttest "github.com/Pylons-tech/pylons_sdk/cmd/test"
 	"github.com/Pylons-tech/pylons_sdk/x/pylons/msgs"
 
 	"github.com/Pylons-tech/pylons_sdk/x/pylons/handlers"
@@ -15,6 +15,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+// RunCheckExecution is a function to execute check execution
 func RunCheckExecution(step FixtureStep, t *testing.T) {
 
 	if step.ParamsRef != "" {
@@ -29,7 +30,7 @@ func RunCheckExecution(step FixtureStep, t *testing.T) {
 			PayToComplete bool
 			Sender        sdk.AccAddress
 		}
-		err := intTest.GetAminoCdc().UnmarshalJSON(newByteValue, &execType)
+		err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &execType)
 		if err != nil {
 			t.Fatal("error reading using GetAminoCdc execType", execType, err)
 		}
@@ -40,19 +41,19 @@ func RunCheckExecution(step FixtureStep, t *testing.T) {
 			execType.PayToComplete,
 			execType.Sender,
 		)
-		txhash := intTest.TestTxWithMsgWithNonce(t, chkExecMsg, execType.Sender.String(), true)
+		txhash := inttest.TestTxWithMsgWithNonce(t, chkExecMsg, execType.Sender.String(), true)
 
-		err = intTest.WaitForNextBlock()
-		intTest.ErrValidation(t, "error waiting for check execution %+v", err)
+		err = inttest.WaitForNextBlock()
+		inttest.ErrValidation(t, "error waiting for check execution %+v", err)
 
-		txHandleResBytes, err := intTest.WaitAndGetTxData(txhash, intTest.GetMaxWaitBlock(), t)
-		intTest.ErrValidation(t, "error getting tx result bytes %+v", err)
+		txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
+		inttest.ErrValidation(t, "error getting tx result bytes %+v", err)
 
 		CheckErrorOnTxFromTxHash(txhash, t)
 		resp := handlers.CheckExecutionResp{}
-		err = intTest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 		t.Log("txhash=", txhash)
-		intTest.ErrValidation(t, "error unmarshaling tx response %+v", err)
+		inttest.ErrValidation(t, "error unmarshaling tx response %+v", err)
 		t.MustTrue(resp.Status == step.Output.TxResult.Status)
 		if len(step.Output.TxResult.Message) > 0 {
 			t.MustTrue(resp.Message == step.Output.TxResult.Message)
@@ -60,6 +61,7 @@ func RunCheckExecution(step FixtureStep, t *testing.T) {
 	}
 }
 
+// RunFiatItem is a function to execute fiat item
 func RunFiatItem(step FixtureStep, t *testing.T) {
 
 	if step.ParamsRef != "" {
@@ -70,7 +72,7 @@ func RunFiatItem(step FixtureStep, t *testing.T) {
 		newByteValue = UpdateCBNameToID(newByteValue, t)
 
 		var itemType types.Item
-		err := intTest.GetAminoCdc().UnmarshalJSON(newByteValue, &itemType)
+		err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &itemType)
 		if err != nil {
 			t.Fatal("error reading using GetAminoCdc itemType", itemType, err)
 		}
@@ -83,24 +85,25 @@ func RunFiatItem(step FixtureStep, t *testing.T) {
 			itemType.Strings,
 			itemType.Sender,
 		)
-		txhash := intTest.TestTxWithMsgWithNonce(t, itmMsg, itemType.Sender.String(), true)
+		txhash := inttest.TestTxWithMsgWithNonce(t, itmMsg, itemType.Sender.String(), true)
 
-		err = intTest.WaitForNextBlock()
-		intTest.ErrValidation(t, "error waiting for fiat item %+v", err)
+		err = inttest.WaitForNextBlock()
+		inttest.ErrValidation(t, "error waiting for fiat item %+v", err)
 
-		txHandleResBytes, err := intTest.WaitAndGetTxData(txhash, intTest.GetMaxWaitBlock(), t)
-		intTest.ErrValidation(t, "error getting tx result bytes %+v", err)
+		txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
+		inttest.ErrValidation(t, "error getting tx result bytes %+v", err)
 
 		CheckErrorOnTxFromTxHash(txhash, t)
 		resp := handlers.FiatItemResponse{}
-		err = intTest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 
 		t.Log("txhash=", txhash)
-		intTest.ErrValidation(t, "error unmarshaling tx response %+v", err)
+		inttest.ErrValidation(t, "error unmarshaling tx response %+v", err)
 		t.MustTrue(resp.ItemID != "")
 	}
 }
 
+// RunUpdateItemString is a function to update item's string value
 func RunUpdateItemString(step FixtureStep, t *testing.T) {
 
 	if step.ParamsRef != "" {
@@ -117,23 +120,24 @@ func RunUpdateItemString(step FixtureStep, t *testing.T) {
 		}
 		t.MustNil(err)
 
-		txhash := intTest.TestTxWithMsgWithNonce(t, sTypeMsg, sTypeMsg.Sender.String(), true)
+		txhash := inttest.TestTxWithMsgWithNonce(t, sTypeMsg, sTypeMsg.Sender.String(), true)
 
-		err = intTest.WaitForNextBlock()
-		intTest.ErrValidation(t, "error waiting for set item field string %+v", err)
+		err = inttest.WaitForNextBlock()
+		inttest.ErrValidation(t, "error waiting for set item field string %+v", err)
 
-		txHandleResBytes, err := intTest.WaitAndGetTxData(txhash, intTest.GetMaxWaitBlock(), t)
-		intTest.ErrValidation(t, "error getting tx result bytes %+v", err)
+		txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
+		inttest.ErrValidation(t, "error getting tx result bytes %+v", err)
 
 		CheckErrorOnTxFromTxHash(txhash, t)
 		resp := handlers.UpdateItemStringResp{}
-		err = intTest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 
 		t.Log("txhash=", txhash)
-		intTest.ErrValidation(t, "error unmarshaling tx response %+v", err)
+		inttest.ErrValidation(t, "error unmarshaling tx response %+v", err)
 	}
 }
 
+// RunCreateCookbook is a function to create cookbook
 func RunCreateCookbook(step FixtureStep, t *testing.T) {
 	if step.ParamsRef != "" {
 		byteValue := ReadFile(step.ParamsRef, t)
@@ -141,7 +145,7 @@ func RunCreateCookbook(step FixtureStep, t *testing.T) {
 		newByteValue := UpdateSenderKeyToAddress(byteValue, t)
 
 		var cbType types.Cookbook
-		err := intTest.GetAminoCdc().UnmarshalJSON(newByteValue, &cbType)
+		err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &cbType)
 		if err != nil {
 			t.Fatal("error reading using GetAminoCdc cbType", cbType, string(newByteValue), err)
 		}
@@ -159,23 +163,24 @@ func RunCreateCookbook(step FixtureStep, t *testing.T) {
 			cbType.Sender,
 		)
 
-		txhash := intTest.TestTxWithMsgWithNonce(t, cbMsg, cbType.Sender.String(), true)
+		txhash := inttest.TestTxWithMsgWithNonce(t, cbMsg, cbType.Sender.String(), true)
 
-		err = intTest.WaitForNextBlock()
-		intTest.ErrValidation(t, "error waiting for creating cookbook %+v", err)
+		err = inttest.WaitForNextBlock()
+		inttest.ErrValidation(t, "error waiting for creating cookbook %+v", err)
 
-		txHandleResBytes, err := intTest.WaitAndGetTxData(txhash, intTest.GetMaxWaitBlock(), t)
-		intTest.ErrValidationWithOutputLog(t, "error getting transaction data for creating cookbook %+v ----- %+v", txHandleResBytes, err)
+		txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
+		inttest.ErrValidationWithOutputLog(t, "error getting transaction data for creating cookbook %+v ----- %+v", txHandleResBytes, err)
 
 		CheckErrorOnTxFromTxHash(txhash, t)
 		resp := handlers.CreateCBResponse{}
-		err = intTest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 		t.Log("txhash=", txhash)
-		intTest.ErrValidation(t, "error unmarshaling tx response %+v", err)
+		inttest.ErrValidation(t, "error unmarshaling tx response %+v", err)
 		t.MustTrue(resp.CookbookID != "")
 	}
 }
 
+// RunCreateRecipe is a function to create recipe
 func RunCreateRecipe(step FixtureStep, t *testing.T) {
 	if step.ParamsRef != "" {
 		byteValue := ReadFile(step.ParamsRef, t)
@@ -189,7 +194,7 @@ func RunCreateRecipe(step FixtureStep, t *testing.T) {
 		entries := GetEntriesFromBytes(newByteValue, t)
 
 		var rcpTempl types.Recipe
-		err := intTest.GetAminoCdc().UnmarshalJSON(newByteValue, &rcpTempl)
+		err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &rcpTempl)
 		if err != nil {
 			t.Fatal("error reading using GetAminoCdc rcpTempl", rcpTempl, err)
 		}
@@ -208,19 +213,19 @@ func RunCreateRecipe(step FixtureStep, t *testing.T) {
 			rcpTempl.Sender,
 		)
 
-		txhash := intTest.TestTxWithMsgWithNonce(t, rcpMsg, rcpTempl.Sender.String(), true)
+		txhash := inttest.TestTxWithMsgWithNonce(t, rcpMsg, rcpTempl.Sender.String(), true)
 
-		err = intTest.WaitForNextBlock()
-		intTest.ErrValidation(t, "error waiting for creating recipe %+v", err)
+		err = inttest.WaitForNextBlock()
+		inttest.ErrValidation(t, "error waiting for creating recipe %+v", err)
 
-		txHandleResBytes, err := intTest.WaitAndGetTxData(txhash, intTest.GetMaxWaitBlock(), t)
+		txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
 		t.MustNil(err)
 
 		CheckErrorOnTxFromTxHash(txhash, t)
 		resp := handlers.CreateRecipeResponse{}
-		err = intTest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 		t.Log("txhash=", txhash)
-		intTest.ErrValidation(t, "error unmarshaling tx response %+v", err)
+		inttest.ErrValidation(t, "error unmarshaling tx response %+v", err)
 		t.MustTrue(resp.RecipeID != "")
 	}
 }
@@ -245,7 +250,7 @@ func RunExecuteRecipe(step FixtureStep, t *testing.T) {
 			ItemIDs  []string `json:"ItemIDs"`
 		}
 
-		err := intTest.GetAminoCdc().UnmarshalJSON(newByteValue, &execType)
+		err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &execType)
 		if err != nil {
 			t.Fatal("error reading using GetAminoCdc execType", execType, err)
 		}
@@ -253,21 +258,21 @@ func RunExecuteRecipe(step FixtureStep, t *testing.T) {
 
 		// t.Log("Executed recipe with below params", execType.RecipeID, execType.Sender, ItemIDs)
 		execMsg := msgs.NewMsgExecuteRecipe(execType.RecipeID, execType.Sender, ItemIDs)
-		txhash := intTest.TestTxWithMsgWithNonce(t, execMsg, execType.Sender.String(), true)
+		txhash := inttest.TestTxWithMsgWithNonce(t, execMsg, execType.Sender.String(), true)
 
-		err = intTest.WaitForNextBlock()
-		intTest.ErrValidation(t, "error waiting for executing recipe %+v", err)
+		err = inttest.WaitForNextBlock()
+		inttest.ErrValidation(t, "error waiting for executing recipe %+v", err)
 
 		if len(step.Output.TxResult.ErrorLog) > 0 {
-			hmrErrMsg := intTest.GetHumanReadableErrorFromTxHash(txhash, t)
+			hmrErrMsg := inttest.GetHumanReadableErrorFromTxHash(txhash, t)
 			t.Log("hmrErrMsg=", hmrErrMsg)
 			t.MustTrue(strings.Contains(hmrErrMsg, step.Output.TxResult.ErrorLog))
 		} else {
-			txHandleResBytes, err := intTest.WaitAndGetTxData(txhash, intTest.GetMaxWaitBlock(), t)
+			txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
 			t.MustNil(err)
 			CheckErrorOnTxFromTxHash(txhash, t)
 			resp := handlers.ExecuteRecipeResp{}
-			err = intTest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+			err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 			if err != nil {
 				t.Fatal("failed to parse transaction result txhash=", txhash)
 			}
@@ -283,7 +288,7 @@ func RunExecuteRecipe(step FixtureStep, t *testing.T) {
 				t.MustNil(err)
 				execIDs[step.ID] = scheduleRes.ExecID
 				for _, itemID := range ItemIDs {
-					item, err := intTest.GetItemByGUID(itemID)
+					item, err := inttest.GetItemByGUID(itemID)
 					t.MustNil(err)
 					t.MustTrue(len(item.OwnerRecipeID) != 0)
 				}
@@ -295,6 +300,7 @@ func RunExecuteRecipe(step FixtureStep, t *testing.T) {
 	}
 }
 
+// RunCreateTrade is a function to create trade
 func RunCreateTrade(step FixtureStep, t *testing.T) {
 
 	if step.ParamsRef != "" {
@@ -304,7 +310,7 @@ func RunCreateTrade(step FixtureStep, t *testing.T) {
 		// get item inputs from fileNames
 		itemInputs := GetItemInputsFromBytes(newByteValue, t)
 		var trdType types.Trade
-		err := intTest.GetAminoCdc().UnmarshalJSON(newByteValue, &trdType)
+		err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &trdType)
 		if err != nil {
 			t.Fatal("error reading using GetAminoCdc trdType", trdType, string(newByteValue), err)
 		}
@@ -322,21 +328,23 @@ func RunCreateTrade(step FixtureStep, t *testing.T) {
 			trdType.Sender,
 		)
 		t.Log("createTrd Msg=", createTrd)
-		txhash := intTest.TestTxWithMsgWithNonce(t, createTrd, createTrd.Sender.String(), true)
-		err = intTest.WaitForNextBlock()
-		intTest.ErrValidation(t, "error while creating trade %+v", err)
+		txhash := inttest.TestTxWithMsgWithNonce(t, createTrd, createTrd.Sender.String(), true)
+		err = inttest.WaitForNextBlock()
+		inttest.ErrValidation(t, "error while creating trade %+v", err)
 
-		txHandleResBytes, err := intTest.WaitAndGetTxData(txhash, intTest.GetMaxWaitBlock(), t)
+		txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
+		inttest.ErrValidation(t, "error while waiting for create trade transaction %+v", err)
 
 		CheckErrorOnTxFromTxHash(txhash, t)
 		resp := handlers.CreateTradeResponse{}
-		err = intTest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 		t.Log("txhash=", txhash)
-		intTest.ErrValidation(t, "error unmarshaling tx response %+v", err)
+		inttest.ErrValidation(t, "error unmarshaling tx response %+v", err)
 		t.MustTrue(resp.TradeID != "")
 	}
 }
 
+// RunFulfillTrade is a function to fulfill trade
 func RunFulfillTrade(step FixtureStep, t *testing.T) {
 
 	if step.ParamsRef != "" {
@@ -354,25 +362,25 @@ func RunFulfillTrade(step FixtureStep, t *testing.T) {
 			ItemIDs []string `json:"ItemIDs"`
 		}
 
-		err := intTest.GetAminoCdc().UnmarshalJSON(newByteValue, &trdType)
+		err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &trdType)
 		if err != nil {
 			t.Fatal("error reading using GetAminoCdc trdType", trdType, err)
 		}
 		t.MustNil(err)
 
 		ffTrdMsg := msgs.NewMsgFulfillTrade(trdType.TradeID, trdType.Sender, ItemIDs)
-		txhash := intTest.TestTxWithMsgWithNonce(t, ffTrdMsg, trdType.Sender.String(), true)
+		txhash := inttest.TestTxWithMsgWithNonce(t, ffTrdMsg, trdType.Sender.String(), true)
 
-		err = intTest.WaitForNextBlock()
-		intTest.ErrValidation(t, "error waiting for fulfilling trade %+v", err)
+		err = inttest.WaitForNextBlock()
+		inttest.ErrValidation(t, "error waiting for fulfilling trade %+v", err)
 
 		if len(step.Output.TxResult.ErrorLog) > 0 {
 		} else {
-			txHandleResBytes, err := intTest.WaitAndGetTxData(txhash, intTest.GetMaxWaitBlock(), t)
+			txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
 			t.MustNil(err)
 			CheckErrorOnTxFromTxHash(txhash, t)
 			resp := handlers.FulfillTradeResp{}
-			err = intTest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+			err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 			if err != nil {
 				t.Fatal("failed to parse transaction result txhash=", txhash)
 			}
@@ -384,6 +392,7 @@ func RunFulfillTrade(step FixtureStep, t *testing.T) {
 	}
 }
 
+// RunDisableTrade is a function to disable trade
 func RunDisableTrade(step FixtureStep, t *testing.T) {
 
 	if step.ParamsRef != "" {
@@ -398,25 +407,25 @@ func RunDisableTrade(step FixtureStep, t *testing.T) {
 			Sender  sdk.AccAddress
 		}
 
-		err := intTest.GetAminoCdc().UnmarshalJSON(newByteValue, &trdType)
+		err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &trdType)
 		if err != nil {
 			t.Fatal("error reading using GetAminoCdc trdType", trdType, err)
 		}
 		t.MustNil(err)
 
 		dsTrdMsg := msgs.NewMsgDisableTrade(trdType.TradeID, trdType.Sender)
-		txhash := intTest.TestTxWithMsgWithNonce(t, dsTrdMsg, trdType.Sender.String(), true)
+		txhash := inttest.TestTxWithMsgWithNonce(t, dsTrdMsg, trdType.Sender.String(), true)
 
-		err = intTest.WaitForNextBlock()
-		intTest.ErrValidation(t, "error waiting for disabling trade %+v", err)
+		err = inttest.WaitForNextBlock()
+		inttest.ErrValidation(t, "error waiting for disabling trade %+v", err)
 
 		if len(step.Output.TxResult.ErrorLog) > 0 {
 		} else {
-			txHandleResBytes, err := intTest.WaitAndGetTxData(txhash, intTest.GetMaxWaitBlock(), t)
+			txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
 			t.MustNil(err)
 			CheckErrorOnTxFromTxHash(txhash, t)
 			resp := handlers.DisableTradeResp{}
-			err = intTest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+			err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 			if err != nil {
 				t.Fatal("failed to parse transaction result txhash=", txhash)
 			}

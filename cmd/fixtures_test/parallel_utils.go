@@ -1,29 +1,30 @@
-package fixtureTest
+package fixturetest
 
 import (
 	testing "github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test/evtesting"
-
-	intTest "github.com/Pylons-tech/pylons_sdk/cmd/test"
 )
 
+// Status is a type to manage work queue status
 type Status int
 
+// describes the constant values that describe the status of work queue item
 const (
-	NOT_STARTED = iota
-	IN_PROGRESS
-	DONE
+	NotStarted = iota
+	InProgress
+	Done
 )
 
-type FixtureTestQueueItem struct {
+// QueueItem is a struct to manage work queue item
+type QueueItem struct {
 	fixtureFileName string
 	idx             int
 	stepID          string
-	status          Status // NOT_STARTED | IN_PROGRESS | DONE
+	status          Status // NotStarted | InProgress | Done
 }
 
-var workQueues []FixtureTestQueueItem
-var workQueueFailed = false
+var workQueues []QueueItem
 
+// GetQueueID get queue index from scenario file, step index and step id
 func GetQueueID(file string, idx int, stepID string) int {
 	for i, work := range workQueues {
 		if work.fixtureFileName == file && work.stepID == stepID {
@@ -33,6 +34,7 @@ func GetQueueID(file string, idx int, stepID string) int {
 	return -1
 }
 
+// GoodToGoForStep check if a step is ready to go
 func GoodToGoForStep(file string, idx int, step FixtureStep, t *testing.T) bool {
 	for _, condition := range step.RunAfter.PreCondition {
 		queID := GetQueueID(file, idx, condition)
@@ -40,13 +42,14 @@ func GoodToGoForStep(file string, idx int, step FixtureStep, t *testing.T) bool 
 			t.Fatal("No WorkQueue found from specified param ID=", condition, "idx=", idx, "file=", file, workQueues)
 		}
 		work := workQueues[queID]
-		if work.status != DONE {
+		if work.status != Done {
 			return false
 		}
 	}
 	return true
 }
 
+// UpdateWorkQueueStatus check if a step is ready to go
 func UpdateWorkQueueStatus(file string, idx int, fixtureSteps []FixtureStep, targetStatus Status, t *testing.T) {
 	step := fixtureSteps[idx]
 	queID := GetQueueID(file, idx, step.ID)
@@ -54,30 +57,18 @@ func UpdateWorkQueueStatus(file string, idx int, fixtureSteps []FixtureStep, tar
 		t.Fatal("No WorkQueue found from specified param ID=", step.ID, "idx=", idx, "file=", file, workQueues)
 	}
 	switch targetStatus {
-	case IN_PROGRESS:
+	case InProgress:
 		if GoodToGoForStep(file, idx, step, t) { // status can move forward only when previous condtions are met
-			workQueues[queID].status = IN_PROGRESS
+			workQueues[queID].status = InProgress
 			ProcessSingleFixtureQueueItem(file, idx, fixtureSteps, t)
 		}
-	case DONE:
-		workQueues[queID].status = DONE
+	case Done:
+		workQueues[queID].status = Done
 		for sidx, sstep := range fixtureSteps {
 			squeID := GetQueueID(file, sidx, sstep.ID)
-			if workQueues[squeID].status == NOT_STARTED {
-				UpdateWorkQueueStatus(file, sidx, fixtureSteps, IN_PROGRESS, t)
+			if workQueues[squeID].status == NotStarted {
+				UpdateWorkQueueStatus(file, sidx, fixtureSteps, InProgress, t)
 			}
 		}
-	}
-}
-
-func WaitForCondition(file string, idx int, step FixtureStep, t *testing.T) {
-	if workQueueFailed {
-		t.Fatal("WorkQueue failed --- somewhere else failed")
-	}
-	if GoodToGoForStep(file, idx, step, t) {
-		intTest.WaitForBlockInterval(step.RunAfter.BlockWait)
-	} else {
-		intTest.WaitForNextBlock()
-		WaitForCondition(file, idx, step, t)
 	}
 }

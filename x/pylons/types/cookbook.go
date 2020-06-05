@@ -5,8 +5,6 @@ import (
 	"github.com/google/uuid"
 )
 
-const TypeCookbook = "cookbook"
-
 // Cookbook is a struct that contains all the metadata of a cookbook
 type Cookbook struct {
 	ID           string // the cookbook guid
