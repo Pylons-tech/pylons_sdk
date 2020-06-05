@@ -2,6 +2,15 @@
 
 pylons SDK provides packages to build blockchain games on pylons eco system.
 
+## Setup development environment
+
+```
+git clone https://github.com/Pylons-tech/pylons_sdk
+brew install pre-commit
+brew install golangci/tap/golangci-lint
+pre-commit install
+```
+
 # SDK publish preparation
 
 Check below things before publishing
