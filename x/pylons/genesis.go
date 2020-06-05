@@ -11,14 +11,17 @@ type GenesisState struct {
 	Items     []types.Item
 }
 
+// NewGenesisState returns new genesis state
 func NewGenesisState() GenesisState {
 	return GenesisState{}
 }
 
+// ValidateGenesis do validate genesis
 func ValidateGenesis(data GenesisState) error {
 	return nil
 }
 
+// DefaultGenesisState returns default genesis state
 func DefaultGenesisState() GenesisState {
 	return GenesisState{
 		Cookbooks: []types.Cookbook{},

@@ -8,6 +8,7 @@ pylons SDK provides packages to build blockchain games on pylons eco system.
 git clone https://github.com/Pylons-tech/pylons_sdk
 brew install pre-commit
 brew install golangci/tap/golangci-lint
+go get -u golang.org/x/lint/golint
 pre-commit install
 ```
 

@@ -1,4 +1,4 @@
-package fixtureTest
+package fixturetest
 
 import (
 	"sync"
@@ -8,6 +8,7 @@ import (
 
 // Algorithm link geeksforgeeks.org/detect-cycle-in-a-graph/
 
+// DependencyGraph is a struct to manage dependency graph
 type DependencyGraph struct {
 	VMap      map[string]int
 	VMapMutex sync.Mutex
@@ -21,7 +22,7 @@ var g = DependencyGraph{
 	NV:        0, // Number of steps
 }
 
-// This is to convert string to into for circular check algorithm
+// AddVertice is to convert string to into for circular check algorithm
 func (g *DependencyGraph) AddVertice(VSID string) bool {
 	if _, ok := g.VMap[VSID]; !ok {
 		g.VMap[VSID] = g.NV
@@ -37,6 +38,7 @@ func (g *DependencyGraph) AddVertice(VSID string) bool {
 	return false
 }
 
+// AddEdge function is to add an edge to graph
 func (g *DependencyGraph) AddEdge(VSID, WSID string) bool {
 	if _, ok := g.VMap[VSID]; !ok {
 		return false
@@ -52,7 +54,7 @@ func (g *DependencyGraph) AddEdge(VSID, WSID string) bool {
 	return true
 }
 
-// This function is a variation of DFSUtil() in https://www.geeksforgeeks.org/archives/18212
+// isCyclicUtil function is a variation of DFSUtil() in https://www.geeksforgeeks.org/archives/18212
 func (g *DependencyGraph) isCyclicUtil(v int, visited []bool, recStack []bool) bool {
 	if !visited[v] {
 		// Mark the current node as visited and part of recursion stack
@@ -73,8 +75,8 @@ func (g *DependencyGraph) isCyclicUtil(v int, visited []bool, recStack []bool) b
 	return false
 }
 
+// IsCyclic function is a variation of DFS() in https://www.geeksforgeeks.org/archives/18212
 // Returns true if the graph contains a cycle, else false.
-// This function is a variation of DFS() in https://www.geeksforgeeks.org/archives/18212
 func (g *DependencyGraph) IsCyclic() bool {
 	// Mark all the vertices as not visited and not part of recursion
 	// stack
@@ -98,6 +100,7 @@ func (g *DependencyGraph) IsCyclic() bool {
 	return false
 }
 
+// CheckSteps checks cylic dependency of steps
 func CheckSteps(steps []FixtureStep, t *testing.T) {
 	g.VMapMutex.Lock()
 	for _, step := range steps {

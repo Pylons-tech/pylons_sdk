@@ -1,10 +1,10 @@
-package fixtureTest
+package fixturetest
 
 import (
 	"flag"
 	"testing"
 
-	intTest "github.com/Pylons-tech/pylons_sdk/cmd/test"
+	inttest "github.com/Pylons-tech/pylons_sdk/cmd/test"
 )
 
 var runSerialMode bool = false
@@ -22,7 +22,7 @@ func TestFixturesViaCLI(t *testing.T) {
 	FixtureTestOpts.IsParallel = !runSerialMode
 	FixtureTestOpts.CreateNewCookbook = !useKnownCookbook
 	if useRest {
-		intTest.CLIOpts.RestEndpoint = "http://localhost:1317"
+		inttest.CLIOpts.RestEndpoint = "http://localhost:1317"
 	}
 	RunTestScenarios("scenarios", t)
 }

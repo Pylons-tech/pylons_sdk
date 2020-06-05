@@ -1,4 +1,4 @@
-package intTest
+package inttest
 
 import (
 	"bytes"
@@ -13,8 +13,6 @@ import (
 
 	testing "github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test/evtesting"
 
-	"github.com/Pylons-tech/pylons_sdk/x/pylons/types"
-
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 
@@ -26,10 +24,6 @@ import (
 
 var nonceMux sync.Mutex
 
-const (
-	DefaultCoinPerRequest = 500
-)
-
 func fileExists(filename string) bool {
 	info, err := os.Stat(filename)
 	if os.IsNotExist(err) {
@@ -38,6 +32,7 @@ func fileExists(filename string) bool {
 	return !info.IsDir()
 }
 
+// GenTxWithMsg is a function to generate transaction from msg
 func GenTxWithMsg(messages []sdk.Msg) (auth.StdTx, error) {
 	var err error
 	cdc := GetAminoCdc()
@@ -63,26 +58,12 @@ func GenTxWithMsg(messages []sdk.Msg) (auth.StdTx, error) {
 	return auth.NewStdTx(stdSignMsg.Msgs, stdSignMsg.Fee, nil, stdSignMsg.Memo), nil
 }
 
-func TestQueryListRecipe(t *testing.T) ([]types.Recipe, error) {
-	output, err, _ := RunPylonsCli([]string{"query", "pylons", "list_recipe"}, "")
-	if err != nil {
-		return []types.Recipe{types.Recipe{}}, err
-	}
-	listRCPResp := types.RecipeList{}
-	err = GetAminoCdc().UnmarshalJSON(output, &listRCPResp)
-	ErrValidationWithOutputLog(t, "error unmarshaling list recipes: %+v --- %+v", output, err)
-	if err != nil {
-		return []types.Recipe{types.Recipe{}}, err
-	}
-	return listRCPResp.Recipes, err
-}
-
 func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) string {
 	if len(CLIOpts.RestEndpoint) == 0 { // broadcast using cli
 		// pylonscli tx broadcast signedCreateCookbookTx.json
 		txBroadcastArgs := []string{"tx", "broadcast", signedTxFile}
-		output, err, _ := RunPylonsCli(txBroadcastArgs, "")
-		// output2, _, logstr2 := RunPylonsCli([]string{"query", "account", "cosmos10xgn8t2auxskrf2qjcht0hwq2h5chnrpx87dus"}, "")
+		output, _, err := RunPylonsCli(txBroadcastArgs, "")
+		// output2, logstr2, err := RunPylonsCli([]string{"query", "account", "cosmos10xgn8t2auxskrf2qjcht0hwq2h5chnrpx87dus"}, "")
 		// t.Log("transaction broadcast log", logstr, "\npylonscli query account log", logstr2, string(output2))
 		t.MustNil(err)
 		txResponse := sdk.TxResponse{}
@@ -102,37 +83,38 @@ func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) string {
 		}
 		t.MustTrue(txResponse.Code == 0)
 		return txResponse.TxHash
-	} else { // broadcast using rest endpoint
-		signedTx := ReadFile(signedTxFile, t)
-		postBodyJSON := make(map[string]interface{})
-	
-		err := json.Unmarshal(signedTx, &postBodyJSON)
-		t.MustNil(err)
-	
-		postBodyJSON["tx"] = postBodyJSON["value"]
-		postBodyJSON["value"] = nil
-		postBodyJSON["mode"] = "sync"
-		postBody, err := json.Marshal(postBodyJSON)
-
-		if err != nil {
-			t.Fatal(err)
-		}
-		resp, err := http.Post(CLIOpts.RestEndpoint+"/txs", "application/json", bytes.NewBuffer(postBody))
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		var result map[string]string
-
-		err = json.NewDecoder(resp.Body).Decode(&result)
-		t.MustNil(err)
-		defer resp.Body.Close()
-		t.Log("get_pylons_api_response", result)
-		t.MustTrue(len(result["txhash"]) == 64)
-		return result["txhash"]
 	}
+	// broadcast using rest endpoint
+	signedTx := ReadFile(signedTxFile, t)
+	postBodyJSON := make(map[string]interface{})
+
+	err := json.Unmarshal(signedTx, &postBodyJSON)
+	t.MustNil(err)
+
+	postBodyJSON["tx"] = postBodyJSON["value"]
+	postBodyJSON["value"] = nil
+	postBodyJSON["mode"] = "sync"
+	postBody, err := json.Marshal(postBodyJSON)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+	resp, err := http.Post(CLIOpts.RestEndpoint+"/txs", "application/json", bytes.NewBuffer(postBody))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var result map[string]string
+
+	err = json.NewDecoder(resp.Body).Decode(&result)
+	t.MustNil(err)
+	defer resp.Body.Close()
+	t.Log("get_pylons_api_response", result)
+	t.MustTrue(len(result["txhash"]) == 64)
+	return result["txhash"]
 }
 
+// TestTxWithMsg is a function to send transaction with message
 func TestTxWithMsg(t *testing.T, msgValue sdk.Msg, signer string) string {
 	tmpDir, err := ioutil.TempDir("", "pylons")
 	if err != nil {
@@ -154,7 +136,7 @@ func TestTxWithMsg(t *testing.T, msgValue sdk.Msg, signer string) string {
 		"--from", signer,
 		"--chain-id", "pylonschain",
 	}
-	output, err, _ = RunPylonsCli(txSignArgs, "")
+	output, _, err = RunPylonsCli(txSignArgs, "")
 	ErrValidationWithOutputLog(t, "error signing transaction: %+v --- %+v", output, err)
 
 	err = ioutil.WriteFile(signedTxFile, output, 0644)
@@ -168,6 +150,7 @@ func TestTxWithMsg(t *testing.T, msgValue sdk.Msg, signer string) string {
 	return txhash
 }
 
+// TestTxWithMsgWithNonce is a function to send transaction with message and nonce
 func TestTxWithMsgWithNonce(t *testing.T, msgValue sdk.Msg, signer string, isBech32Addr bool) string {
 	tmpDir, err := ioutil.TempDir("", "pylons")
 	if err != nil {
@@ -218,8 +201,8 @@ func TestTxWithMsgWithNonce(t *testing.T, msgValue sdk.Msg, signer string, isBec
 		"--sequence", strconv.FormatUint(nonce, 10),
 		"--account-number", strconv.FormatUint(accInfo.GetAccountNumber(), 10),
 	}
-	output, err, _ = RunPylonsCli(txSignArgs, "")
-	// output, err, logstr := RunPylonsCli(txSignArgs, "")
+	output, _, err = RunPylonsCli(txSignArgs, "")
+	// output, logstr, err := RunPylonsCli(txSignArgs, "")
 	// t.Log("TX sign:: err", err, ", logstr", logstr)
 	ErrValidationWithOutputLog(t, "error signing transaction: %+v --- %+v", output, err)
 

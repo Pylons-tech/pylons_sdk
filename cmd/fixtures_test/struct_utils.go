@@ -1,4 +1,4 @@
-package fixtureTest
+package fixturetest
 
 import (
 	"encoding/json"
@@ -7,12 +7,13 @@ import (
 
 	testing "github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test/evtesting"
 
-	intTest "github.com/Pylons-tech/pylons_sdk/cmd/test"
+	inttest "github.com/Pylons-tech/pylons_sdk/cmd/test"
 	"github.com/Pylons-tech/pylons_sdk/x/pylons/types"
 )
 
 var execIDs map[string]string = make(map[string]string)
 
+// ReadFile is a function to read file
 func ReadFile(fileURL string, t *testing.T) []byte {
 	jsonFile, err := os.Open(fileURL)
 	if err != nil {
@@ -25,6 +26,7 @@ func ReadFile(fileURL string, t *testing.T) []byte {
 	return byteValue
 }
 
+// UnmarshalIntoEmptyInterface is a function to convert bytes into map[string]interface{}
 func UnmarshalIntoEmptyInterface(bytes []byte, t *testing.T) map[string]interface{} {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(bytes, &raw); err != nil {
@@ -33,17 +35,19 @@ func UnmarshalIntoEmptyInterface(bytes []byte, t *testing.T) map[string]interfac
 	return raw
 }
 
+// UpdateSenderKeyToAddress is a function to update sender key to sender's address
 func UpdateSenderKeyToAddress(bytes []byte, t *testing.T) []byte {
 	raw := UnmarshalIntoEmptyInterface(bytes, t)
 
 	senderName, ok := raw["Sender"].(string)
 	t.MustTrue(ok)
-	raw["Sender"] = intTest.GetAccountAddr(senderName, t)
+	raw["Sender"] = inttest.GetAccountAddr(senderName, t)
 	newBytes, err := json.Marshal(raw)
 	t.MustNil(err)
 	return newBytes
 }
 
+// UpdateCBNameToID is a function to update cookbook name to cookbook id if it has cookbook name field
 func UpdateCBNameToID(bytes []byte, t *testing.T) []byte {
 	raw := UnmarshalIntoEmptyInterface(bytes, t)
 
@@ -51,7 +55,7 @@ func UpdateCBNameToID(bytes []byte, t *testing.T) []byte {
 	if !ok {
 		return bytes
 	}
-	cbID, exist, err := intTest.GetCookbookIDFromName(cbName, "")
+	cbID, exist, err := inttest.GetCookbookIDFromName(cbName, "")
 	if exist && err != nil {
 		raw["CookbookID"] = cbID
 		newBytes, err := json.Marshal(raw)
@@ -61,12 +65,13 @@ func UpdateCBNameToID(bytes []byte, t *testing.T) []byte {
 	return bytes
 }
 
+// UpdateRecipeName is a function to update recipe name into recipe id
 func UpdateRecipeName(bytes []byte, t *testing.T) []byte {
 	raw := UnmarshalIntoEmptyInterface(bytes, t)
 
 	rcpName, ok := raw["RecipeName"].(string)
 	t.MustTrue(ok)
-	rcpID, exist, err := intTest.GetRecipeIDFromName(rcpName)
+	rcpID, exist, err := inttest.GetRecipeIDFromName(rcpName)
 	t.MustTrue(exist)
 	t.MustNil(err)
 	raw["RecipeID"] = rcpID
@@ -75,12 +80,13 @@ func UpdateRecipeName(bytes []byte, t *testing.T) []byte {
 	return newBytes
 }
 
+// UpdateTradeExtraInfoToID is a function to update trade extra info into trade id
 func UpdateTradeExtraInfoToID(bytes []byte, t *testing.T) []byte {
 	raw := UnmarshalIntoEmptyInterface(bytes, t)
 
 	trdInfo, ok := raw["TradeInfo"].(string)
 	t.MustTrue(ok)
-	trdID, exist, err := intTest.GetTradeIDFromExtraInfo(trdInfo)
+	trdID, exist, err := inttest.GetTradeIDFromExtraInfo(trdInfo)
 	t.MustTrue(exist)
 	t.MustNil(err)
 	raw["TradeID"] = trdID
@@ -89,6 +95,7 @@ func UpdateTradeExtraInfoToID(bytes []byte, t *testing.T) []byte {
 	return newBytes
 }
 
+// UpdateExecID is a function to set execute id from execID reference
 func UpdateExecID(bytes []byte, t *testing.T) []byte {
 	raw := UnmarshalIntoEmptyInterface(bytes, t)
 
@@ -109,13 +116,14 @@ func UpdateExecID(bytes []byte, t *testing.T) []byte {
 	return newBytes
 }
 
+// UpdateItemIDFromName is a function to set item id from item name
 func UpdateItemIDFromName(bytes []byte, includeLockedByRcp bool, t *testing.T) []byte {
 	raw := UnmarshalIntoEmptyInterface(bytes, t)
 
 	itemName, ok := raw["ItemName"].(string)
 
 	t.MustTrue(ok)
-	itemID, exist, err := intTest.GetItemIDFromName(itemName, includeLockedByRcp)
+	itemID, exist, err := inttest.GetItemIDFromName(itemName, includeLockedByRcp)
 	if !exist {
 		t.Log("no item named=", itemName, "and includeLockedByRcp=", includeLockedByRcp)
 	}
@@ -127,6 +135,7 @@ func UpdateItemIDFromName(bytes []byte, includeLockedByRcp bool, t *testing.T) [
 	return newBytes
 }
 
+// GetItemIDsFromNames is a function to set item ids from names for recipe execution
 func GetItemIDsFromNames(bytes []byte, includeLockedByRcp bool, t *testing.T) []string {
 	var itemNamesResp struct {
 		ItemNames []string
@@ -137,7 +146,7 @@ func GetItemIDsFromNames(bytes []byte, includeLockedByRcp bool, t *testing.T) []
 	ItemIDs := []string{}
 
 	for _, itemName := range itemNamesResp.ItemNames {
-		itemID, exist, err := intTest.GetItemIDFromName(itemName, includeLockedByRcp)
+		itemID, exist, err := inttest.GetItemIDFromName(itemName, includeLockedByRcp)
 		if !exist {
 			t.Log("no item named=", itemName, "and includeLockedByRcp=", includeLockedByRcp)
 		}
@@ -148,6 +157,7 @@ func GetItemIDsFromNames(bytes []byte, includeLockedByRcp bool, t *testing.T) []
 	return ItemIDs
 }
 
+// GetItemInputsFromBytes is a function to get item input list from bytes
 func GetItemInputsFromBytes(bytes []byte, t *testing.T) types.ItemInputList {
 	var itemInputRefsReader struct {
 		ItemInputRefs []string
@@ -161,7 +171,7 @@ func GetItemInputsFromBytes(bytes []byte, t *testing.T) types.ItemInputList {
 	for _, iiRef := range itemInputRefsReader.ItemInputRefs {
 		var ii types.ItemInput
 		iiBytes := ReadFile(iiRef, t)
-		err := intTest.GetAminoCdc().UnmarshalJSON(iiBytes, &ii)
+		err := inttest.GetAminoCdc().UnmarshalJSON(iiBytes, &ii)
 		if err != nil {
 			t.Fatal("error parsing item input provided via fixture error=", err)
 		}
@@ -170,6 +180,7 @@ func GetItemInputsFromBytes(bytes []byte, t *testing.T) types.ItemInputList {
 	return itemInputs
 }
 
+// GetItemOutputsFromBytes is a function to get item outputs from bytes
 func GetItemOutputsFromBytes(bytes []byte, sender string, t *testing.T) types.ItemList {
 	var itemOutputNamesReader struct {
 		ItemOutputNames []string
@@ -182,16 +193,17 @@ func GetItemOutputsFromBytes(bytes []byte, sender string, t *testing.T) types.It
 
 	for _, iN := range itemOutputNamesReader.ItemOutputNames {
 		var io types.Item
-		iID, ok, err := intTest.GetItemIDFromName(iN, false)
+		iID, ok, err := inttest.GetItemIDFromName(iN, false)
 		t.MustNil(err)
 		t.MustTrue(ok)
-		io, err = intTest.GetItemByGUID(iID)
+		io, err = inttest.GetItemByGUID(iID)
 		t.MustNil(err)
 		itemOutputs = append(itemOutputs, io)
 	}
 	return itemOutputs
 }
 
+// GetEntriesFromBytes is a function to get entries from bytes
 func GetEntriesFromBytes(bytes []byte, t *testing.T) types.EntriesList {
 	var entriesReader struct {
 		Entries struct {
@@ -239,6 +251,7 @@ func GetEntriesFromBytes(bytes []byte, t *testing.T) types.EntriesList {
 	return wpl
 }
 
+// GetModifyParamsFromRef is a function to get modifying fields from reference file
 func GetModifyParamsFromRef(ref string, t *testing.T) types.ItemModifyParams {
 	var iup types.ItemModifyParams
 	if len(ref) == 0 {

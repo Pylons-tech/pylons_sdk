@@ -5,8 +5,6 @@ import (
 	"github.com/google/uuid"
 )
 
-const TypeTrade = "trade"
-
 // Trade is a construct to perform exchange of items and coins between users. Initiated by the sender and completed by
 // the FulFiller.
 type Trade struct {

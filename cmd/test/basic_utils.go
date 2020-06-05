@@ -1,4 +1,4 @@
-package intTest
+package inttest
 
 import (
 	"errors"
@@ -22,12 +22,14 @@ import (
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 )
 
+// CLIOptions is a struct to manage pylonscli options
 type CLIOptions struct {
 	CustomNode   string
 	RestEndpoint string
 	MaxWaitBlock int64
 }
 
+// CLIOpts is a variable to manage pylonscli options
 var CLIOpts CLIOptions
 var cliMux sync.Mutex
 
@@ -35,6 +37,7 @@ func init() {
 	flag.StringVar(&CLIOpts.CustomNode, "node", "tcp://localhost:26657", "custom node url")
 }
 
+// GetMaxWaitBlock is a function to get configuration for maximum wait block, default 3
 func GetMaxWaitBlock() int64 {
 	if CLIOpts.MaxWaitBlock == 0 {
 		return 3
@@ -42,6 +45,7 @@ func GetMaxWaitBlock() int64 {
 	return CLIOpts.MaxWaitBlock
 }
 
+// ReadFile is a utility function to read file
 func ReadFile(fileURL string, t *testing.T) []byte {
 	jsonFile, err := os.Open(fileURL)
 	if err != nil {
@@ -54,10 +58,12 @@ func ReadFile(fileURL string, t *testing.T) []byte {
 	return byteValue
 }
 
+// GetAminoCdc is a utility function to get amino codec
 func GetAminoCdc() *amino.Codec {
 	return app.MakeCodec()
 }
 
+// KeyringBackendSetup is a utility function to setup keyring backend for pylonscli command
 func KeyringBackendSetup(args []string) []string {
 	if len(args) == 0 {
 		return args
@@ -76,6 +82,7 @@ func KeyringBackendSetup(args []string) []string {
 	}
 }
 
+// NodeFlagSetup is a utility function to setup configured custom node
 func NodeFlagSetup(args []string) []string {
 	if len(CLIOpts.CustomNode) > 0 {
 		if args[0] == "query" || args[0] == "tx" || args[0] == "status" {
@@ -88,7 +95,8 @@ func NodeFlagSetup(args []string) []string {
 	return args
 }
 
-func RunPylonsCli(args []string, stdinInput string) ([]byte, error, string) { // run pylonscli with specific params : helper function
+// RunPylonsCli is a function to run pylonscli
+func RunPylonsCli(args []string, stdinInput string) ([]byte, string, error) {
 	args = NodeFlagSetup(args)
 	args = KeyringBackendSetup(args)
 	cliMux.Lock()
@@ -96,11 +104,12 @@ func RunPylonsCli(args []string, stdinInput string) ([]byte, error, string) { //
 	cmd.Stdin = strings.NewReader(stdinInput)
 	res, err := cmd.CombinedOutput()
 	cliMux.Unlock()
-	return res, err, fmt.Sprintf("cmd is \"pylonscli %s\", result is \"%s\"", strings.Join(args, " "), string(res))
+	return res, fmt.Sprintf("cmd is \"pylonscli %s\", result is \"%s\"", strings.Join(args, " "), string(res)), err
 }
 
+// GetAccountAddr is a function to get account address from key
 func GetAccountAddr(account string, t *testing.T) string {
-	addrBytes, err, logstr := RunPylonsCli([]string{"keys", "show", account, "-a"}, "")
+	addrBytes, logstr, err := RunPylonsCli([]string{"keys", "show", account, "-a"}, "")
 	addr := strings.Trim(string(addrBytes), "\n ")
 	if t != nil && err != nil {
 		t.Fatalf("error getting account address, account=%s, err=%+v, logstr=%s", account, err, logstr)
@@ -108,8 +117,9 @@ func GetAccountAddr(account string, t *testing.T) string {
 	return addr
 }
 
+// GetAccountInfoFromAddr is a function to get account information from address
 func GetAccountInfoFromAddr(addr string, t *testing.T) auth.BaseAccount {
-	accBytes, err, logstr := RunPylonsCli([]string{"query", "account", addr}, "")
+	accBytes, logstr, err := RunPylonsCli([]string{"query", "account", addr}, "")
 	if t != nil && err != nil {
 		t.Fatalf("error getting account info addr=%s err=%+v, logstr=%s", addr, err, logstr)
 	}
@@ -120,42 +130,45 @@ func GetAccountInfoFromAddr(addr string, t *testing.T) auth.BaseAccount {
 	return accInfo
 }
 
+// GetAccountInfoFromName is a function to get account information from account key
 func GetAccountInfoFromName(account string, t *testing.T) auth.BaseAccount {
 	addr := GetAccountAddr(account, t)
 	return GetAccountInfoFromAddr(addr, t)
 }
 
-func GetDaemonStatus() (*ctypes.ResultStatus, error, string) {
+// GetDaemonStatus is a function to get daemon status
+func GetDaemonStatus() (*ctypes.ResultStatus, string, error) {
 	var ds ctypes.ResultStatus
 
-	dsBytes, err, logstr := RunPylonsCli([]string{"status"}, "")
+	dsBytes, logstr, err := RunPylonsCli([]string{"status"}, "")
 
 	if err != nil {
-		return nil, err, logstr
+		return nil, logstr, err
 	}
 	err = GetAminoCdc().UnmarshalJSON(dsBytes, &ds)
 
 	if err != nil {
-		return nil, err, logstr
+		return nil, logstr, err
 	}
-	return &ds, nil, logstr
+	return &ds, logstr, nil
 }
 
+// WaitForNextBlock is a function to wait until next block
 func WaitForNextBlock() error {
 	return WaitForBlockInterval(1)
 }
 
+// WaitForBlockInterval is a function to wait until block heights to flow
 func WaitForBlockInterval(interval int64) error {
-	ds, err, _ := GetDaemonStatus()
+	ds, _, err := GetDaemonStatus()
 	if err != nil {
 		return err // couldn't get daemon status.
 	}
 	currentBlock := ds.SyncInfo.LatestBlockHeight
 
-	var counter int64
-	counter = 1
+	counter := int64(1)
 	for counter < 300*interval {
-		ds, err, _ = GetDaemonStatus()
+		ds, _, err = GetDaemonStatus()
 		if err != nil {
 			return err
 		}
@@ -163,22 +176,25 @@ func WaitForBlockInterval(interval int64) error {
 			return nil
 		}
 		time.Sleep(100 * time.Millisecond)
-		counter += 1
+		counter++
 	}
 	return errors.New("You are waiting too long time for interval")
 }
 
+// CleanFile is a function to remove file
 func CleanFile(filePath string, t *testing.T) {
 	err := os.Remove(filePath)
 	ErrValidation(t, "error removing raw tx file json %+v", err)
 }
 
+// ErrValidation is a function to log output and finish test if error is available
 func ErrValidation(t *testing.T, format string, err error) {
 	if err != nil {
 		t.Fatalf(format, err)
 	}
 }
 
+// ErrValidationWithOutputLog is a function to log output and finish test if error is available
 func ErrValidationWithOutputLog(t *testing.T, format string, bytes []byte, err error) {
 	if err != nil {
 		t.Fatalf(format, string(bytes), err)

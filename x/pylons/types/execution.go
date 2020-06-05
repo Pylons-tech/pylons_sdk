@@ -5,8 +5,6 @@ import (
 	"github.com/google/uuid"
 )
 
-const TypeExecution = "execution"
-
 // Execution is a recipe execution used for tracking the execution - specifically a
 // scheduled execution
 type Execution struct {
@@ -20,6 +18,7 @@ type Execution struct {
 	Completed   bool
 }
 
+// ExecutionList describes executions list
 type ExecutionList struct {
 	Executions []Execution
 }
