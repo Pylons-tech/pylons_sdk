@@ -64,10 +64,12 @@ func UpdateWorkQueueStatus(file string, idx int, fixtureSteps []FixtureStep, tar
 		}
 	case Done:
 		workQueues[queID].status = Done
-		for sidx, sstep := range fixtureSteps {
-			squeID := GetQueueID(file, sidx, sstep.ID)
-			if workQueues[squeID].status == NotStarted {
-				UpdateWorkQueueStatus(file, sidx, fixtureSteps, InProgress, t)
+		if FixtureTestOpts.IsParallel {
+			for sidx, sstep := range fixtureSteps {
+				squeID := GetQueueID(file, sidx, sstep.ID)
+				if workQueues[squeID].status == NotStarted {
+					UpdateWorkQueueStatus(file, sidx, fixtureSteps, InProgress, t)
+				}
 			}
 		}
 	}
