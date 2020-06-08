@@ -1,6 +1,6 @@
 package handlers
 
-// CheckExecutionResp is a struct of check execution response
+// CheckExecutionResp is the response for checkExecution
 type CheckExecutionResp struct {
 	Message string
 	Status  string

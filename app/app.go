@@ -17,8 +17,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+// basic configurations to manage app
 var (
-	// ModuleBasics NewBasicManager is in charge of setting up basic module elemnets
+	// NewBasicManager is in charge of setting up basic module elemnets
 	ModuleBasics = module.NewBasicManager(
 		genutil.AppModuleBasic{},
 		auth.AppModuleBasic{},
