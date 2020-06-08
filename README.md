@@ -19,12 +19,18 @@ Check below things before publishing
 make fixture_tests
 ```
 
+# How to add feature
+
+All the features added should have fixture test and it should be well documented.
+
+
 # Packages
 
+## Fixture Test Package
 "github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test"
-"github.com/Pylons-tech/pylons_sdk/cmd/test"
 
-e.g. Utility functions within pylons/cmd tests
+## Integration Test Util Package
+"github.com/Pylons-tech/pylons_sdk/cmd/test"
 
 - GetAccountAddr
 - GetAccountInfoFromName
@@ -43,8 +49,9 @@ e.g. Utility functions within pylons/cmd tests
 - GetHumanReadableErrorFromTxHash
 - TestTxWithMsgWithNonce
 - GetItemByGUID
-- TestTxWithMsgWithNonce
 
+- SendMultiMsgTxWithNonce
+SendMultiMsgTxWithNonce is an integration test utility to send multiple message transaction from a single sender, single signed transaction.
 
 
 

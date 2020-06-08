@@ -150,11 +150,11 @@ func TestTxWithMsg(t *testing.T, msgValue sdk.Msg, signer string) string {
 	return txhash
 }
 
-// TestTxWithMsgWithNonce is a function to send transaction with message and nonce
-func TestTxWithMsgWithNonce(t *testing.T, msgValue sdk.Msg, signer string, isBech32Addr bool) string {
+// SendMultiMsgTxWithNonce is a function to send multiple messages in one transaction
+func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech32Addr bool) (string, error) {
 	tmpDir, err := ioutil.TempDir("", "pylons")
 	if err != nil {
-		panic(err.Error())
+		return "error creating pylons directory on temp folder", err
 	}
 	nonceRootDir := "./"
 	nonceFile := filepath.Join(nonceRootDir, "nonce.json")
@@ -173,20 +173,28 @@ func TestTxWithMsgWithNonce(t *testing.T, msgValue sdk.Msg, signer string, isBec
 		nonceBytes := ReadFile(nonceFile, t)
 		err := json.Unmarshal(nonceBytes, &nonceMap)
 		if err != nil {
-			ErrValidation(t, "error reading nonce: %+v --- %+v", err)
+			return "error unmarshaling nonce map", err
 		}
 		nonce = nonceMap[signer]
 	}
 	nonceMap[signer] = nonce + 1
 	nonceOutput, err := json.Marshal(nonceMap)
-	t.MustNil(err)
+	if err != nil {
+		return "error marshaling nonceMap", err
+	}
 	err = ioutil.WriteFile(nonceFile, nonceOutput, 0644)
-	t.MustNil(err)
+	if err != nil {
+		return "error writing nonce output file", err
+	}
 
-	txModel, err := GenTxWithMsg([]sdk.Msg{msgValue})
-	t.MustNil(err)
+	txModel, err := GenTxWithMsg(msgs)
+	if err != nil {
+		return "error generating transaction with messages", err
+	}
 	output, err := GetAminoCdc().MarshalJSON(txModel)
-	t.MustNil(err)
+	if err != nil {
+		return "error marshaling transaction into json", err
+	}
 
 	rawTxFile := filepath.Join(tmpDir, "raw_tx_"+strconv.FormatUint(nonce, 10)+".json")
 	signedTxFile := filepath.Join(tmpDir, "signed_tx_"+strconv.FormatUint(nonce, 10)+".json")
@@ -204,10 +212,14 @@ func TestTxWithMsgWithNonce(t *testing.T, msgValue sdk.Msg, signer string, isBec
 	output, _, err = RunPylonsCli(txSignArgs, "")
 	// output, logstr, err := RunPylonsCli(txSignArgs, "")
 	// t.Log("TX sign:: err", err, ", logstr", logstr)
-	ErrValidationWithOutputLog(t, "error signing transaction: %+v --- %+v", output, err)
+	if err != nil {
+		return "error signing transaction", err
+	}
 
 	err = ioutil.WriteFile(signedTxFile, output, 0644)
-	ErrValidation(t, "error writing signed transaction %+v", err)
+	if err != nil {
+		return "error writing signed transaction", err
+	}
 
 	nonceMux.Unlock()
 
@@ -216,5 +228,15 @@ func TestTxWithMsgWithNonce(t *testing.T, msgValue sdk.Msg, signer string, isBec
 	CleanFile(rawTxFile, t)
 	CleanFile(signedTxFile, t)
 
+	return txhash, nil
+}
+
+// TestTxWithMsgWithNonce is a function to send transaction with message and nonce
+func TestTxWithMsgWithNonce(t *testing.T, msgValue sdk.Msg, signer string, isBech32Addr bool) string {
+	txhash, err := SendMultiMsgTxWithNonce(t, []sdk.Msg{msgValue}, signer, isBech32Addr)
+	if err != nil {
+		t.Log("error reason is", txhash)
+	}
+	t.MustNil(err)
 	return txhash
 }

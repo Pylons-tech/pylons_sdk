@@ -23,9 +23,13 @@ type FixtureStep struct {
 		BlockWait    int64    `json:"blockWait"`
 	} `json:"runAfter"`
 	Action        string `json:"action"`
-	BlockInterval int64  `json:"blockInterval"`
 	ParamsRef     string `json:"paramsRef"`
-	Output        struct {
+	BlockInterval int64  `json:"blockInterval"`
+	MsgRefs       []struct {
+		Action    string `json:"action"`
+		ParamsRef string `json:"paramsRef"`
+	} `json:"msgRefs"`
+	Output struct {
 		TxResult struct {
 			Status   string `json:"status"`
 			Message  string `json:"message"`
@@ -290,6 +294,8 @@ func ProcessSingleFixtureQueueItem(file string, idx int, fixtureSteps []FixtureS
 			RunFulfillTrade(step, t)
 		case "disable_trade":
 			RunDisableTrade(step, t)
+		case "multi_msg_tx":
+			RunMultiMsgTx(step, t)
 		default:
 			t.Fatalf("step with unrecognizable action found %s", step.Action)
 		}
