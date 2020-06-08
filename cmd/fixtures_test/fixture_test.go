@@ -25,5 +25,7 @@ func TestFixturesViaCLI(t *testing.T) {
 		inttest.CLIOpts.RestEndpoint = "http://localhost:1317"
 	}
 	RegisterDefaultActionRunners()
+	// Register custom action runners
+	// RegisterActionRunner("custom_action", CustomActionRunner)
 	RunTestScenarios("scenarios", t)
 }

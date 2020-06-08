@@ -21,6 +21,47 @@ make fixture_tests
 
 #### All the features added should have fixture test and it should be well documented.
 
+# How to implement fixture test using fixture test SDK
+
+As in `cmd/fixture_test/fixture_test.go` you can add single `*_test.go` file and add flag parser, register default action runners, custom action runners and run test scenarios.
+
+```go
+package fixturetest
+
+import (
+	"flag"
+	"testing"
+
+	inttestSDK "github.com/Pylons-tech/pylons_sdk/cmd/test"
+	fixturetestSDK "github.com/Pylons-tech/pylons_sdk/cmd/fixture_test"
+)
+
+var runSerialMode bool = false
+var useRest bool = false
+var useKnownCookbook bool = false
+
+func init() {
+	flag.BoolVar(&runSerialMode, "runserial", false, "true/false value to check if test will be running in parallel")
+	flag.BoolVar(&useRest, "userest", false, "use rest endpoint for Tx send")
+	flag.BoolVar(&useKnownCookbook, "use-known-cookbook", false, "use existing cookbook or not")
+}
+
+func TestFixturesViaCLI(t *testing.T) {
+	flag.Parse()
+	fixturetestSDK.FixtureTestOpts.IsParallel = !runSerialMode
+	fixturetestSDK.FixtureTestOpts.CreateNewCookbook = !useKnownCookbook
+	if useRest {
+		inttestSDK.CLIOpts.RestEndpoint = "http://localhost:1317"
+	}
+	fixturetestSDK.RegisterDefaultActionRunners()
+	// Register custom action runners
+	// fixturetestSDK.RegisterActionRunner("custom_action", CustomActionRunner)
+	fixturetestSDK.RunTestScenarios("scenarios", t)
+}
+
+```
+
+
 # Packages
 
 ## Fixture Test Package
@@ -31,45 +72,65 @@ github.com/Pylons-tech/pylons_sdk/cmd/test
 
 #### GetAccountAddr  
 GetAccountAddr is a function to get account address from key
+
 #### GetAccountInfoFromName  
 GetAccountInfoFromName is a function to get account information from account key
+
 #### ListItemsViaCLI  
 ListItemsViaCLI is a function to list items via cli
+
 #### GetDaemonStatus  
 GetDaemonStatus is a function to get daemon status
+
 #### CLIOpts  
 CLIOpts is a variable to manage pylonscli options.  
 `CustomNode` is for custom node tcp endpoint and `RestEndpoint` is for custom node http endpoint.
+
 #### WaitAndGetTxData  
 WaitAndGetTxData is a function to get transaction data after transaction is processed
+
 #### ReadFile  
 ReadFile is a utility function to read file
+
 #### CleanFile  
 CleanFile is a function to remove file
+
 #### GetAminoCdc  
 GetAminoCdc is a utility function to get amino codec
+
 #### RunPylonsCli  
 RunPylonsCli is a function to run pylonscli
+
 #### GenTxWithMsg  
 GenTxWithMsg is a function to generate transaction from msg
+
 #### WaitForNextBlock  
 WaitForNextBlock is a function to wait until next block
+
 #### WaitAndGetTxData  
 WaitAndGetTxData is a function to get transaction data after transaction is processed
+
 #### GetHumanReadableErrorFromTxHash  
 GetHumanReadableErrorFromTxHash is a function to get human readable error from txhash
+
 #### TestTxWithMsgWithNonce  
 TestTxWithMsgWithNonce is a function to send transaction with message and nonce
+
 #### GetItemByGUID  
 GetItemByGUID is to get Item from ID
+
 #### SendMultiMsgTxWithNonce  
 SendMultiMsgTxWithNonce is an integration test utility to send multiple message transaction from a single sender, single signed transaction.
+
 #### RegisterDefaultActionRunners  
 RegisterDefaultActionRunners register default test functions.
+
 #### RegisterActionRunner  
 RegisterActionRunner registers action runner function
+
 #### GetActionRunner  
 GetActionRunner get registered action runner function
+
 #### RunActionRunner  
 RunActionRunner execute registered action runner function
 
@@ -80,24 +141,34 @@ github.com/Pylons-tech/pylons_sdk/x/pylons/handlers
 
 #### ExecuteRecipeResp  
 ExecuteRecipeResp is the response for executeRecipe
+
 #### ExecuteRecipeScheduleOutput  
 ExecuteRecipeScheduleOutput is a struct that shows how execute recipe schedule output works
+
 #### CheckExecutionResp  
 CheckExecutionResp is the response for checkExecution
+
 #### CreateCBResponse  
 CreateCBResponse is a struct of create cookbook response
+
 #### CreateRecipeResponse  
 CreateRecipeResponse is struct of create recipe response
+
 #### FulfillTradeResp  
 FulfillTradeResp is a struct to control fulfill trade response
+
 #### PopularRecipeType  
 PopularRecipeType is a type for popular recipes
+
 #### GetParamsForPopularRecipe  
 GetParamsForPopularRecipe is a function to get popular recipe's attributes
+
 #### FiatItemResponse  
 FiatItemResponse is a struct to control fiat item response
+
 #### UpdateItemStringResp  
 UpdateItemStringResp is a struct to control update item string response
+
 ## Msgs package
 github.com/Pylons-tech/pylons_sdk/x/pylons/msgs
 
