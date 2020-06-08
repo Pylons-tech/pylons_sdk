@@ -98,212 +98,98 @@ github.com/Pylons-tech/pylons_sdk/x/pylons/handlers
 
 ### Structs
 
-#### ExecuteRecipeResp  
-ExecuteRecipeResp is the response for executeRecipe
-
-#### ExecuteRecipeScheduleOutput  
-ExecuteRecipeScheduleOutput is a struct that shows how execute recipe schedule output works
-
-#### CheckExecutionResp  
-CheckExecutionResp is the response for checkExecution
-
-#### CreateCBResponse  
-CreateCBResponse is a struct of create cookbook response
-
-#### CreateRecipeResponse  
-CreateRecipeResponse is struct of create recipe response
-
-#### FulfillTradeResp  
-FulfillTradeResp is a struct to control fulfill trade response
-
-#### PopularRecipeType  
-PopularRecipeType is a type for popular recipes
-
-#### GetParamsForPopularRecipe  
-GetParamsForPopularRecipe is a function to get popular recipe's attributes
-
-#### FiatItemResponse  
-FiatItemResponse is a struct to control fiat item response
-
-#### UpdateItemStringResp  
-UpdateItemStringResp is a struct to control update item string response
+| No | Type   | Name                        | Description                                                                                 |
+|----|--------|-----------------------------|---------------------------------------------------------------------------------------------|
+| 1  | Struct | CheckExecutionResp          | CheckExecutionResp is the response for checkExecution                                       |
+| 2  | Struct | CreateCBResponse            | CreateCBResponse is a struct of create cookbook response                                    |
+| 3  | Struct | CreateRecipeResponse        | CreateRecipeResponse is struct of create recipe response                                    |
+| 4  | Struct | ExecuteRecipeResp           | ExecuteRecipeResp is the response for executeRecipe                                         |
+| 5  | Struct | ExecuteRecipeScheduleOutput | ExecuteRecipeScheduleOutput is a struct that shows how execute recipe schedule output works |
+| 6  | Struct | FiatItemResponse            | FiatItemResponse is a struct to control fiat item response                                  |
+| 7  | Struct | FulfillTradeResp            | FulfillTradeResp is a struct to control fulfill trade response                              |
+| 8  | Struct | GetParamsForPopularRecipe   | GetParamsForPopularRecipe is a function to get popular recipe's attributes                  |
+| 9  | Struct | PopularRecipeType           | PopularRecipeType is a type for popular recipes                                             |
+| 10 | Struct | UpdateItemStringResp        | UpdateItemStringResp is a struct to control update item string response                     |
 
 ## Msgs package
 github.com/Pylons-tech/pylons_sdk/x/pylons/msgs
 
 ### Msg structs
 
-#### MsgCheckExecution  
-MsgCheckExecution defines a CheckExecution message
-#### MsgCreateCookbook  
-MsgCreateCookbook defines a CreateCookbook message
-#### MsgCreateRecipe  
-MsgCreateRecipe defines a CreateRecipe message
-#### MsgCreateTrade  
-MsgCreateTrade defines a CreateTrade message
-#### MsgDisableRecipe  
-MsgDisableRecipe defines a DisableRecipe message
-#### MsgDisableTrade  
-MsgDisableTrade defines a DisableTrade message
-#### MsgEnableRecipe  
-MsgEnableRecipe defines a EnableRecipe message
-#### MsgEnableTrade  
-MsgEnableTrade defines a EnableTrade message
-#### MsgExecuteRecipe  
-MsgExecuteRecipe defines a SetName message
-#### MsgFiatItem  
-MsgFiatItem is a msg struct to be used to fiat item
-#### MsgFulfillTrade  
-MsgFulfillTrade defines a FulfillTrade message
-#### MsgGetPylons  
-MsgGetPylons defines a GetPylons message
-#### MsgSendPylons  
-MsgSendPylons defines a SendPylons message
-#### MsgUpdateItemString  
-MsgUpdateItemString defines a SendPylons message
-#### MsgUpdateCookbook  
-MsgUpdateCookbook defines a UpdateCookbook message
-#### MsgUpdateRecipe  
-MsgUpdateRecipe defines a UpdateRecipe message
+| No | Type   | Name                | Description                                                                              |
+|----|--------|---------------------|------------------------------------------------------------------------------------------|
+| 1  | Struct | MsgCheckExecution   | MsgCheckExecution defines a CheckExecution message                                       |
+| 2  | Struct | MsgCreateCookbook   | MsgCreateCookbook defines a CreateCookbook message                                       |
+| 3  | Struct | MsgCreateRecipe     | NewMsgCreateRecipe a constructor for CreateRecipe msg                                    |
+| 4  | Struct | MsgCreateTrade      | MsgCreateTrade defines a CreateTrade message                                             |
+| 5  | Struct | MsgDisableRecipe    | MsgDisableRecipe defines a DisableRecipe message                                         |
+| 6  | Struct | MsgDisableTrade     | MsgDisableTrade defines a DisableTrade message                                           |
+| 7  | Struct | MsgEnableRecipe     | MsgEnableRecipe defines a EnableRecipe message                                           |
+| 8  | Struct | MsgEnableTrade      | MsgEnableTrade defines a EnableTrade message                                             |
+| 9  | Struct | MsgExecuteRecipe    | MsgExecuteRecipe defines a SetName message                                               |
+| 10 | Struct | MsgFiatItem         | MsgFiatItem is a msg struct to be used to fiat item                                      |
+| 11 | Struct | MsgFulfillTrade     | NewMsgFulfillTrade a constructor for FulfillTrade msg                                    |
+| 12 | Struct | MsgGetPylons        | MsgGetPylons defines a GetPylons message                                                 |
+| 13 | Struct | MsgSendPylons       | MsgSendPylons defines a SendPylons message                                               |
+| 14 | Struct | MsgUpdateCookbook   | MsgUpdateCookbook defines a UpdateCookbook message                                       |
+| 15 | Struct | MsgUpdateItemString | MsgUpdateItemString defines a UpdateItemString message                                   |
+| 16 | Struct | MsgUpdateRecipe     | MsgUpdateRecipe defines a UpdateRecipe message                                           |
 
 ### Msg Utility functions 
 
-#### NewMsgGetPylons  
-NewMsgGetPylons is a function to get MsgGetPylons msg from required params
-
-#### NewMsgExecuteRecipe  
-NewMsgExecuteRecipe a constructor for ExecuteCookbook msg
-
-#### NewMsgCreateCookbook  
-NewMsgCreateCookbook a constructor for CreateCookbook msg
-
-#### NewMsgGetPylons  
-NewMsgGetPylons is a function to get MsgGetPylons msg from required params
-
-#### NewMsgUpdateItemString  
-NewMsgUpdateItemString is a function to get MsgUpdateItemString msg from required params
-
-#### NewMsgCreateTrade  
-NewMsgCreateTrade a constructor for CreateTrade msg
-
-#### NewMsgFulfillTrade  
-NewMsgFulfillTrade a constructor for FulfillTrade msg
-
-#### NewMsgDisableTrade  
-NewMsgDisableTrade a constructor for DisableTrade msg
-
-#### NewMsgCheckExecution   
-NewMsgCheckExecution a constructor for CheckExecution msg
-
-#### NewMsgFiatItem  
-NewMsgFiatItem a constructor for MsgFiatItem msg
-
-#### NewMsgCreateRecipe  
-NewMsgCreateRecipe a constructor for CreateRecipe msg
-
-#### DefaultCostPerBlock  
-DefaultCostPerBlock the amount of pylons to be charged by default
-
-## Types package
-github.com/Pylons-tech/pylons_sdk/x/pylons/types
-
+| No | Type     | Name                   | Description                                                                              |
+|----|----------|------------------------|------------------------------------------------------------------------------------------|
+| 1  | Constant | DefaultCostPerBlock    | DefaultCostPerBlock the amount of pylons to be charged by default                        |
+| 2  | Fn       | NewMsgCheckExecution   | NewMsgCheckExecution a constructor for CheckExecution msg                                |
+| 3  | Fn       | NewMsgCreateCookbook   | NewMsgCreateCookbook a constructor for CreateCookbook msg                                |
+| 4  | Fn       | NewMsgCreateRecipe     | NewMsgCreateRecipe a constructor for CreateRecipe msg                                    |
+| 5  | Fn       | NewMsgCreateTrade      | NewMsgCreateTrade a constructor for CreateTrade msg                                      |
+| 6  | Fn       | NewMsgDisableTrade     | NewMsgDisableTrade a constructor for DisableTrade msg                                    |
+| 7  | Fn       | NewMsgExecuteRecipe    | NewMsgExecuteRecipe a constructor for ExecuteCookbook msg                                |
+| 8  | Fn       | NewMsgFiatItem         | NewMsgFiatItem a constructor for MsgFiatItem msg                                         |
+| 9  | Fn       | NewMsgFulfillTrade     | NewMsgFulfillTrade a constructor for FulfillTrade msg                                    |
+| 10 | Fn       | NewMsgGetPylons        | NewMsgGetPylons is a function to get MsgGetPylons msg from required params               |
+| 11 | Fn       | NewMsgUpdateItemString | NewMsgUpdateItemString is a function to get MsgUpdateItemString msg from required params |
 
 ### Type structs
 
-#### Item  
-Item is a tradable asset
-
-#### Cookbook  
-Cookbook is a struct that contains all the metadata of a cookbook
-
-#### Recipe  
-Recipe is a game state machine step abstracted out as a cooking terminology
-
-#### Trade  
-Trade is a construct to perform exchange of items and coins between users. Initiated by the sender and completed by the FulFiller.
-
-#### FloatString  
-FloatString is a wrapper to resolve the amino issues
-
-#### EntriesList  
-EntriesList is a struct to keep list of items and coins
-
-#### TradeList  
-TradeList is a list of trades
-
-#### Execution  
-Execution is a recipe execution used for tracking the execution #### specifically a scheduled execution
-
-#### CoinOutput  
-CoinOutput is the game elements that are needs as output to a recipe
-
-#### ItemModifyParams  
-ItemModifyParams describes the fields that needs to be modified
-
-#### BasicTier  
-BasicTier is the cookbook tier which doesn't allow paid receipes which means the developers cannot have receipes where they can actually carge a fee in pylons.
-
-#### PremiumTier  
-PremiumTier the cookbook tier which does allow paid receipes
-
-#### ItemList   
-ItemList is a list of items
-
-#### ItemInput  
-ItemInput is a wrapper struct for Item for recipes
-
-#### ItemInputList  
-ItemInputList is a list of ItemInputs for convinience
-
-#### DoubleInputParamList  
-DoubleInputParamList is a list of DoubleInputParam
-
-#### DoubleInputParam  
-DoubleInputParamList is a list of DoubleInputParam
-
-#### LongInputParam  
-LongInputParam describes the bounds on an item input/output parameter of type int64
-
-#### LongInputParamList  
-LongInputParamList is a list of LongInputParam
-
-#### StringInputParam  
-StringInputParam describes the bounds on an item input/output parameter of type string
-
-#### StringInputParamList  
-StringInputParamList is a list of StringInputParam
-
-#### CoinInputList  
-CoinInputList is a list of Coin inputs
-
-#### WeightedOutputsList  
-WeightedOutputsList is a struct to keep items which can be generated by weight
+| No | Type     | Name                 | Description                                                                                                                                                     |
+|----|----------|----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1  | Constant | BasicTier            | BasicTier is the cookbook tier which doesn't allow paid receipes which means the developers cannot have receipes where they can actually carge a fee in pylons. |
+| 2  | Struct   | CoinInputList        | CoinInputList is a list of Coin inputs                                                                                                                          |
+| 3  | Struct   | CoinOutput           | CoinOutput is the game elements that are needs as output to a recipe                                                                                            |
+| 4  | Struct   | Cookbook             | Cookbook is a struct that contains all the metadata of a cookbook                                                                                               |
+| 5  | Struct   | DoubleInputParam     | DoubleInputParam describes the bounds on an item input/output parameter of type float64                                                                         |
+| 6  | Struct   | DoubleInputParamList | DoubleInputParamList is a list of DoubleInputParam                                                                                                              |
+| 7  | Struct   | EntriesList          | EntriesList is a struct to keep list of items and coins                                                                                                         |
+| 8  | Struct   | Execution            | Execution is a recipe execution used for tracking the execution #### specifically a scheduled execution                                                         |
+| 9  | Struct   | FloatString          | FloatString is a wrapper to resolve the amino issues                                                                                                            |
+| 10 | Struct   | Item                 | Item is a tradable asset                                                                                                                                        |
+| 11 | Struct   | ItemInput            | ItemInput is a wrapper struct for Item for recipes                                                                                                              |
+| 12 | Struct   | ItemInputList        | ItemInputList is a list of ItemInputs for convinience                                                                                                           |
+| 13 | Struct   | ItemList             | ItemList is a list of items                                                                                                                                     |
+| 14 | Struct   | ItemModifyParams     | ItemModifyParams describes the fields that needs to be modified                                                                                                 |
+| 15 | Struct   | LongInputParam       | LongInputParam describes the bounds on an item input/output parameter of type int64                                                                             |
+| 16 | Struct   | LongInputParamList   | LongInputParamList is a list of LongInputParam                                                                                                                  |
+| 17 | Struct   | PremiumTier          | PremiumTier the cookbook tier which does allow paid receipes                                                                                                    |
+| 18 | Struct   | Recipe               | Recipe is a game state machine step abstracted out as a cooking terminology                                                                                     |
+| 19 | Struct   | StringInputParam     | StringInputParam describes the bounds on an item input/output parameter of type string                                                                          |
+| 20 | Struct   | StringInputParamList | StringInputParamList is a list of StringInputParam                                                                                                              |
+| 21 | Struct   | Trade                | Trade is a construct to perform exchange of items and coins between users. Initiated by the sender and completed by the FulFiller.                              |
+| 22 | Struct   | TradeList            | TradeList is a list of trades                                                                                                                                   |
+| 23 | Struct   | WeightedOutputsList  | WeightedOutputsList is a struct to keep items which can be generated by weight                                                                                  |
 
 ### Type Utility functions 
 
-#### NewPylon  
-NewPylon Returns pylon currency
-
-#### GenItemInputList  
-GenItemInputList is a utility function to genearte item input list
-
-#### GenEntries  
-GenEntries is a function to generate entries from coin name and item name
-
-#### GenCoinInputList  
-GenCoinInputList is a utility function to genearte coin input list
-
-#### GenItemOnlyEntry  
-GenItemOnlyEntry is a utility function to generate item only entry
-
-#### GenCoinInputList  
-GenCoinInputList is a utility function to genearte coin input list
-
-#### GenEntriesFirstItemNameUpgrade  
-GenEntriesFirstItemNameUpgrade is a function to generate entries that update first item's name
-
-#### GenOneOutput  
-GenOneOutput is a function to generate output with one from entry list
+| No | Type | Name                           | Description                                                                                    |
+|----|------|--------------------------------|------------------------------------------------------------------------------------------------|
+| 1  | Fn   | GenCoinInputList               | GenCoinInputList is a utility function to genearte coin input list                             |
+| 2  | Fn   | GenEntries                     | GenEntries is a function to generate entries from coin name and item name                      |
+| 3  | Fn   | GenEntriesFirstItemNameUpgrade | GenEntriesFirstItemNameUpgrade is a function to generate entries that update first item's name |
+| 4  | Fn   | GenItemInputList               | GenItemInputList is a utility function to genearte item input list                             |
+| 5  | Fn   | GenItemOnlyEntry               | GenItemOnlyEntry is a utility function to generate item only entry                             |
+| 6  | Fn   | GenOneOutput                   | GenOneOutput is a function to generate output with one from entry list                         |
+| 7  | Fn   | NewPylon                       | NewPylon Returns pylon currency                                                                |
 
 ## App package
 github.com/Pylons-tech/pylons_sdk/app
