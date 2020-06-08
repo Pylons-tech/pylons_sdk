@@ -272,33 +272,7 @@ func ProcessSingleFixtureQueueItem(file string, idx int, fixtureSteps []FixtureS
 		if FixtureTestOpts.IsParallel {
 			t.Parallel()
 		}
-
-		switch step.Action {
-		case "fiat_item":
-			RunFiatItem(step, t)
-		case "update_item_string":
-			RunUpdateItemString(step, t)
-		case "create_cookbook":
-			if FixtureTestOpts.CreateNewCookbook {
-				RunCreateCookbook(step, t)
-			}
-		case "create_recipe":
-			RunCreateRecipe(step, t)
-		case "execute_recipe":
-			RunExecuteRecipe(step, t)
-		case "check_execution":
-			RunCheckExecution(step, t)
-		case "create_trade":
-			RunCreateTrade(step, t)
-		case "fulfill_trade":
-			RunFulfillTrade(step, t)
-		case "disable_trade":
-			RunDisableTrade(step, t)
-		case "multi_msg_tx":
-			RunMultiMsgTx(step, t)
-		default:
-			t.Fatalf("step with unrecognizable action found %s", step.Action)
-		}
+		RunActionRunner(step.Action, step, t)
 		PropertyExistCheck(step, t)
 		UpdateWorkQueueStatus(file, idx, fixtureSteps, Done, t)
 	})

@@ -236,6 +236,9 @@ func CreateCookbookMsgFromRef(ref string, t *testing.T) msgs.MsgCreateCookbook {
 
 // RunCreateCookbook is a function to create cookbook
 func RunCreateCookbook(step FixtureStep, t *testing.T) {
+	if !FixtureTestOpts.CreateNewCookbook {
+		return
+	}
 	if step.ParamsRef != "" {
 		cbMsg := CreateCookbookMsgFromRef(step.ParamsRef, t)
 

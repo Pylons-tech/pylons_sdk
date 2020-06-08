@@ -1,6 +1,6 @@
 package types
 
-// StringInputParam describes the bounds on an item input/output parameter of type int64
+// StringInputParam describes the bounds on an item input/output parameter of type string
 type StringInputParam struct {
 	Key string
 	// The value of the parameter
