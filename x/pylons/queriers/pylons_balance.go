@@ -1,6 +1,6 @@
 package queriers
 
-// QueryResBalance is a struct to query pylons balance result
+// QueryResBalance Result Payload for a resolve query
 type QueryResBalance struct {
 	Balance int64 `json:"balance"`
 }
