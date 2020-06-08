@@ -14,279 +14,279 @@ pre-commit install
 
 # SDK publish preparation
 
-- Check fixture test works fine
+#### Check fixture test works fine
 ```
 make fixture_tests
 ```
 
-- All the features added should have fixture test and it should be well documented.
+#### All the features added should have fixture test and it should be well documented.
 
 # Packages
 
 ## Fixture Test Package
-"github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test"
+github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test
 
 ## Integration Test Utils Package
-"github.com/Pylons-tech/pylons_sdk/cmd/test"
+github.com/Pylons-tech/pylons_sdk/cmd/test
 
-- GetAccountAddr  
+#### GetAccountAddr  
 GetAccountAddr is a function to get account address from key
-- GetAccountInfoFromName  
+#### GetAccountInfoFromName  
 GetAccountInfoFromName is a function to get account information from account key
-- ListItemsViaCLI  
+#### ListItemsViaCLI  
 ListItemsViaCLI is a function to list items via cli
-- GetDaemonStatus  
+#### GetDaemonStatus  
 GetDaemonStatus is a function to get daemon status
-- CLIOpts  
+#### CLIOpts  
 CLIOpts is a variable to manage pylonscli options.  
 `CustomNode` is for custom node tcp endpoint and `RestEndpoint` is for custom node http endpoint.
-- WaitAndGetTxData  
+#### WaitAndGetTxData  
 WaitAndGetTxData is a function to get transaction data after transaction is processed
-- ReadFile  
+#### ReadFile  
 ReadFile is a utility function to read file
-- CleanFile  
+#### CleanFile  
 CleanFile is a function to remove file
-- GetAminoCdc  
+#### GetAminoCdc  
 GetAminoCdc is a utility function to get amino codec
-- RunPylonsCli  
+#### RunPylonsCli  
 RunPylonsCli is a function to run pylonscli
-- GenTxWithMsg  
+#### GenTxWithMsg  
 GenTxWithMsg is a function to generate transaction from msg
-- WaitForNextBlock  
+#### WaitForNextBlock  
 WaitForNextBlock is a function to wait until next block
-- WaitAndGetTxData  
+#### WaitAndGetTxData  
 WaitAndGetTxData is a function to get transaction data after transaction is processed
-- GetHumanReadableErrorFromTxHash  
+#### GetHumanReadableErrorFromTxHash  
 GetHumanReadableErrorFromTxHash is a function to get human readable error from txhash
-- TestTxWithMsgWithNonce  
+#### TestTxWithMsgWithNonce  
 TestTxWithMsgWithNonce is a function to send transaction with message and nonce
-- GetItemByGUID  
+#### GetItemByGUID  
 GetItemByGUID is to get Item from ID
-- SendMultiMsgTxWithNonce  
+#### SendMultiMsgTxWithNonce  
 SendMultiMsgTxWithNonce is an integration test utility to send multiple message transaction from a single sender, single signed transaction.
-- RegisterDefaultActionRunners  
+#### RegisterDefaultActionRunners  
 RegisterDefaultActionRunners register default test functions.
-- RegisterActionRunner  
+#### RegisterActionRunner  
 RegisterActionRunner registers action runner function
-- GetActionRunner  
+#### GetActionRunner  
 GetActionRunner get registered action runner function
-- RunActionRunner  
+#### RunActionRunner  
 RunActionRunner execute registered action runner function
 
 ## Handlers struct package
-"github.com/Pylons-tech/pylons_sdk/x/pylons/handlers"
+github.com/Pylons-tech/pylons_sdk/x/pylons/handlers
 
-Structs
+### Structs
 
-- ExecuteRecipeResp  
+#### ExecuteRecipeResp  
 ExecuteRecipeResp is the response for executeRecipe
-- ExecuteRecipeScheduleOutput  
+#### ExecuteRecipeScheduleOutput  
 ExecuteRecipeScheduleOutput is a struct that shows how execute recipe schedule output works
-- CheckExecutionResp  
+#### CheckExecutionResp  
 CheckExecutionResp is the response for checkExecution
-- CreateCBResponse  
+#### CreateCBResponse  
 CreateCBResponse is a struct of create cookbook response
-- CreateRecipeResponse  
+#### CreateRecipeResponse  
 CreateRecipeResponse is struct of create recipe response
-- FulfillTradeResp  
+#### FulfillTradeResp  
 FulfillTradeResp is a struct to control fulfill trade response
-- PopularRecipeType  
+#### PopularRecipeType  
 PopularRecipeType is a type for popular recipes
-- GetParamsForPopularRecipe  
+#### GetParamsForPopularRecipe  
 GetParamsForPopularRecipe is a function to get popular recipe's attributes
-- FiatItemResponse  
+#### FiatItemResponse  
 FiatItemResponse is a struct to control fiat item response
-- UpdateItemStringResp  
+#### UpdateItemStringResp  
 UpdateItemStringResp is a struct to control update item string response
 ## Msgs package
-"github.com/Pylons-tech/pylons_sdk/x/pylons/msgs"
+github.com/Pylons-tech/pylons_sdk/x/pylons/msgs
 
 ### Msg structs
 
-- MsgCheckExecution  
+#### MsgCheckExecution  
 MsgCheckExecution defines a CheckExecution message
-- MsgCreateCookbook  
+#### MsgCreateCookbook  
 MsgCreateCookbook defines a CreateCookbook message
-- MsgCreateRecipe  
+#### MsgCreateRecipe  
 MsgCreateRecipe defines a CreateRecipe message
-- MsgCreateTrade  
+#### MsgCreateTrade  
 MsgCreateTrade defines a CreateTrade message
-- MsgDisableRecipe  
+#### MsgDisableRecipe  
 MsgDisableRecipe defines a DisableRecipe message
-- MsgDisableTrade  
+#### MsgDisableTrade  
 MsgDisableTrade defines a DisableTrade message
-- MsgEnableRecipe  
+#### MsgEnableRecipe  
 MsgEnableRecipe defines a EnableRecipe message
-- MsgEnableTrade  
+#### MsgEnableTrade  
 MsgEnableTrade defines a EnableTrade message
-- MsgExecuteRecipe  
+#### MsgExecuteRecipe  
 MsgExecuteRecipe defines a SetName message
-- MsgFiatItem  
+#### MsgFiatItem  
 MsgFiatItem is a msg struct to be used to fiat item
-- MsgFulfillTrade  
+#### MsgFulfillTrade  
 MsgFulfillTrade defines a FulfillTrade message
-- MsgGetPylons  
+#### MsgGetPylons  
 MsgGetPylons defines a GetPylons message
-- MsgSendPylons  
+#### MsgSendPylons  
 MsgSendPylons defines a SendPylons message
-- MsgUpdateItemString  
+#### MsgUpdateItemString  
 MsgUpdateItemString defines a SendPylons message
-- MsgUpdateCookbook  
+#### MsgUpdateCookbook  
 MsgUpdateCookbook defines a UpdateCookbook message
-- MsgUpdateRecipe  
+#### MsgUpdateRecipe  
 MsgUpdateRecipe defines a UpdateRecipe message
 
 ### Msg Utility functions 
 
-- NewMsgGetPylons  
+#### NewMsgGetPylons  
 NewMsgGetPylons is a function to get MsgGetPylons msg from required params
 
-- NewMsgExecuteRecipe  
+#### NewMsgExecuteRecipe  
 NewMsgExecuteRecipe a constructor for ExecuteCookbook msg
 
-- NewMsgCreateCookbook  
+#### NewMsgCreateCookbook  
 NewMsgCreateCookbook a constructor for CreateCookbook msg
 
-- NewMsgGetPylons  
+#### NewMsgGetPylons  
 NewMsgGetPylons is a function to get MsgGetPylons msg from required params
 
-- NewMsgUpdateItemString  
+#### NewMsgUpdateItemString  
 NewMsgUpdateItemString is a function to get MsgUpdateItemString msg from required params
 
-- NewMsgCreateTrade  
+#### NewMsgCreateTrade  
 NewMsgCreateTrade a constructor for CreateTrade msg
 
-- NewMsgFulfillTrade  
+#### NewMsgFulfillTrade  
 NewMsgFulfillTrade a constructor for FulfillTrade msg
 
-- NewMsgDisableTrade  
+#### NewMsgDisableTrade  
 NewMsgDisableTrade a constructor for DisableTrade msg
 
-- NewMsgCheckExecution   
+#### NewMsgCheckExecution   
 NewMsgCheckExecution a constructor for CheckExecution msg
 
-- NewMsgFiatItem  
+#### NewMsgFiatItem  
 NewMsgFiatItem a constructor for MsgFiatItem msg
 
-- NewMsgCreateRecipe  
+#### NewMsgCreateRecipe  
 NewMsgCreateRecipe a constructor for CreateRecipe msg
 
-- DefaultCostPerBlock  
+#### DefaultCostPerBlock  
 DefaultCostPerBlock the amount of pylons to be charged by default
 
 ## Types package
-"github.com/Pylons-tech/pylons_sdk/x/pylons/types"
+github.com/Pylons-tech/pylons_sdk/x/pylons/types
 
 
 ### Type structs
 
-- Item  
+#### Item  
 Item is a tradable asset
 
-- Cookbook  
+#### Cookbook  
 Cookbook is a struct that contains all the metadata of a cookbook
 
-- Recipe  
+#### Recipe  
 Recipe is a game state machine step abstracted out as a cooking terminology
 
-- Trade  
+#### Trade  
 Trade is a construct to perform exchange of items and coins between users. Initiated by the sender and completed by the FulFiller.
 
-- FloatString  
+#### FloatString  
 FloatString is a wrapper to resolve the amino issues
 
-- EntriesList  
+#### EntriesList  
 EntriesList is a struct to keep list of items and coins
 
-- TradeList  
+#### TradeList  
 TradeList is a list of trades
 
-- Execution  
-Execution is a recipe execution used for tracking the execution - specifically a scheduled execution
+#### Execution  
+Execution is a recipe execution used for tracking the execution #### specifically a scheduled execution
 
-- CoinOutput  
+#### CoinOutput  
 CoinOutput is the game elements that are needs as output to a recipe
 
-- ItemModifyParams  
+#### ItemModifyParams  
 ItemModifyParams describes the fields that needs to be modified
 
-- BasicTier  
+#### BasicTier  
 BasicTier is the cookbook tier which doesn't allow paid receipes which means the developers cannot have receipes where they can actually carge a fee in pylons.
 
-- PremiumTier  
+#### PremiumTier  
 PremiumTier the cookbook tier which does allow paid receipes
 
-- ItemList   
+#### ItemList   
 ItemList is a list of items
 
-- ItemInput  
+#### ItemInput  
 ItemInput is a wrapper struct for Item for recipes
 
-- ItemInputList  
+#### ItemInputList  
 ItemInputList is a list of ItemInputs for convinience
 
-- DoubleInputParamList  
+#### DoubleInputParamList  
 DoubleInputParamList is a list of DoubleInputParam
 
-- DoubleInputParam  
+#### DoubleInputParam  
 DoubleInputParamList is a list of DoubleInputParam
 
-- LongInputParam  
+#### LongInputParam  
 LongInputParam describes the bounds on an item input/output parameter of type int64
 
-- LongInputParamList  
+#### LongInputParamList  
 LongInputParamList is a list of LongInputParam
 
-- StringInputParam  
+#### StringInputParam  
 StringInputParam describes the bounds on an item input/output parameter of type string
 
-- StringInputParamList  
+#### StringInputParamList  
 StringInputParamList is a list of StringInputParam
 
-- CoinInputList  
+#### CoinInputList  
 CoinInputList is a list of Coin inputs
 
-- WeightedOutputsList  
+#### WeightedOutputsList  
 WeightedOutputsList is a struct to keep items which can be generated by weight
 
 ### Type Utility functions 
 
-- NewPylon  
+#### NewPylon  
 NewPylon Returns pylon currency
 
-- GenItemInputList  
+#### GenItemInputList  
 GenItemInputList is a utility function to genearte item input list
 
-- GenEntries  
+#### GenEntries  
 GenEntries is a function to generate entries from coin name and item name
 
-- GenCoinInputList  
+#### GenCoinInputList  
 GenCoinInputList is a utility function to genearte coin input list
 
-- GenItemOnlyEntry  
+#### GenItemOnlyEntry  
 GenItemOnlyEntry is a utility function to generate item only entry
 
-- GenCoinInputList  
+#### GenCoinInputList  
 GenCoinInputList is a utility function to genearte coin input list
 
-- GenEntriesFirstItemNameUpgrade  
+#### GenEntriesFirstItemNameUpgrade  
 GenEntriesFirstItemNameUpgrade is a function to generate entries that update first item's name
 
-- GenOneOutput  
+#### GenOneOutput  
 GenOneOutput is a function to generate output with one from entry list
 
 ## App package
-"github.com/Pylons-tech/pylons_sdk/app"
+github.com/Pylons-tech/pylons_sdk/app
 
-- MakeCodec  
+#### MakeCodec  
 MakeCodec make codec for message marshal/unmarshal
 
 ## Queriers package
-"github.com/Pylons-tech/pylons_sdk/x/pylons/queriers"
+github.com/Pylons-tech/pylons_sdk/x/pylons/queriers
 
-- ExecResp  
+#### ExecResp  
 ExecResp is the response for ListExecutions
 
-- ItemResp  
+#### ItemResp  
 ItemResp is the response for Items
 
