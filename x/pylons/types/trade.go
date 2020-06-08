@@ -2,7 +2,6 @@ package types
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/google/uuid"
 )
 
 // Trade is a construct to perform exchange of items and coins between users. Initiated by the sender and completed by
@@ -41,12 +40,6 @@ func NewTrade(extraInfo string,
 		Sender:      sender,
 	}
 
-	trd.ID = trd.KeyGen()
+	trd.ID = KeyGen(sender)
 	return trd
-}
-
-// KeyGen generates key for the store
-func (trd Trade) KeyGen() string {
-	id := uuid.New()
-	return trd.Sender.String() + id.String()
 }

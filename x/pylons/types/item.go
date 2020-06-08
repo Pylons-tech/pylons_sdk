@@ -2,7 +2,6 @@ package types
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/google/uuid"
 )
 
 // DoubleKeyValue describes double key/value set
@@ -111,12 +110,6 @@ func (it Item) SetString(key string, value string) bool {
 	return false
 }
 
-// KeyGen generates key for the store
-func (it Item) KeyGen() string {
-	id := uuid.New()
-	return it.Sender.String() + id.String()
-}
-
 // NewItem create a new item with an auto generated ID
 func NewItem(cookbookID string, doubles []DoubleKeyValue, longs []LongKeyValue, strings []StringKeyValue, sender sdk.AccAddress, BlockHeight int64) *Item {
 	item := &Item{
@@ -129,6 +122,6 @@ func NewItem(cookbookID string, doubles []DoubleKeyValue, longs []LongKeyValue, 
 		Tradable:   true,
 		LastUpdate: BlockHeight,
 	}
-	item.ID = item.KeyGen()
+	item.ID = KeyGen(sender)
 	return item
 }

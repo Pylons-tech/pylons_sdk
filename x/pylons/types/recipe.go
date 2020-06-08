@@ -2,7 +2,6 @@ package types
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/google/uuid"
 )
 
 // Recipe is a game state machine step abstracted out as a cooking terminology
@@ -44,12 +43,6 @@ func NewRecipe(recipeName, cookbookID, description string,
 		Sender:        sender,
 	}
 
-	rcp.ID = rcp.KeyGen()
+	rcp.ID = KeyGen(sender)
 	return rcp
-}
-
-// KeyGen generates key for the store
-func (rcp Recipe) KeyGen() string {
-	id := uuid.New()
-	return rcp.Sender.String() + id.String()
 }
