@@ -2,7 +2,6 @@ package types
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/google/uuid"
 )
 
 // Execution is a recipe execution used for tracking the execution - specifically a
@@ -39,12 +38,6 @@ func NewExecution(rcpID string, cbID string, ci sdk.Coins,
 		Completed:   completed,
 	}
 
-	exec.ID = exec.KeyGen()
+	exec.ID = KeyGen(sender)
 	return exec
-}
-
-// KeyGen generates key for the execution
-func (exec Execution) KeyGen() string {
-	id := uuid.New()
-	return exec.Sender.String() + id.String()
 }
