@@ -1,0 +1,31 @@
+[
+    {
+        "ID": "MULTI_MSG_TX",
+        "runAfter": {
+            "precondition": [],
+            "blockWait": 0
+        },
+        "action": "multi_msg_tx",
+        "msgRefs": [
+            {
+                "action": "create_cookbook",
+                "paramsRef": "./cookbooks/multi_msg_cookbook1.json"
+            },
+            {
+                "action": "create_cookbook",
+                "paramsRef": "./cookbooks/multi_msg_cookbook2.json"
+            }
+        ],
+        "output": {
+            "txResult": {
+                "status": "Success"
+            },
+            "property": [
+                {
+                    "owner": "eugen",
+                    "cookbooks": ["Multi Message Cookbook 1", "Multi Message Cookbook 2"]
+                }
+            ]
+        }
+    }
+]
