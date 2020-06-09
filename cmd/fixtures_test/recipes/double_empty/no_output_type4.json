@@ -8,8 +8,8 @@
     },
     "ExtraInfo":"",
     "Sender":"eugen",
-    "Name": "DE's no output empty type4 test recipe",
+    "Name": "DE's no output type4 test recipe",
     "CookbookID": "DE-v0.0.0-1579053457",
-    "Description": "this recipe is used to test no input empty type4.",
+    "Description": "this recipe is used to test no output type4.",
     "BlockInterval":"0"
 }

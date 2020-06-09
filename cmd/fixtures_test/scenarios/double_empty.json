@@ -60,13 +60,13 @@
         }
     },
     {
-        "ID": "CREATE_NO_INPUT_EMPTY_TYPE1_RECIPE",
+        "ID": "CREATE_NO_INPUT_TYPE1_RECIPE",
         "runAfter": {
             "precondition": ["CREATE_DOUBLE_EMPTY_COOKBOOK"],
             "blockWait": 0
         },
         "action": "create_recipe",
-        "paramsRef": "./recipes/double_empty/no_input_empty_type1.json",
+        "paramsRef": "./recipes/double_empty/no_input_type1.json",
         "output": {
             "txResult": {
                 "status": "Success"
@@ -74,19 +74,19 @@
             "property": [
                 {
                     "owner": "eugen",
-                    "recipes": ["DE's no input empty type1 test recipe"]
+                    "recipes": ["DE's no input type1 test recipe"]
                 }
             ]
         }
     },
     {
-        "ID": "CREATE_NO_INPUT_EMPTY_TYPE2_RECIPE",
+        "ID": "CREATE_NO_INPUT_TYPE2_RECIPE",
         "runAfter": {
             "precondition": ["CREATE_DOUBLE_EMPTY_COOKBOOK"],
             "blockWait": 0
         },
         "action": "create_recipe",
-        "paramsRef": "./recipes/double_empty/no_input_empty_type2.json",
+        "paramsRef": "./recipes/double_empty/no_input_type2.json",
         "output": {
             "txResult": {
                 "status": "Success"
@@ -94,19 +94,19 @@
             "property": [
                 {
                     "owner": "eugen",
-                    "recipes": ["DE's no input empty type2 test recipe"]
+                    "recipes": ["DE's no input type2 test recipe"]
                 }
             ]
         }
     },
     {
-        "ID": "CREATE_NO_OUTPUT_EMPTY_TYPE1_RECIPE",
+        "ID": "CREATE_NO_OUTPUT_TYPE1_RECIPE",
         "runAfter": {
             "precondition": ["CREATE_DOUBLE_EMPTY_COOKBOOK"],
             "blockWait": 0
         },
         "action": "create_recipe",
-        "paramsRef": "./recipes/double_empty/no_output_empty_type1.json",
+        "paramsRef": "./recipes/double_empty/no_output_type1.json",
         "output": {
             "txResult": {
                 "status": "Success"
@@ -114,19 +114,19 @@
             "property": [
                 {
                     "owner": "eugen",
-                    "recipes": ["DE's no output empty type1 test recipe"]
+                    "recipes": ["DE's no output type1 test recipe"]
                 }
             ]
         }
     },
     {
-        "ID": "CREATE_NO_OUTPUT_EMPTY_TYPE2_RECIPE",
+        "ID": "CREATE_NO_OUTPUT_TYPE2_RECIPE",
         "runAfter": {
             "precondition": ["CREATE_DOUBLE_EMPTY_COOKBOOK"],
             "blockWait": 0
         },
         "action": "create_recipe",
-        "paramsRef": "./recipes/double_empty/no_output_empty_type2.json",
+        "paramsRef": "./recipes/double_empty/no_output_type2.json",
         "output": {
             "txResult": {
                 "status": "Success"
@@ -134,19 +134,19 @@
             "property": [
                 {
                     "owner": "eugen",
-                    "recipes": ["DE's no output empty type2 test recipe"]
+                    "recipes": ["DE's no output type2 test recipe"]
                 }
             ]
         }
     },
     {
-        "ID": "CREATE_NO_OUTPUT_EMPTY_TYPE3_RECIPE",
+        "ID": "CREATE_NO_OUTPUT_TYPE3_RECIPE",
         "runAfter": {
             "precondition": ["CREATE_DOUBLE_EMPTY_COOKBOOK"],
             "blockWait": 0
         },
         "action": "create_recipe",
-        "paramsRef": "./recipes/double_empty/no_output_empty_type3.json",
+        "paramsRef": "./recipes/double_empty/no_output_type3.json",
         "output": {
             "txResult": {
                 "status": "Success"
@@ -154,19 +154,19 @@
             "property": [
                 {
                     "owner": "eugen",
-                    "recipes": ["DE's no output empty type3 test recipe"]
+                    "recipes": ["DE's no output type3 test recipe"]
                 }
             ]
         }
     },
     {
-        "ID": "CREATE_NO_OUTPUT_EMPTY_TYPE4_RECIPE",
+        "ID": "CREATE_NO_OUTPUT_TYPE4_RECIPE",
         "runAfter": {
             "precondition": ["CREATE_DOUBLE_EMPTY_COOKBOOK"],
             "blockWait": 0
         },
         "action": "create_recipe",
-        "paramsRef": "./recipes/double_empty/no_output_empty_type4.json",
+        "paramsRef": "./recipes/double_empty/no_output_type4.json",
         "output": {
             "txResult": {
                 "status": "Success"
@@ -174,7 +174,7 @@
             "property": [
                 {
                     "owner": "eugen",
-                    "recipes": ["DE's no output empty type4 test recipe"]
+                    "recipes": ["DE's no output type4 test recipe"]
                 }
             ]
         }
