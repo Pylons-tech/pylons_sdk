@@ -1,0 +1,15 @@
+{
+    "ID": "DE-no-output-empty-type4",
+    "Entries":{
+        "CoinOutputs":[],
+        "ItemOutputs":[{
+            "Ref": "./recipes/double_empty/item_output/regular.json"
+        }]
+    },
+    "ExtraInfo":"",
+    "Sender":"eugen",
+    "Name": "DE's no output empty type4 test recipe",
+    "CookbookID": "DE-v0.0.0-1579053457",
+    "Description": "this recipe is used to test no input empty type4.",
+    "BlockInterval":"0"
+}

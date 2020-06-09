@@ -66,12 +66,12 @@ func ListRecipesViaCLI(account string) ([]types.Recipe, error) {
 	}
 	output, _, err := RunPylonsCli(queryParams, "")
 	if err != nil {
-		return []types.Recipe{types.Recipe{}}, err
+		return []types.Recipe{}, err
 	}
 	listRCPResp := types.RecipeList{}
 	err = GetAminoCdc().UnmarshalJSON(output, &listRCPResp)
 	if err != nil {
-		return []types.Recipe{types.Recipe{}}, err
+		return []types.Recipe{}, err
 	}
 	return listRCPResp.Recipes, err
 }

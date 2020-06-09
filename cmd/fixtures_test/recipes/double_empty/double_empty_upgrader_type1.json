@@ -1,0 +1,33 @@
+{
+    "ID": "DE-double-empty-upgrader-type1",
+    "CoinInputs":[{
+        "Coin": "loudcoin",
+        "Count": "250"
+    }],    
+    "ItemInputRefs":[
+        "./recipes/double_empty/item_input/regular.json"
+    ],
+    "Entries":{
+        "CoinOutputs":[],
+        "ItemOutputs":[
+            {
+                "ModifyItem": {
+                    "ItemInputRef": 0,
+                    "ModifyParamsRef": "./recipes/double_empty/upgrader/double_empty_type1.json"
+                }
+            }
+        ]
+    },
+    "Outputs": [
+        {
+            "ResultEntries": ["0"],
+            "Weight": "1"
+        }
+    ],
+    "ExtraInfo":"",
+    "Sender":"eugen",
+    "Name": "DE's double empty upgrader type1 test recipe",
+    "CookbookID": "DE-v0.0.0-1579053457",
+    "Description": "this recipe is used to test double empty upgrader type1.",
+    "BlockInterval":"0"
+}

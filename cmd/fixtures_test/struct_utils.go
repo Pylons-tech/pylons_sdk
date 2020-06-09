@@ -238,6 +238,16 @@ func GetEntriesFromBytes(bytes []byte, t *testing.T) types.EntriesList {
 		}
 		if io.ModifyItem.ItemInputRef == nil {
 			pio.ModifyItem.ItemInputRef = -1
+			// This is hot fix for signature verification failed issue of item output Doubles: [] instead of Doubles: nil
+			if pio.Doubles != nil && len(pio.Doubles) == 0 {
+				pio.Doubles = nil
+			}
+			if pio.Longs != nil && len(pio.Longs) == 0 {
+				pio.Longs = nil
+			}
+			if pio.Strings != nil && len(pio.Strings) == 0 {
+				pio.Strings = nil
+			}
 		} else {
 			pio.ModifyItem.ItemInputRef = *io.ModifyItem.ItemInputRef
 		}
@@ -245,6 +255,16 @@ func GetEntriesFromBytes(bytes []byte, t *testing.T) types.EntriesList {
 		pio.ModifyItem.Doubles = ModifyParams.Doubles
 		pio.ModifyItem.Longs = ModifyParams.Longs
 		pio.ModifyItem.Strings = ModifyParams.Strings
+		// This is hot fix for signature verification failed issue of item output Doubles: [] instead of Doubles: nil
+		if pio.ModifyItem.Doubles != nil && len(pio.ModifyItem.Doubles) == 0 {
+			pio.ModifyItem.Doubles = nil
+		}
+		if pio.ModifyItem.Longs != nil && len(pio.ModifyItem.Longs) == 0 {
+			pio.ModifyItem.Longs = nil
+		}
+		if pio.ModifyItem.Strings != nil && len(pio.ModifyItem.Strings) == 0 {
+			pio.ModifyItem.Strings = nil
+		}
 		wpl = append(wpl, pio)
 	}
 

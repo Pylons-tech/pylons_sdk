@@ -1,0 +1,22 @@
+{
+    "ID": "DE-double-empty-output-type1",
+    "ItemInputRefs": [],
+    "Entries":{
+        "CoinOutputs":[],
+        "ItemOutputs":[{
+            "Ref": "./recipes/double_empty/item_output/double_empty_type1.json"
+        }]
+    },
+    "Outputs": [
+        {
+            "ResultEntries": ["0"],
+            "Weight": "1"
+        }
+    ],
+    "ExtraInfo":"",
+    "Sender":"eugen",
+    "Name": "DE's double empty output type1 test recipe",
+    "CookbookID": "DE-v0.0.0-1579053457",
+    "Description": "this recipe is used to test double empty output type1.",
+    "BlockInterval":"0"
+}
