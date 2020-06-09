@@ -1,9 +1,9 @@
 package inttest
 
 import (
-	"errors"
 	"bytes"
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -63,7 +63,7 @@ func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) string {
 	if len(CLIOpts.RestEndpoint) == 0 { // broadcast using cli
 		// pylonscli tx broadcast signedCreateCookbookTx.json
 		txBroadcastArgs := []string{"tx", "broadcast", signedTxFile}
-		output, _, err := RunPylonsCli(txBroadcastArgs, "")
+		output, logstr, err := RunPylonsCli(txBroadcastArgs, "")
 		// output2, logstr2, err := RunPylonsCli([]string{"query", "account", "cosmos10xgn8t2auxskrf2qjcht0hwq2h5chnrpx87dus"}, "")
 		// t.Log("transaction broadcast log", logstr, "\npylonscli query account log", logstr2, string(output2))
 		t.MustNil(err)
@@ -74,6 +74,7 @@ func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) string {
 		ErrValidationWithOutputLog(t, "error in broadcasting signed transaction output: %+v, err: %+v", output, err)
 
 		if txResponse.Code != 0 && maxRetry > 0 {
+			t.Log(logstr, "================>", string(output))
 			t.Log("rebroadcasting after 1s...", maxRetry, "left")
 			time.Sleep(1 * time.Second)
 			return broadcastTxFile(signedTxFile, maxRetry-1, t)
