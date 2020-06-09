@@ -71,7 +71,7 @@ github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test
 github.com/Pylons-tech/pylons_sdk/cmd/test
 | No | Type | Name                            | Description                                                                                                                                         |
 |----|------|---------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
-| 1  | Fn   | CLIOpts                         | CLIOpts is a variable to manage pylonscli options.`CustomNode` is for custom node tcp endpoint and `RestEndpoint` is for custom node http endpoint. |
+| 1  | Config   | CLIOpts                         | CLIOpts is a variable to manage pylonscli options.`CustomNode` is for custom node tcp endpoint and `RestEndpoint` is for custom node http endpoint. |
 | 2  | Fn   | CleanFile                       | CleanFile is a function to remove file                                                                                                              |
 | 3  | Fn   | GenTxWithMsg                    | GenTxWithMsg is a function to generate transaction from msg                                                                                         |
 | 4  | Fn   | GetAccountAddr                  | GetAccountAddr is a function to get account address from key                                                                                        |
