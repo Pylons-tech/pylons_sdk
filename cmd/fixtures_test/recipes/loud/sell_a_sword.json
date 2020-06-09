@@ -2,7 +2,7 @@
     "ID": "LOUD-sell-a-sword-recipe-v0.0.0-1590029710",
     "CoinInputs":[],
     "ItemInputRefs":[
-        "./recipes/item_input/sword.json"
+        "./recipes/loud/item_input/sword.json"
     ],
     "Entries": {
         "CoinOutputs": [{

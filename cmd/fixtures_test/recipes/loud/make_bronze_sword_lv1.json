@@ -1,16 +1,16 @@
 {
-    "ID": "LOUD-silver-sword-lv1-make-recipe-v0.0.0-1590029710",
+    "ID": "LOUD-bronze-sword-lv1-make-recipe-v0.0.0-1590029710",
     "CoinInputs":[{
         "Coin": "loudcoin",
         "Count": "250"
     }],
     "ItemInputRefs": [
-        "./recipes/item_input/goblin_ear.json"
+        "./recipes/loud/item_input/wolf_tail.json"
     ],
     "Entries":{
         "CoinOutputs":[],
         "ItemOutputs":[{
-            "Ref": "./recipes/item_output/silver_sword_lv1.json"
+            "Ref": "./recipes/loud/item_output/bronze_sword_lv1.json"
         }]
     },
     "Outputs": [
@@ -21,8 +21,8 @@
     ],
     "ExtraInfo":"",
     "Sender":"eugen",
-    "Name": "LOUD's Silver sword lv1 make recipe",
+    "Name": "LOUD's Bronze sword lv1 make recipe",
     "CookbookID": "LOUD-v0.0.0-1579053457",
-    "Description": "this recipe is used to make silver sword lv1.",
+    "Description": "this recipe is used to make bronze sword lv1.",
     "BlockInterval":"0"
 }

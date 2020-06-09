@@ -5,14 +5,14 @@
         "Count": "20000"
     }],
     "ItemInputRefs": [
-        "./recipes/item_input/drop_from_fire_dragon.json",
-        "./recipes/item_input/drop_from_ice_dragon.json",
-        "./recipes/item_input/drop_from_acid_dragon.json"
+        "./recipes/loud/item_input/drop_from_fire_dragon.json",
+        "./recipes/loud/item_input/drop_from_ice_dragon.json",
+        "./recipes/loud/item_input/drop_from_acid_dragon.json"
     ],
     "Entries":{
         "CoinOutputs":[],
         "ItemOutputs":[{
-            "Ref": "./recipes/item_output/angel_sword_lv1.json"
+            "Ref": "./recipes/loud/item_output/angel_sword_lv1.json"
         }]
     },
     "Outputs": [

@@ -84,7 +84,7 @@
             "blockWait": 0
         },
         "action": "create_recipe",
-        "paramsRef": "./recipes/get_character.json",
+        "paramsRef": "./recipes/loud/get_character.json",
         "output": {
             "txResult": {
                 "status": "Success"
@@ -104,7 +104,7 @@
             "blockWait": 0
         },
         "action": "create_recipe",
-        "paramsRef": "./recipes/buy_gold_with_pylons.json",
+        "paramsRef": "./recipes/loud/buy_gold_with_pylons.json",
         "output": {
             "txResult": {
                 "status": "Success"
@@ -124,7 +124,7 @@
             "blockWait": 0
         },
         "action": "create_recipe",
-        "paramsRef": "./recipes/dev_get_test_items.json",
+        "paramsRef": "./recipes/loud/dev_get_test_items.json",
         "output": {
             "txResult": {
                 "status": "Success"
@@ -144,7 +144,7 @@
             "blockWait": 0
         },
         "action": "create_recipe",
-        "paramsRef": "./recipes/buy_copper_sword_lv1.json",
+        "paramsRef": "./recipes/loud/buy_copper_sword_lv1.json",
         "output": {
             "txResult": {
                 "status": "Success"
@@ -164,7 +164,7 @@
             "blockWait": 0
         },
         "action": "create_recipe",
-        "paramsRef": "./recipes/buy_wooden_sword_lv1.json",
+        "paramsRef": "./recipes/loud/buy_wooden_sword_lv1.json",
         "output": {
             "txResult": {
                 "status": "Success"
@@ -184,7 +184,7 @@
             "blockWait": 0
         },
         "action": "create_recipe",
-        "paramsRef": "./recipes/make_bronze_sword_lv1.json",
+        "paramsRef": "./recipes/loud/make_bronze_sword_lv1.json",
         "output": {
             "txResult": {
                 "status": "Success"
@@ -204,7 +204,7 @@
             "blockWait": 0
         },
         "action": "create_recipe",
-        "paramsRef": "./recipes/make_iron_sword_lv1.json",
+        "paramsRef": "./recipes/loud/make_iron_sword_lv1.json",
         "output": {
             "txResult": {
                 "status": "Success"
@@ -224,7 +224,7 @@
             "blockWait": 0
         },
         "action": "create_recipe",
-        "paramsRef": "./recipes/make_silver_sword_lv1.json",
+        "paramsRef": "./recipes/loud/make_silver_sword_lv1.json",
         "output": {
             "txResult": {
                 "status": "Success"
@@ -244,7 +244,7 @@
             "blockWait": 0
         },
         "action": "create_recipe",
-        "paramsRef": "./recipes/hunt_rabbits_with_a_sword.json",
+        "paramsRef": "./recipes/loud/hunt_rabbits_with_a_sword.json",
         "output": {
             "txResult": {
                 "status": "Success"
@@ -264,7 +264,7 @@
             "blockWait": 0
         },
         "action": "create_recipe",
-        "paramsRef": "./recipes/hunt_rabbits_with_no_weapon.json",
+        "paramsRef": "./recipes/loud/hunt_rabbits_with_no_weapon.json",
         "output": {
             "txResult": {
                 "status": "Success"
@@ -284,7 +284,7 @@
             "blockWait": 0
         },
         "action": "create_recipe",
-        "paramsRef": "./recipes/fight_giant_with_iron_sword.json",
+        "paramsRef": "./recipes/loud/fight_giant_with_iron_sword.json",
         "output": {
             "txResult": {
                 "status": "Success"
@@ -304,7 +304,7 @@
             "blockWait": 0
         },
         "action": "create_recipe",
-        "paramsRef": "./recipes/fight_goblin_with_sword.json",
+        "paramsRef": "./recipes/loud/fight_goblin_with_sword.json",
         "output": {
             "txResult": {
                 "status": "Success"
@@ -324,7 +324,7 @@
             "blockWait": 0
         },
         "action": "create_recipe",
-        "paramsRef": "./recipes/fight_troll_with_sword.json",
+        "paramsRef": "./recipes/loud/fight_troll_with_sword.json",
         "output": {
             "txResult": {
                 "status": "Success"
@@ -344,7 +344,7 @@
             "blockWait": 0
         },
         "action": "create_recipe",
-        "paramsRef": "./recipes/fight_wolf_with_sword.json",
+        "paramsRef": "./recipes/loud/fight_wolf_with_sword.json",
         "output": {
             "txResult": {
                 "status": "Success"
@@ -364,7 +364,7 @@
             "blockWait": 0
         },
         "action": "create_recipe",
-        "paramsRef": "./recipes/health_restore_lv1.json",
+        "paramsRef": "./recipes/loud/health_restore_lv1.json",
         "output": {
             "txResult": {
                 "status": "Success"
@@ -384,7 +384,7 @@
             "blockWait": 0
         },
         "action": "create_recipe",
-        "paramsRef": "./recipes/sell_a_sword.json",
+        "paramsRef": "./recipes/loud/sell_a_sword.json",
         "output": {
             "txResult": {
                 "status": "Success"
@@ -404,7 +404,7 @@
             "blockWait": 0
         },
         "action": "create_recipe",
-        "paramsRef": "./recipes/upgrade_copper_sword_lv1_to_lv2.json",
+        "paramsRef": "./recipes/loud/upgrade_copper_sword_lv1_to_lv2.json",
         "output": {
             "txResult": {
                 "status": "Success"
@@ -424,7 +424,7 @@
             "blockWait": 0
         },
         "action": "create_recipe",
-        "paramsRef": "./recipes/upgrade_wooden_sword_lv1_to_lv2.json",
+        "paramsRef": "./recipes/loud/upgrade_wooden_sword_lv1_to_lv2.json",
         "output": {
             "txResult": {
                 "status": "Success"

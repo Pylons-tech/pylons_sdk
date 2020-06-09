@@ -1,14 +1,14 @@
 {
-    "ID": "LOUD-wooden-sword-lv1-buy-recipe-v0.0.0-1590029710",
+    "ID": "LOUD-get-character-recipe-v0.0.0-1590029710",
     "CoinInputs":[{
-        "Coin": "loudcoin",
-        "Count": "100"
+        "Coin": "pylon",
+        "Count": "1"
     }],
     "ItemInputRefs": [],
     "Entries":{
         "CoinOutputs":[],
         "ItemOutputs":[{
-            "Ref": "./recipes/item_output/wooden_sword_lv1.json"
+            "Ref": "./recipes/loud/item_output/tiger_character_lv1.json"
         }]
     },
     "Outputs": [
@@ -19,8 +19,8 @@
     ],
     "ExtraInfo":"",
     "Sender":"eugen",
-    "Name": "LOUD's Wooden sword lv1 buy recipe",
+    "Name": "LOUD's Get Character recipe",
     "CookbookID": "LOUD-v0.0.0-1579053457",
-    "Description": "this recipe is used to buy wooden sword lv1.",
+    "Description": "this recipe is used to create character.",
     "BlockInterval":"0"
 }

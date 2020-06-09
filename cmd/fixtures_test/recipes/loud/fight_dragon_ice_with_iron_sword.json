@@ -1,20 +1,20 @@
 {
-    "ID": "LOUD-fight-wolf-with-a-sword-recipe-v0.0.0-1590029710",
+    "ID": "LOUD-fight-ice-dragon-with-iron-sword-recipe-v0.0.0-1590029710",
     "CoinInputs":[],
     "ItemInputRefs":[
-        "./recipes/item_input/character.json",
-        "./recipes/item_input/sword.json"
+        "./recipes/loud/item_input/character_ice.json",
+        "./recipes/loud/item_input/iron_sword.json"
     ],
     "Entries":{
         "CoinOutputs":[{
             "Coin":"loudcoin",
-            "Count": "150"
+            "Count": "10000"
         }],
         "ItemOutputs":[
             {
                 "ModifyItem": {
                     "ItemInputRef": 0,
-                    "ModifyParamsRef": "./recipes/upgrader/character_after_fighting_wolf.json"
+                    "ModifyParamsRef": "./recipes/loud/upgrader/character_after_fighting_special_dragon.json"
                 }
             },
             {
@@ -23,14 +23,14 @@
                 }
             },
             {
-                "Ref": "./recipes/item_output/wolf_tail.json"  
+                "Ref": "./recipes/loud/item_output/drop_from_ice_dragon.json"  
             }
         ]
     },
     "Outputs": [
         {
             "ResultEntries": [],
-            "Weight": "15 * 3 / int(input1.attack) - HP"
+            "Weight": "300 * 30 / int(input1.attack) - HP"
         },
         {
             "ResultEntries": ["0", "1"],
@@ -47,8 +47,8 @@
     ],
     "ExtraInfo":"",
     "Sender":"eugen",
-    "Name": "LOUD's fight with wolf with a sword recipe",
+    "Name": "LOUD's fight with ice dragon with a sword recipe",
     "CookbookID": "LOUD-v0.0.0-1579053457",
-    "Description": "this recipe is used to fight with wolf with a sword.",
+    "Description": "this recipe is used to fight with ice dragon with a sword.",
     "BlockInterval":"0"
 }

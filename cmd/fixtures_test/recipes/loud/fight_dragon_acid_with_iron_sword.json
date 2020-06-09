@@ -2,8 +2,8 @@
     "ID": "LOUD-fight-acid-dragon-with-iron-sword-recipe-v0.0.0-1590029710",
     "CoinInputs":[],
     "ItemInputRefs":[
-        "./recipes/item_input/character_acid.json",
-        "./recipes/item_input/iron_sword.json"
+        "./recipes/loud/item_input/character_acid.json",
+        "./recipes/loud/item_input/iron_sword.json"
     ],
     "Entries":{
         "CoinOutputs":[{
@@ -14,7 +14,7 @@
             {
                 "ModifyItem": {
                     "ItemInputRef": 0,
-                    "ModifyParamsRef": "./recipes/upgrader/character_after_fighting_special_dragon.json"
+                    "ModifyParamsRef": "./recipes/loud/upgrader/character_after_fighting_special_dragon.json"
                 }
             },
             {
@@ -23,7 +23,7 @@
                 }
             },
             {
-                "Ref": "./recipes/item_output/drop_from_acid_dragon.json"  
+                "Ref": "./recipes/loud/item_output/drop_from_acid_dragon.json"  
             }
         ]
     },

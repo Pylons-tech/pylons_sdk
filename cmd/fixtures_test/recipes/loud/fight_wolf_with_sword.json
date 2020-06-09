@@ -1,20 +1,20 @@
 {
-    "ID": "LOUD-fight-troll-with-a-sword-recipe-v0.0.0-1590029710",
+    "ID": "LOUD-fight-wolf-with-a-sword-recipe-v0.0.0-1590029710",
     "CoinInputs":[],
     "ItemInputRefs":[
-        "./recipes/item_input/character.json",
-        "./recipes/item_input/sword.json"
+        "./recipes/loud/item_input/character.json",
+        "./recipes/loud/item_input/sword.json"
     ],
     "Entries":{
         "CoinOutputs":[{
             "Coin":"loudcoin",
-            "Count": "300"
+            "Count": "150"
         }],
         "ItemOutputs":[
             {
                 "ModifyItem": {
                     "ItemInputRef": 0,
-                    "ModifyParamsRef": "./recipes/upgrader/character_after_fighting_troll.json"
+                    "ModifyParamsRef": "./recipes/loud/upgrader/character_after_fighting_wolf.json"
                 }
             },
             {
@@ -23,14 +23,14 @@
                 }
             },
             {
-                "Ref": "./recipes/item_output/troll_toes.json"  
+                "Ref": "./recipes/loud/item_output/wolf_tail.json"  
             }
         ]
     },
     "Outputs": [
         {
             "ResultEntries": [],
-            "Weight": "20 * 5 / int(input1.attack) - HP"
+            "Weight": "15 * 3 / int(input1.attack) - HP"
         },
         {
             "ResultEntries": ["0", "1"],
@@ -47,8 +47,8 @@
     ],
     "ExtraInfo":"",
     "Sender":"eugen",
-    "Name": "LOUD's fight with troll with a sword recipe",
+    "Name": "LOUD's fight with wolf with a sword recipe",
     "CookbookID": "LOUD-v0.0.0-1579053457",
-    "Description": "this recipe is used to fight with troll with a sword.",
+    "Description": "this recipe is used to fight with wolf with a sword.",
     "BlockInterval":"0"
 }

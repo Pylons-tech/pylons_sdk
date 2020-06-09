@@ -1,16 +1,14 @@
 {
-    "ID": "LOUD-iron-sword-lv1-make-recipe-v0.0.0-1590029710",
+    "ID": "LOUD-wooden-sword-lv1-buy-recipe-v0.0.0-1590029710",
     "CoinInputs":[{
         "Coin": "loudcoin",
-        "Count": "250"
+        "Count": "100"
     }],
-    "ItemInputRefs": [
-        "./recipes/item_input/troll_toes.json"
-    ],
+    "ItemInputRefs": [],
     "Entries":{
         "CoinOutputs":[],
         "ItemOutputs":[{
-            "Ref": "./recipes/item_output/iron_sword_lv1.json"
+            "Ref": "./recipes/loud/item_output/wooden_sword_lv1.json"
         }]
     },
     "Outputs": [
@@ -21,8 +19,8 @@
     ],
     "ExtraInfo":"",
     "Sender":"eugen",
-    "Name": "LOUD's Iron sword lv1 make recipe",
+    "Name": "LOUD's Wooden sword lv1 buy recipe",
     "CookbookID": "LOUD-v0.0.0-1579053457",
-    "Description": "this recipe is used to make iron sword lv1.",
+    "Description": "this recipe is used to buy wooden sword lv1.",
     "BlockInterval":"0"
 }

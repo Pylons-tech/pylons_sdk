@@ -2,8 +2,8 @@
     "ID": "LOUD-hunt-rabbits-with-a-sword-recipe-v0.0.0-1590029710",
     "CoinInputs":[],
     "ItemInputRefs":[
-        "./recipes/item_input/character.json",
-        "./recipes/item_input/sword.json"
+        "./recipes/loud/item_input/character.json",
+        "./recipes/loud/item_input/sword.json"
     ],
     "Entries":{
         "CoinOutputs":[{
@@ -14,7 +14,7 @@
             {
                 "ModifyItem": {
                     "ItemInputRef": 0,
-                    "ModifyParamsRef": "./recipes/upgrader/character_after_hunting_rabbits.json"
+                    "ModifyParamsRef": "./recipes/loud/upgrader/character_after_hunting_rabbits.json"
                 }
             },
             {

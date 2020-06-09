@@ -1,16 +1,14 @@
 {
-    "ID": "LOUD-bronze-sword-lv1-make-recipe-v0.0.0-1590029710",
+    "ID": "LOUD-copper-sword-lv1-buy-recipe-v0.0.0-1590029710",
     "CoinInputs":[{
         "Coin": "loudcoin",
         "Count": "250"
     }],
-    "ItemInputRefs": [
-        "./recipes/item_input/wolf_tail.json"
-    ],
+    "ItemInputRefs": [],
     "Entries":{
         "CoinOutputs":[],
         "ItemOutputs":[{
-            "Ref": "./recipes/item_output/bronze_sword_lv1.json"
+            "Ref": "./recipes/loud/item_output/copper_sword_lv1.json"
         }]
     },
     "Outputs": [
@@ -21,8 +19,8 @@
     ],
     "ExtraInfo":"",
     "Sender":"eugen",
-    "Name": "LOUD's Bronze sword lv1 make recipe",
+    "Name": "LOUD's Copper sword lv1 buy recipe",
     "CookbookID": "LOUD-v0.0.0-1579053457",
-    "Description": "this recipe is used to make bronze sword lv1.",
+    "Description": "this recipe is used to buy copper sword lv1.",
     "BlockInterval":"0"
 }

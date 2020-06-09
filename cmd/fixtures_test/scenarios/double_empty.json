@@ -1,0 +1,22 @@
+[
+    {
+        "ID": "CREATE_DOUBLE_EMPTY_COOKBOOK",
+        "runAfter": {
+            "precondition": [],
+            "blockWait": 0
+        },
+        "action": "create_cookbook",
+        "paramsRef": "./cookbooks/double_empty.json",
+        "output": {
+            "txResult": {
+                "status": "Success"
+            },
+            "property": [
+                {
+                    "owner": "eugen",
+                    "cookbooks": ["Double Empty Checker Cookbook"]
+                }
+            ]
+        }
+    }
+]

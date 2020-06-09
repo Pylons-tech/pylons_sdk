@@ -1,11 +1,11 @@
 {
-    "ID": "LOUD-upgrade-copper-sword-lv1-to-lv2-recipe-v0.0.0-1590029710",
+    "ID": "LOUD-upgrade-wooden-sword-lv1-to-lv2-recipe-v0.0.0-1590029710",
     "CoinInputs":[{
         "Coin": "loudcoin",
-        "Count": "250"
-    }],    
+        "Count": "100"
+    }],
     "ItemInputRefs":[
-        "./recipes/item_input/copper_sword_lv1.json"
+        "./recipes/loud/item_input/wooden_sword_lv1.json"
     ],
     "Entries":{
         "CoinOutputs":[],
@@ -13,7 +13,7 @@
             {
                 "ModifyItem": {
                     "ItemInputRef": 0,
-                    "ModifyParamsRef": "./recipes/upgrader/level.json"
+                    "ModifyParamsRef": "./recipes/loud/upgrader/level.json"
                 }
             }
         ]
@@ -26,8 +26,8 @@
     ],
     "ExtraInfo":"",
     "Sender":"eugen",
-    "Name": "LOUD's Copper sword lv1 to lv2 upgrade recipe",
+    "Name": "LOUD's Wooden sword lv1 to lv2 upgrade recipe",
     "CookbookID": "LOUD-v0.0.0-1579053457",
-    "Description": "this recipe is used to upgrade copper sword level.",
+    "Description": "this recipe is used to upgrade wooden sword level.",
     "BlockInterval":"0"
 }
