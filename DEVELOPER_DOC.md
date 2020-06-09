@@ -45,6 +45,9 @@ Sample cookbook JSON
 }
 ```
 
+### Support email validation rule 
+We accept emails that fit `^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z0-9]{2,})$` regular expression.
+
 ## Item
 
 Item consists of below fields.
