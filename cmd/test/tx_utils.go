@@ -1,6 +1,7 @@
 package inttest
 
 import (
+	"errors"
 	"bytes"
 	"encoding/json"
 	"io/ioutil"
@@ -152,6 +153,10 @@ func TestTxWithMsg(t *testing.T, msgValue sdk.Msg, signer string) string {
 
 // SendMultiMsgTxWithNonce is a function to send multiple messages in one transaction
 func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech32Addr bool) (string, error) {
+
+	if len(msgs) == 0 {
+		return "msgs validation error", errors.New("length of msgs shouldn't be zero")
+	}
 	tmpDir, err := ioutil.TempDir("", "pylons")
 	if err != nil {
 		return "error creating pylons directory on temp folder", err
