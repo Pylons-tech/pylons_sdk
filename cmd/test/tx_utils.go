@@ -144,7 +144,7 @@ func TestTxWithMsg(t *testing.T, msgValue sdk.Msg, signer string) string {
 	err = ioutil.WriteFile(signedTxFile, output, 0644)
 	ErrValidation(t, "error writing signed transaction %+v", err)
 
-	txhash := broadcastTxFile(signedTxFile, 50, t)
+	txhash := broadcastTxFile(signedTxFile, GetMaxBroadcastRetry(), t)
 
 	CleanFile(rawTxFile, t)
 	CleanFile(signedTxFile, t)
@@ -229,7 +229,7 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 
 	nonceMux.Unlock()
 
-	txhash := broadcastTxFile(signedTxFile, 50, t)
+	txhash := broadcastTxFile(signedTxFile, GetMaxBroadcastRetry(), t)
 
 	CleanFile(rawTxFile, t)
 	CleanFile(signedTxFile, t)

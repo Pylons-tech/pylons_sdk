@@ -27,6 +27,7 @@ type CLIOptions struct {
 	CustomNode   string
 	RestEndpoint string
 	MaxWaitBlock int64
+	MaxBroadcast int
 }
 
 // CLIOpts is a variable to manage pylonscli options
@@ -43,6 +44,14 @@ func GetMaxWaitBlock() int64 {
 		return 3
 	}
 	return CLIOpts.MaxWaitBlock
+}
+
+// GetMaxBroadcastRetry is a function to get configuration for maximum retry for transactio broadcast
+func GetMaxBroadcastRetry() int {
+	if CLIOpts.MaxBroadcast == 0 {
+		return 50
+	}
+	return CLIOpts.MaxBroadcast
 }
 
 // ReadFile is a utility function to read file
