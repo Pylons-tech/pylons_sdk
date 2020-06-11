@@ -198,16 +198,19 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 	if len(msgs) == 0 {
 		return "msgs validation error", errors.New("length of msgs shouldn't be zero")
 	}
+	t.Trace("tx_with_nonce.step.A")
 	tmpDir, err := ioutil.TempDir("", "pylons")
 	if err != nil {
 		return "error creating pylons directory on temp folder", err
 	}
+	t.Trace("tx_with_nonce.step.B")
 	nonceRootDir := "./"
 	nonceFile := filepath.Join(nonceRootDir, "nonce.json")
 	if !isBech32Addr {
 		signer = GetAccountAddr(signer, t)
 	}
 
+	t.Trace("tx_with_nonce.step.C")
 	accInfo := GetAccountInfoFromAddr(signer, t)
 	nonce := accInfo.GetSequence()
 
@@ -223,25 +226,30 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 		}
 		nonce = nonceMap[signer]
 	}
+	t.Trace("tx_with_nonce.step.D")
 	nonceMap[signer] = nonce + 1
 	nonceOutput, err := json.Marshal(nonceMap)
 	if err != nil {
 		return "error marshaling nonceMap", err
 	}
+	t.Trace("tx_with_nonce.step.E")
 	err = ioutil.WriteFile(nonceFile, nonceOutput, 0644)
 	if err != nil {
 		return "error writing nonce output file", err
 	}
 
+	t.Trace("tx_with_nonce.step.F")
 	txModel, err := GenTxWithMsg(msgs)
 	if err != nil {
 		return "error generating transaction with messages", err
 	}
+	t.Trace("tx_with_nonce.step.F")
 	output, err := GetAminoCdc().MarshalJSON(txModel)
 	if err != nil {
 		return "error marshaling transaction into json", err
 	}
 
+	t.Trace("tx_with_nonce.step.G")
 	rawTxFile := filepath.Join(tmpDir, "raw_tx_"+strconv.FormatUint(nonce, 10)+".json")
 	signedTxFile := filepath.Join(tmpDir, "signed_tx_"+strconv.FormatUint(nonce, 10)+".json")
 	err = ioutil.WriteFile(rawTxFile, output, 0644)
@@ -252,6 +260,7 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 		}).Fatal("error writing raw transaction")
 	}
 
+	t.Trace("tx_with_nonce.step.H")
 	// pylonscli tx sign sample_transaction.json --account-number 2 --sequence 10 --offline --from eugen
 	txSignArgs := []string{"tx", "sign", rawTxFile,
 		"--from", signer,
@@ -269,12 +278,14 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 	if err != nil {
 		return "error signing transaction", err
 	}
+	t.Trace("tx_with_nonce.step.I")
 
 	err = ioutil.WriteFile(signedTxFile, output, 0644)
 	if err != nil {
 		return "error writing signed transaction", err
 	}
 
+	t.Trace("tx_with_nonce.step.J")
 	nonceMux.Unlock()
 
 	txhash := broadcastTxFile(signedTxFile, GetMaxBroadcastRetry(), t)

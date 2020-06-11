@@ -115,7 +115,7 @@ func RunPylonsCli(args []string, stdinInput string) ([]byte, string, error) {
 	cmd.Stdin = strings.NewReader(stdinInput)
 	res, err := cmd.CombinedOutput()
 	cliMux.Unlock()
-	return res, fmt.Sprintf("cmd is \"pylonscli %s\", result is \"%s\"", strings.Join(args, " "), string(res)), err
+	return res, fmt.Sprintf("\"pylonscli %s\" ==>\n%s\n", strings.Join(args, " "), string(res)), err
 }
 
 // GetAccountAddr is a function to get account address from key

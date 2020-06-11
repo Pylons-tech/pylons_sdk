@@ -15,6 +15,7 @@ type T struct {
 	origin    *testing.T
 	useLogPkg bool
 	fields    log.Fields
+	logLevel  log.Level
 }
 
 // Fields is a type to manage json based output
@@ -27,13 +28,46 @@ func NewT(origin *testing.T) T {
 	newT := T{
 		origin:    origin,
 		useLogPkg: false,
+		fields:    log.Fields{},
+		logLevel:  log.DebugLevel,
 	}
 	if origin == nil {
 		orgT := testing.T{}
 		newT.origin = &orgT
 		newT.useLogPkg = true
+		newT.logLevel = log.TraceLevel
 	}
 	return newT
+}
+
+// WithFields is to manage data in json format
+func (t *T) WithFields(fields Fields) *T {
+	return &T{
+		fields:    log.Fields(fields),
+		origin:    t.origin,
+		useLogPkg: t.useLogPkg,
+		logLevel:  t.logLevel,
+	}
+}
+
+// Run is modified Run
+func (t *T) Run(name string, f func(t *T)) bool {
+	return t.origin.Run(name, func(subt *testing.T) {
+		newT := T{
+			origin:    subt,
+			fields:    t.fields,
+			useLogPkg: t.useLogPkg,
+			logLevel:  t.logLevel,
+		}
+		f(&newT)
+	})
+}
+
+// DispatchEvent process events that are related to the event e.g. failure in one test case make others to fail without continuing
+func (t *T) DispatchEvent(event string) {
+	if listener, ok := listeners[event]; ok {
+		listener()
+	}
 }
 
 func getFrame(skipFrames int) runtime.Frame {
@@ -76,15 +110,6 @@ func (t *T) printCallerLine() {
 	}
 }
 
-// WithFields is to manage data in json format
-func (t *T) WithFields(fields Fields) *T {
-	return &T{
-		fields:    log.Fields(fields),
-		origin:    t.origin,
-		useLogPkg: t.useLogPkg,
-	}
-}
-
 // FormatFields renders a single log entry
 func (t *T) FormatFields() string {
 	var formated string
@@ -111,6 +136,7 @@ func (t *T) FormatFields() string {
 // Fatal is a modified Fatal
 func (t *T) Fatal(args ...interface{}) {
 	t.DispatchEvent("FAIL")
+	t.printCallerLine()
 	if t.useLogPkg {
 		log.WithFields(t.fields).Fatal(args...)
 	} else {
@@ -122,6 +148,7 @@ func (t *T) Fatal(args ...interface{}) {
 // Fatalf is a modified Fatalf
 func (t *T) Fatalf(format string, args ...interface{}) {
 	t.DispatchEvent("FAIL")
+	t.printCallerLine()
 	if t.useLogPkg {
 		log.WithFields(t.fields).Fatalf(format, args...)
 	} else {
@@ -137,7 +164,8 @@ func (t *T) MustTrue(value bool) {
 	}
 	if t.useLogPkg {
 		if !value {
-			log.Fatal("MustTrue validation failed")
+			t.printCallerLine()
+			log.Fatal("MustTrue validation failure")
 		}
 	} else {
 		require.True(t.origin, value)
@@ -147,9 +175,16 @@ func (t *T) MustTrue(value bool) {
 // MustNil validate if value is nil
 func (t *T) MustNil(err error) {
 	if err != nil {
-		t.Log("comparing \"", err, "\" to nil")
+		t.DispatchEvent("FAIL")
+		if t.useLogPkg {
+			t.printCallerLine()
+			t.WithFields(Fields{
+				"error": err,
+			}).Fatal("MustNil validation failure")
+		} else {
+			require.True(t.origin, err == nil)
+		}
 	}
-	t.MustTrue(err == nil)
 }
 
 // Parallel is modified Parallel
@@ -169,6 +204,9 @@ func (t *T) Log(args ...interface{}) {
 
 // Info is modified Info
 func (t *T) Info(args ...interface{}) {
+	if t.logLevel < log.InfoLevel {
+		return
+	}
 	if t.useLogPkg {
 		log.WithFields(t.fields).Infoln(args...)
 	} else {
@@ -179,6 +217,10 @@ func (t *T) Info(args ...interface{}) {
 
 // Warn is modified Info
 func (t *T) Warn(args ...interface{}) {
+	if t.logLevel < log.WarnLevel {
+		return
+	}
+	t.printCallerLine()
 	if t.useLogPkg {
 		log.WithFields(t.fields).Warnln(args...)
 	} else {
@@ -187,29 +229,29 @@ func (t *T) Warn(args ...interface{}) {
 	}
 }
 
+// Trace is modified Trace
+func (t *T) Trace(args ...interface{}) {
+	if t.logLevel < log.TraceLevel {
+		return
+	}
+	t.printCallerLine()
+	if t.useLogPkg {
+		log.WithFields(t.fields).Traceln(args...)
+	} else {
+		t.origin.Log(t.FormatFields())
+		t.origin.Log(args...)
+	}
+}
+
 // Debug is modified Debug
 func (t *T) Debug(args ...interface{}) {
+	if t.logLevel < log.DebugLevel {
+		return
+	}
 	t.printCallerLine()
 	if t.useLogPkg {
 		log.WithFields(t.fields).Debugln(args...)
 	} else {
 		t.origin.Log(args...)
-	}
-}
-
-// Run is modified Run
-func (t *T) Run(name string, f func(t *T)) bool {
-	return t.origin.Run(name, func(t *testing.T) {
-		newT := T{
-			origin: t,
-		}
-		f(&newT)
-	})
-}
-
-// DispatchEvent process events that are related to the event e.g. failure in one test case make others to fail without continuing
-func (t *T) DispatchEvent(event string) {
-	if listener, ok := listeners[event]; ok {
-		listener()
 	}
 }
