@@ -65,7 +65,12 @@ func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) string {
 		txBroadcastArgs := []string{"tx", "broadcast", signedTxFile}
 		output, logstr, err := RunPylonsCli(txBroadcastArgs, "")
 		// output2, logstr2, err := RunPylonsCli([]string{"query", "account", "cosmos10xgn8t2auxskrf2qjcht0hwq2h5chnrpx87dus"}, "")
-		// t.Log("transaction broadcast log", logstr, "\npylonscli query account log", logstr2, string(output2))
+		// t.WithFields(testing.Fields{
+		// 	"broadcast_log": logstr,
+		// 	"query_account": logstr2,
+		// 	"output2":       string(output2),
+		// }).Debug("")
+
 		t.MustNil(err)
 		txResponse := sdk.TxResponse{}
 
@@ -74,16 +79,20 @@ func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) string {
 		ErrValidationWithOutputLog(t, "error in broadcasting signed transaction output: %+v, err: %+v", output, err)
 
 		if txResponse.Code != 0 && maxRetry > 0 {
-			t.Log(logstr, "================>", string(output))
-			t.Log("rebroadcasting after 1s...", maxRetry, "left")
+			t.WithFields(testing.Fields{
+				"log":       logstr,
+				"output":    string(output),
+				"max_retry": maxRetry,
+			}).Info("rebroadcasting after 1s...")
 			time.Sleep(1 * time.Second)
 			return broadcastTxFile(signedTxFile, maxRetry-1, t)
 		}
 		t.MustTrue(len(txResponse.TxHash) == 64)
 		if txResponse.Code != 0 {
-			t.Log("broadcasting failure after maxRetry limitation", string(output))
+			t.WithFields(testing.Fields{
+				"output": string(output),
+			}).Fatal("broadcasting failure after maxRetry limitation")
 		}
-		t.MustTrue(txResponse.Code == 0)
 		return txResponse.TxHash
 	}
 	// broadcast using rest endpoint
@@ -99,11 +108,15 @@ func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) string {
 	postBody, err := json.Marshal(postBodyJSON)
 
 	if err != nil {
-		t.Fatal(err)
+		t.WithFields(testing.Fields{
+			"error": err,
+		}).Fatal("")
 	}
 	resp, err := http.Post(CLIOpts.RestEndpoint+"/txs", "application/json", bytes.NewBuffer(postBody))
 	if err != nil {
-		t.Fatal(err)
+		t.WithFields(testing.Fields{
+			"error": err,
+		}).Fatal("")
 	}
 
 	var result map[string]string
@@ -111,7 +124,9 @@ func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) string {
 	err = json.NewDecoder(resp.Body).Decode(&result)
 	t.MustNil(err)
 	defer resp.Body.Close()
-	t.Log("get_pylons_api_response", result)
+	t.WithFields(testing.Fields{
+		"get_pylons_api_response": result,
+	}).Info("")
 	t.MustTrue(len(result["txhash"]) == 64)
 	return result["txhash"]
 }
@@ -217,7 +232,10 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 	}
 	output, _, err = RunPylonsCli(txSignArgs, "")
 	// output, logstr, err := RunPylonsCli(txSignArgs, "")
-	// t.Log("TX sign:: err", err, ", logstr", logstr)
+	// t.WithFields(testing.Fields{
+	// 	"error": err,
+	// 	"log": logstr,
+	// })("TX sign result")
 	if err != nil {
 		return "error signing transaction", err
 	}
@@ -241,8 +259,11 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 func TestTxWithMsgWithNonce(t *testing.T, msgValue sdk.Msg, signer string, isBech32Addr bool) string {
 	txhash, err := SendMultiMsgTxWithNonce(t, []sdk.Msg{msgValue}, signer, isBech32Addr)
 	if err != nil {
-		t.Log("error reason is", txhash)
+		t.WithFields(testing.Fields{
+			"txhash": txhash,
+			"error":  err,
+			"func":   "TestTxWithMsgWithNonce",
+		}).Fatal("")
 	}
-	t.MustNil(err)
 	return txhash
 }

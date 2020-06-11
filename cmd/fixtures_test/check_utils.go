@@ -167,7 +167,10 @@ func CheckItemWithLongValues(item types.Item, longValues map[string]int) bool {
 func CheckErrorOnTxFromTxHash(txhash string, t *testing.T) {
 	hmrErrMsg := inttest.GetHumanReadableErrorFromTxHash(txhash, t)
 	if len(hmrErrMsg) > 0 {
-		t.Fatal("hmrErrMsg is available. txhash=", txhash, "hmrErrMsg=", hmrErrMsg)
+		t.WithFields(testing.Fields{
+			"txhash":   txhash,
+			"tx_error": hmrErrMsg,
+		}).Fatal("tx_error exist")
 	}
 }
 
@@ -185,19 +188,29 @@ func PropertyExistCheck(step FixtureStep, t *testing.T) {
 			for _, cbName := range pCheck.Cookbooks {
 				_, exist, err := inttest.GetCookbookIDFromName(cbName, pOwnerAddr)
 				if err != nil {
-					t.Fatal("error checking cookbook exist", err)
+					t.WithFields(testing.Fields{
+						"error": err,
+					}).Fatal("error checking cookbook exist")
 				}
 				if !shouldNotExist {
 					if exist {
-						t.Log("checked existance of cookbook name=", cbName)
+						t.WithFields(testing.Fields{
+							"cookbook_name": cbName,
+						}).Info("cookbook exist, ok")
 					} else {
-						t.Fatal("cookbook with name=", cbName, "does not exist")
+						t.WithFields(testing.Fields{
+							"cookbook_name": cbName,
+						}).Fatal("cookbook does not exist, but should exist")
 					}
 				} else {
 					if exist {
-						t.Fatal("cookbook with name=", cbName, "should not exist but it exist")
+						t.WithFields(testing.Fields{
+							"cookbook_name": cbName,
+						}).Fatal("cookbook exist, but shouldn't exist")
 					} else {
-						t.Log("cookbook with name=", cbName, "does not exist as expected")
+						t.WithFields(testing.Fields{
+							"cookbook_name": cbName,
+						}).Info("cookbook does not exist as expected, ok")
 					}
 				}
 			}
@@ -209,15 +222,23 @@ func PropertyExistCheck(step FixtureStep, t *testing.T) {
 
 				if !shouldNotExist {
 					if len(guid) > 0 {
-						t.Log("checked existence of recipe name=", rcpName)
+						t.WithFields(testing.Fields{
+							"recipe_name": rcpName,
+						}).Info("recipe exist, ok")
 					} else {
-						t.Fatal("recipe with name=", rcpName, "does not exist")
+						t.WithFields(testing.Fields{
+							"recipe_name": rcpName,
+						}).Fatal("recipe with does not exist, but should exist")
 					}
 				} else {
 					if len(guid) > 0 {
-						t.Fatal("recipe with name=", rcpName, "should not exist but it exist")
+						t.WithFields(testing.Fields{
+							"recipe_name": rcpName,
+						}).Fatal("recipe exist but shouldn't exist")
 					} else {
-						t.Log("recipe with name=", rcpName, "does not exist as expected")
+						t.WithFields(testing.Fields{
+							"recipe_name": rcpName,
+						}).Info("recipe does not exist as expected, ok")
 					}
 				}
 			}
@@ -225,7 +246,10 @@ func PropertyExistCheck(step FixtureStep, t *testing.T) {
 		if len(pCheck.Items) > 0 {
 			for _, itemCheck := range pCheck.Items {
 				fitItemExist := false
-				// t.Log("Checking item with spec=", itemCheck, "id=", idx)
+				// t.WithFields(testing.Fields{
+				// 	// "id": idx,
+				// 	"spec": itemCheck,
+				// }).Info("checking item")
 				items, err := inttest.ListItemsViaCLI(pOwnerAddr)
 				inttest.ErrValidation(t, "error listing items %+v", err)
 				for _, item := range items {
@@ -242,15 +266,27 @@ func PropertyExistCheck(step FixtureStep, t *testing.T) {
 
 				if !shouldNotExist {
 					if fitItemExist {
-						t.Log("checked item existence")
+						t.WithFields(testing.Fields{
+							"owner_address": pOwnerAddr,
+							"spec":          itemCheck,
+						}).Info("checked item existence")
 					} else {
-						t.Fatal("no item exist which fit item spec for", pOwnerAddr, itemCheck)
+						t.WithFields(testing.Fields{
+							"owner_address": pOwnerAddr,
+							"spec":          itemCheck,
+						}).Fatal("no item exist which fit item spec")
 					}
 				} else {
 					if fitItemExist {
-						t.Fatal("item should not be available but available with spec=", pOwnerAddr, itemCheck)
+						t.WithFields(testing.Fields{
+							"owner_address": pOwnerAddr,
+							"spec":          itemCheck,
+						}).Fatal("item exist but shouldn't exist")
 					} else {
-						t.Log("item is not available as expected")
+						t.WithFields(testing.Fields{
+							"owner_address": pOwnerAddr,
+							"spec":          itemCheck,
+						}).Info("item does not exist as expected, ok")
 					}
 				}
 			}
@@ -317,7 +353,7 @@ func RunTestScenarios(scenarioDir string, t *originT.T) {
 		return nil
 	})
 	if err != nil {
-		t.Fatal(err)
+		t.Fatal("error walking through scenario directory", err)
 	}
 	for _, file := range files {
 		if filepath.Ext(file) != ".json" {

@@ -39,7 +39,12 @@ func GoodToGoForStep(file string, idx int, step FixtureStep, t *testing.T) bool 
 	for _, condition := range step.RunAfter.PreCondition {
 		queID := GetQueueID(file, idx, condition)
 		if queID == -1 {
-			t.Fatal("No WorkQueue found from specified param ID=", condition, "idx=", idx, "file=", file, workQueues)
+			t.WithFields(testing.Fields{
+				"ID":          step.ID,
+				"idx":         idx,
+				"file":        file,
+				"work_queues": workQueues,
+			}).Fatal("No WorkQueue found from specified param")
 		}
 		work := workQueues[queID]
 		if work.status != Done {
@@ -54,7 +59,12 @@ func UpdateWorkQueueStatus(file string, idx int, fixtureSteps []FixtureStep, tar
 	step := fixtureSteps[idx]
 	queID := GetQueueID(file, idx, step.ID)
 	if queID == -1 {
-		t.Fatal("No WorkQueue found from specified param ID=", step.ID, "idx=", idx, "file=", file, workQueues)
+		t.WithFields(testing.Fields{
+			"ID":          step.ID,
+			"idx":         idx,
+			"file":        file,
+			"work_queues": workQueues,
+		}).Fatal("No WorkQueue found from specified param")
 	}
 	switch targetStatus {
 	case InProgress:

@@ -34,7 +34,6 @@ func RunMultiMsgTx(step FixtureStep, t *testing.T) {
 			case "create_cookbook":
 				msg := CreateCookbookMsgFromRef(ref.ParamsRef, t)
 				newMsg, sender = msg, msg.Sender
-				t.Log("create_cookbook msg test", msg)
 			case "create_recipe":
 				msg := CreateRecipeMsgFromRef(ref.ParamsRef, t)
 				newMsg, sender = msg, msg.Sender
@@ -56,7 +55,12 @@ func RunMultiMsgTx(step FixtureStep, t *testing.T) {
 			}
 			msgs = append(msgs, newMsg)
 		}
-		t.Log("sender", sender.String(), len(msgs), msgs, step.MsgRefs)
+		t.WithFields(testing.Fields{
+			"sender":   sender.String(),
+			"len_msgs": len(msgs),
+			"tx_msgs":  msgs,
+			"msg_refs": step.MsgRefs,
+		}).Debug("")
 		txhash, err := inttest.SendMultiMsgTxWithNonce(t, msgs, sender.String(), true)
 		t.MustNil(err)
 
@@ -67,7 +71,9 @@ func RunMultiMsgTx(step FixtureStep, t *testing.T) {
 		inttest.ErrValidation(t, "error getting tx result bytes %+v", err)
 
 		CheckErrorOnTxFromTxHash(txhash, t)
-		t.Log("txhash=", txhash)
+		t.WithFields(testing.Fields{
+			"txhash": txhash,
+		}).Debug("")
 	}
 }
 
@@ -86,7 +92,10 @@ func CheckExecutionMsgFromRef(ref string, t *testing.T) msgs.MsgCheckExecution {
 	}
 	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &execType)
 	if err != nil {
-		t.Fatal("error reading using GetAminoCdc execType", execType, err)
+		t.WithFields(testing.Fields{
+			"execType": execType,
+			"error":    err,
+		}).Fatal("error reading using GetAminoCdc")
 	}
 	t.MustNil(err)
 
@@ -113,7 +122,9 @@ func RunCheckExecution(step FixtureStep, t *testing.T) {
 		CheckErrorOnTxFromTxHash(txhash, t)
 		resp := handlers.CheckExecutionResp{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
-		t.Log("txhash=", txhash)
+		t.WithFields(testing.Fields{
+			"txhash": txhash,
+		}).Debug("")
 		inttest.ErrValidation(t, "error unmarshaling tx response %+v", err)
 		t.MustTrue(resp.Status == step.Output.TxResult.Status)
 		if len(step.Output.TxResult.Message) > 0 {
@@ -133,7 +144,10 @@ func FiatItemMsgFromRef(ref string, t *testing.T) msgs.MsgFiatItem {
 	var itemType types.Item
 	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &itemType)
 	if err != nil {
-		t.Fatal("error reading using GetAminoCdc itemType", itemType, err)
+		t.WithFields(testing.Fields{
+			"itemType": itemType,
+			"error":    err,
+		}).Fatal("error reading using GetAminoCdc itemType", itemType, err)
 	}
 	t.MustNil(err)
 
@@ -163,7 +177,9 @@ func RunFiatItem(step FixtureStep, t *testing.T) {
 		resp := handlers.FiatItemResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 
-		t.Log("txhash=", txhash)
+		t.WithFields(testing.Fields{
+			"txhash": txhash,
+		}).Debug("")
 		inttest.ErrValidation(t, "error unmarshaling tx response %+v", err)
 		t.MustTrue(resp.ItemID != "")
 	}
@@ -180,7 +196,11 @@ func UpdateItemStringMsgFromRef(ref string, t *testing.T) msgs.MsgUpdateItemStri
 	var sTypeMsg msgs.MsgUpdateItemString
 	err := json.Unmarshal(newByteValue, &sTypeMsg)
 	if err != nil {
-		t.Fatal("error reading using GetAminoCdc sTypeMsg", sTypeMsg, string(newByteValue), err)
+		t.WithFields(testing.Fields{
+			"sTypeMsg":  sTypeMsg,
+			"new_bytes": string(newByteValue),
+			"error":     err,
+		}).Fatal("error reading using GetAminoCdc")
 	}
 	t.MustNil(err)
 	return sTypeMsg
@@ -203,7 +223,9 @@ func RunUpdateItemString(step FixtureStep, t *testing.T) {
 		resp := handlers.UpdateItemStringResp{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 
-		t.Log("txhash=", txhash)
+		t.WithFields(testing.Fields{
+			"txhash": txhash,
+		}).Debug("")
 		inttest.ErrValidation(t, "error unmarshaling tx response %+v", err)
 	}
 }
@@ -217,7 +239,11 @@ func CreateCookbookMsgFromRef(ref string, t *testing.T) msgs.MsgCreateCookbook {
 	var cbType types.Cookbook
 	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &cbType)
 	if err != nil {
-		t.Fatal("error reading using GetAminoCdc cbType", cbType, string(newByteValue), err)
+		t.WithFields(testing.Fields{
+			"cbType":    cbType,
+			"new_bytes": string(newByteValue),
+			"error":     err,
+		}).Fatal("error reading using GetAminoCdc")
 	}
 	t.MustNil(err)
 
@@ -253,7 +279,10 @@ func RunCreateCookbook(step FixtureStep, t *testing.T) {
 		CheckErrorOnTxFromTxHash(txhash, t)
 		resp := handlers.CreateCBResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
-		t.Log("txhash=", txhash)
+
+		t.WithFields(testing.Fields{
+			"txhash": txhash,
+		}).Debug("")
 		inttest.ErrValidation(t, "error unmarshaling tx response %+v", err)
 		t.MustTrue(resp.CookbookID != "")
 	}
@@ -274,7 +303,11 @@ func CreateRecipeMsgFromRef(ref string, t *testing.T) msgs.MsgCreateRecipe {
 	var rcpTempl types.Recipe
 	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &rcpTempl)
 	if err != nil {
-		t.Fatal("error reading using GetAminoCdc rcpTempl", rcpTempl, err)
+		t.WithFields(testing.Fields{
+			"rcpTempl":  rcpTempl,
+			"new_bytes": string(newByteValue),
+			"error":     err,
+		}).Fatal("error reading using GetAminoCdc")
 	}
 	t.MustNil(err)
 
@@ -308,7 +341,10 @@ func RunCreateRecipe(step FixtureStep, t *testing.T) {
 		CheckErrorOnTxFromTxHash(txhash, t)
 		resp := handlers.CreateRecipeResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
-		t.Log("txhash=", txhash)
+
+		t.WithFields(testing.Fields{
+			"txhash": txhash,
+		}).Debug("")
 		inttest.ErrValidation(t, "error unmarshaling tx response %+v", err)
 		t.MustTrue(resp.RecipeID != "")
 	}
@@ -332,11 +368,14 @@ func ExecuteRecipeMsgFromRef(ref string, t *testing.T) msgs.MsgExecuteRecipe {
 
 	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &execType)
 	if err != nil {
-		t.Fatal("error reading using GetAminoCdc execType", execType, err)
+		t.WithFields(testing.Fields{
+			"execType":  execType,
+			"new_bytes": string(newByteValue),
+			"error":     err,
+		}).Fatal("error reading using GetAminoCdc")
 	}
 	t.MustNil(err)
 
-	// t.Log("Executed recipe with below params", execType.RecipeID, execType.Sender, ItemIDs)
 	return msgs.NewMsgExecuteRecipe(execType.RecipeID, execType.Sender, ItemIDs)
 }
 
@@ -354,7 +393,10 @@ func RunExecuteRecipe(step FixtureStep, t *testing.T) {
 
 		if len(step.Output.TxResult.ErrorLog) > 0 {
 			hmrErrMsg := inttest.GetHumanReadableErrorFromTxHash(txhash, t)
-			t.Log("hmrErrMsg=", hmrErrMsg)
+
+			t.WithFields(testing.Fields{
+				"tx_error": hmrErrMsg,
+			}).Debug("")
 			t.MustTrue(strings.Contains(hmrErrMsg, step.Output.TxResult.ErrorLog))
 		} else {
 			txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
@@ -363,7 +405,9 @@ func RunExecuteRecipe(step FixtureStep, t *testing.T) {
 			resp := handlers.ExecuteRecipeResp{}
 			err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 			if err != nil {
-				t.Fatal("failed to parse transaction result txhash=", txhash)
+				t.WithFields(testing.Fields{
+					"txhash": txhash,
+				}).Fatal("failed to parse transaction result")
 			}
 			t.MustTrue(resp.Status == step.Output.TxResult.Status)
 			if len(step.Output.TxResult.Message) > 0 {
@@ -381,9 +425,14 @@ func RunExecuteRecipe(step FixtureStep, t *testing.T) {
 					t.MustNil(err)
 					t.MustTrue(len(item.OwnerRecipeID) != 0)
 				}
-				t.Log("scheduled execution", scheduleRes.ExecID)
+
+				t.WithFields(testing.Fields{
+					"exec_id": scheduleRes.ExecID,
+				}).Debug("scheduled execution")
 			} else { // straight execution
-				t.Log("straight execution result output", string(resp.Output))
+				t.WithFields(testing.Fields{
+					"output": string(resp.Output),
+				}).Debug("straight execution result")
 			}
 		}
 	}
@@ -399,7 +448,11 @@ func CreateTradeMsgFromRef(ref string, t *testing.T) msgs.MsgCreateTrade {
 	var trdType types.Trade
 	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &trdType)
 	if err != nil {
-		t.Fatal("error reading using GetAminoCdc trdType", trdType, string(newByteValue), err)
+		t.WithFields(testing.Fields{
+			"trdType":   trdType,
+			"new_bytes": string(newByteValue),
+			"error":     err,
+		}).Fatal("error reading using GetAminoCdc")
 	}
 	t.MustTrue(err == nil)
 
@@ -420,7 +473,9 @@ func CreateTradeMsgFromRef(ref string, t *testing.T) msgs.MsgCreateTrade {
 func RunCreateTrade(step FixtureStep, t *testing.T) {
 	if step.ParamsRef != "" {
 		createTrd := CreateTradeMsgFromRef(step.ParamsRef, t)
-		t.Log("createTrd Msg=", createTrd)
+		t.WithFields(testing.Fields{
+			"tx_msg": createTrd,
+		}).Debug("createTrd")
 		txhash := inttest.TestTxWithMsgWithNonce(t, createTrd, createTrd.Sender.String(), true)
 		err := inttest.WaitForNextBlock()
 		inttest.ErrValidation(t, "error while creating trade %+v", err)
@@ -431,7 +486,9 @@ func RunCreateTrade(step FixtureStep, t *testing.T) {
 		CheckErrorOnTxFromTxHash(txhash, t)
 		resp := handlers.CreateTradeResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
-		t.Log("txhash=", txhash)
+		t.WithFields(testing.Fields{
+			"txhash": txhash,
+		}).Debug("")
 		inttest.ErrValidation(t, "error unmarshaling tx response %+v", err)
 		t.MustTrue(resp.TradeID != "")
 	}
@@ -455,7 +512,11 @@ func FulfillTradeMsgFromRef(ref string, t *testing.T) msgs.MsgFulfillTrade {
 
 	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &trdType)
 	if err != nil {
-		t.Fatal("error reading using GetAminoCdc trdType", trdType, err)
+		t.WithFields(testing.Fields{
+			"trdType":   trdType,
+			"new_bytes": string(newByteValue),
+			"error":     err,
+		}).Fatal("error reading using GetAminoCdc")
 	}
 	t.MustNil(err)
 
@@ -480,7 +541,9 @@ func RunFulfillTrade(step FixtureStep, t *testing.T) {
 			resp := handlers.FulfillTradeResp{}
 			err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 			if err != nil {
-				t.Fatal("failed to parse transaction result txhash=", txhash)
+				t.WithFields(testing.Fields{
+					"txhash": txhash,
+				}).Fatal("failed to parse transaction result")
 			}
 			t.MustTrue(resp.Status == step.Output.TxResult.Status)
 			if len(step.Output.TxResult.Message) > 0 {
@@ -505,7 +568,11 @@ func DisableTradeMsgFromRef(ref string, t *testing.T) msgs.MsgDisableTrade {
 
 	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &trdType)
 	if err != nil {
-		t.Fatal("error reading using GetAminoCdc trdType", trdType, err)
+		t.WithFields(testing.Fields{
+			"trdType":   trdType,
+			"new_bytes": string(newByteValue),
+			"error":     err,
+		}).Fatal("error reading using GetAminoCdc")
 	}
 	t.MustNil(err)
 
@@ -530,7 +597,9 @@ func RunDisableTrade(step FixtureStep, t *testing.T) {
 			resp := handlers.DisableTradeResp{}
 			err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 			if err != nil {
-				t.Fatal("failed to parse transaction result txhash=", txhash)
+				t.WithFields(testing.Fields{
+					"txhash": txhash,
+				}).Fatal("failed to parse transaction result")
 			}
 			t.MustTrue(resp.Status == step.Output.TxResult.Status)
 			if len(step.Output.TxResult.Message) > 0 {

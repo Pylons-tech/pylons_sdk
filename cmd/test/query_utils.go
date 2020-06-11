@@ -84,13 +84,17 @@ func ListExecutionsViaCLI(account string, t *testing.T) ([]types.Execution, erro
 	}
 	output, _, err := RunPylonsCli(queryParams, "")
 	if err != nil {
-		t.Fatalf("error running list_executions cli command ::: %+v", err)
+		t.WithFields(testing.Fields{
+			"error": err,
+		}).Fatal("error running list_executions cli command")
 		return []types.Execution{}, err
 	}
 	var listExecutionsResp queriers.ExecResp
 	err = GetAminoCdc().UnmarshalJSON(output, &listExecutionsResp)
 	if err != nil {
-		t.Fatalf("error unmarshaling list executions ::: %+v", err)
+		t.WithFields(testing.Fields{
+			"error": err,
+		}).Fatalf("error unmarshaling list executions")
 		return []types.Execution{}, err
 	}
 	return listExecutionsResp.Executions, err

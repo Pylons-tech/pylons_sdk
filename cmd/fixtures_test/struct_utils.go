@@ -17,7 +17,9 @@ var execIDs map[string]string = make(map[string]string)
 func ReadFile(fileURL string, t *testing.T) []byte {
 	jsonFile, err := os.Open(fileURL)
 	if err != nil {
-		t.Fatalf("%+v", err)
+		t.WithFields(testing.Fields{
+			"error": err,
+		}).Fatal("")
 	}
 
 	defer jsonFile.Close()
@@ -30,7 +32,9 @@ func ReadFile(fileURL string, t *testing.T) []byte {
 func UnmarshalIntoEmptyInterface(bytes []byte, t *testing.T) map[string]interface{} {
 	var raw map[string]interface{}
 	if err := json.Unmarshal(bytes, &raw); err != nil {
-		t.Fatal("read raw file using json.Unmarshal:", err)
+		t.WithFields(testing.Fields{
+			"error": err,
+		}).Fatal("error unmarshaling")
 	}
 	return raw
 }
@@ -103,13 +107,17 @@ func UpdateExecID(bytes []byte, t *testing.T) []byte {
 		ExecRef string
 	}
 	if err := json.Unmarshal(bytes, &execRefReader); err != nil {
-		t.Fatal("read execRef using json.Unmarshal:", err)
+		t.WithFields(testing.Fields{
+			"error": err,
+		}).Fatal("error unmarshaling")
 	}
 
 	var ok bool
 	raw["ExecID"], ok = execIDs[execRefReader.ExecRef]
 	if !ok {
-		t.Fatal("execID not available for ref=", execRefReader.ExecRef)
+		t.WithFields(testing.Fields{
+			"execRef": execRefReader.ExecRef,
+		}).Fatal("execID not available")
 	}
 	newBytes, err := json.Marshal(raw)
 	t.MustNil(err)
@@ -125,7 +133,10 @@ func UpdateItemIDFromName(bytes []byte, includeLockedByRcp bool, t *testing.T) [
 	t.MustTrue(ok)
 	itemID, exist, err := inttest.GetItemIDFromName(itemName, includeLockedByRcp)
 	if !exist {
-		t.Log("no item named=", itemName, "and includeLockedByRcp=", includeLockedByRcp)
+		t.WithFields(testing.Fields{
+			"name":           itemName,
+			"include_locked": includeLockedByRcp,
+		}).Debug("no item fit params")
 	}
 	t.MustTrue(exist)
 	t.MustNil(err)
@@ -141,14 +152,19 @@ func GetItemIDsFromNames(bytes []byte, includeLockedByRcp bool, t *testing.T) []
 		ItemNames []string
 	}
 	if err := json.Unmarshal(bytes, &itemNamesResp); err != nil {
-		t.Fatal("read item names using json.Unmarshal:", err)
+		t.WithFields(testing.Fields{
+			"error": err,
+		}).Fatal("error unmarshaling")
 	}
 	ItemIDs := []string{}
 
 	for _, itemName := range itemNamesResp.ItemNames {
 		itemID, exist, err := inttest.GetItemIDFromName(itemName, includeLockedByRcp)
 		if !exist {
-			t.Log("no item named=", itemName, "and includeLockedByRcp=", includeLockedByRcp)
+			t.WithFields(testing.Fields{
+				"name":           itemName,
+				"include_locked": includeLockedByRcp,
+			}).Debug("no item fit params")
 		}
 		t.MustTrue(exist)
 		t.MustNil(err)
@@ -163,7 +179,9 @@ func GetItemInputsFromBytes(bytes []byte, t *testing.T) types.ItemInputList {
 		ItemInputRefs []string
 	}
 	if err := json.Unmarshal(bytes, &itemInputRefsReader); err != nil {
-		t.Fatal("read itemInputRefsReader using json.Unmarshal:", err)
+		t.WithFields(testing.Fields{
+			"error": err,
+		}).Fatal("error unmarshaling")
 	}
 
 	var itemInputs types.ItemInputList
@@ -173,7 +191,9 @@ func GetItemInputsFromBytes(bytes []byte, t *testing.T) types.ItemInputList {
 		iiBytes := ReadFile(iiRef, t)
 		err := inttest.GetAminoCdc().UnmarshalJSON(iiBytes, &ii)
 		if err != nil {
-			t.Fatal("error parsing item input provided via fixture error=", err)
+			t.WithFields(testing.Fields{
+				"error": err,
+			}).Fatal("error unmarshaling")
 		}
 		itemInputs = append(itemInputs, ii)
 	}
@@ -186,7 +206,9 @@ func GetItemOutputsFromBytes(bytes []byte, sender string, t *testing.T) types.It
 		ItemOutputNames []string
 	}
 	if err := json.Unmarshal(bytes, &itemOutputNamesReader); err != nil {
-		t.Fatal("read itemOutputNamesReader using json.Unmarshal:", err)
+		t.WithFields(testing.Fields{
+			"error": err,
+		}).Fatal("error unmarshaling")
 	}
 
 	var itemOutputs types.ItemList
@@ -219,7 +241,9 @@ func GetEntriesFromBytes(bytes []byte, t *testing.T) types.EntriesList {
 	}
 
 	if err := json.Unmarshal(bytes, &entriesReader); err != nil {
-		t.Fatal("read entriesReader using json.Unmarshal:", err)
+		t.WithFields(testing.Fields{
+			"error": err,
+		}).Fatal("error unmarshaling")
 	}
 
 	var wpl types.EntriesList
@@ -233,7 +257,10 @@ func GetEntriesFromBytes(bytes []byte, t *testing.T) types.EntriesList {
 			ioBytes := ReadFile(io.Ref, t)
 			err := json.Unmarshal(ioBytes, &pio)
 			if err != nil {
-				t.Fatal("error parsing item output provided via fixture Bytes=", string(ioBytes), "error=", err)
+				t.WithFields(testing.Fields{
+					"item_output_bytes": string(ioBytes),
+					"error":             err,
+				}).Fatal("error unmarshaling")
 			}
 		}
 		if io.ModifyItem.ItemInputRef == nil {
@@ -280,7 +307,10 @@ func GetModifyParamsFromRef(ref string, t *testing.T) types.ItemModifyParams {
 	modBytes := ReadFile(ref, t)
 	err := json.Unmarshal(modBytes, &iup)
 	if err != nil {
-		t.Fatal("error parsing modBytes provided via fixture Bytes=", string(modBytes), "error=", err)
+		t.WithFields(testing.Fields{
+			"modify_param_bytes": string(modBytes),
+			"error":              err,
+		}).Fatal("error unmarshaling")
 	}
 
 	return iup

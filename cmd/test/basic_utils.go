@@ -58,7 +58,9 @@ func GetMaxBroadcastRetry() int {
 func ReadFile(fileURL string, t *testing.T) []byte {
 	jsonFile, err := os.Open(fileURL)
 	if err != nil {
-		t.Fatalf("%+v", err)
+		t.WithFields(testing.Fields{
+			"error": err,
+		}).Fatal("error reading file")
 	}
 
 	defer jsonFile.Close()
@@ -121,7 +123,11 @@ func GetAccountAddr(account string, t *testing.T) string {
 	addrBytes, logstr, err := RunPylonsCli([]string{"keys", "show", account, "-a"}, "")
 	addr := strings.Trim(string(addrBytes), "\n ")
 	if t != nil && err != nil {
-		t.Fatalf("error getting account address, account=%s, err=%+v, logstr=%s", account, err, logstr)
+		t.WithFields(testing.Fields{
+			"account": account,
+			"error":   err,
+			"log":     logstr,
+		}).Fatal("error getting account address")
 	}
 	return addr
 }
@@ -130,12 +136,18 @@ func GetAccountAddr(account string, t *testing.T) string {
 func GetAccountInfoFromAddr(addr string, t *testing.T) auth.BaseAccount {
 	accBytes, logstr, err := RunPylonsCli([]string{"query", "account", addr}, "")
 	if t != nil && err != nil {
-		t.Fatalf("error getting account info addr=%s err=%+v, logstr=%s", addr, err, logstr)
+		t.WithFields(testing.Fields{
+			"address": addr,
+			"error":   err,
+			"log":     logstr,
+		}).Fatal("error getting account info")
 	}
 	var accInfo auth.BaseAccount
 	err = GetAminoCdc().UnmarshalJSON(accBytes, &accInfo)
 	t.MustNil(err)
-	// t.Log("GetAccountInfo", accInfo)
+	// t.WithFields(testing.Fields{
+	// 	"account_info": accInfo,
+	// }).Debug("")
 	return accInfo
 }
 
