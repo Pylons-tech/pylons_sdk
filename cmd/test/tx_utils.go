@@ -76,7 +76,12 @@ func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) string {
 
 		err = GetAminoCdc().UnmarshalJSON(output, &txResponse)
 		// This can happen when "pylonscli config output json" is not set or when real issue is available
-		ErrValidationWithOutputLog(t, "error in broadcasting signed transaction output: %+v, err: %+v", output, err)
+		if err != nil {
+			t.WithFields(testing.Fields{
+				"broadcast_output": string(output),
+				"error":            err,
+			}).Fatal("error in broadcasting signed transaction output")
+		}
 
 		if txResponse.Code != 0 && maxRetry > 0 {
 			t.WithFields(testing.Fields{
@@ -146,7 +151,12 @@ func TestTxWithMsg(t *testing.T, msgValue sdk.Msg, signer string) string {
 	t.MustNil(err)
 
 	err = ioutil.WriteFile(rawTxFile, output, 0644)
-	ErrValidationWithOutputLog(t, "error writing raw transaction: %+v --- %+v", output, err)
+	if err != nil {
+		t.WithFields(testing.Fields{
+			"tx_model_json": string(output),
+			"error":         err,
+		}).Fatal("error writing raw transaction")
+	}
 
 	// pylonscli tx sign raw_tx.json --from eugen --chain-id pylonschain > signed_tx.json
 	txSignArgs := []string{"tx", "sign", rawTxFile,
@@ -154,10 +164,19 @@ func TestTxWithMsg(t *testing.T, msgValue sdk.Msg, signer string) string {
 		"--chain-id", "pylonschain",
 	}
 	output, _, err = RunPylonsCli(txSignArgs, "")
-	ErrValidationWithOutputLog(t, "error signing transaction: %+v --- %+v", output, err)
+	if err != nil {
+		t.WithFields(testing.Fields{
+			"signed_tx_json": string(output),
+			"error":          err,
+		}).Fatal("error signing transaction")
+	}
 
 	err = ioutil.WriteFile(signedTxFile, output, 0644)
-	ErrValidation(t, "error writing signed transaction %+v", err)
+	if err != nil {
+		t.WithFields(testing.Fields{
+			"error": err,
+		}).Fatal("error writing signed transaction")
+	}
 
 	txhash := broadcastTxFile(signedTxFile, GetMaxBroadcastRetry(), t)
 
@@ -169,6 +188,12 @@ func TestTxWithMsg(t *testing.T, msgValue sdk.Msg, signer string) string {
 
 // SendMultiMsgTxWithNonce is a function to send multiple messages in one transaction
 func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech32Addr bool) (string, error) {
+	t.WithFields(testing.Fields{
+		"func_start":     "SendMultiMsgTxWithNonce",
+		"tx_msgs":        msgs,
+		"signer":         signer,
+		"is_bech32_addr": isBech32Addr,
+	}).Debug("")
 
 	if len(msgs) == 0 {
 		return "msgs validation error", errors.New("length of msgs shouldn't be zero")
@@ -220,7 +245,12 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 	rawTxFile := filepath.Join(tmpDir, "raw_tx_"+strconv.FormatUint(nonce, 10)+".json")
 	signedTxFile := filepath.Join(tmpDir, "signed_tx_"+strconv.FormatUint(nonce, 10)+".json")
 	err = ioutil.WriteFile(rawTxFile, output, 0644)
-	ErrValidationWithOutputLog(t, "error writing raw transaction: %+v --- %+v", output, err)
+	if err != nil {
+		t.WithFields(testing.Fields{
+			"tx_model_json": string(output),
+			"error":         err,
+		}).Fatal("error writing raw transaction")
+	}
 
 	// pylonscli tx sign sample_transaction.json --account-number 2 --sequence 10 --offline --from eugen
 	txSignArgs := []string{"tx", "sign", rawTxFile,
@@ -252,6 +282,12 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 	CleanFile(rawTxFile, t)
 	CleanFile(signedTxFile, t)
 
+	t.WithFields(testing.Fields{
+		"func_end":       "SendMultiMsgTxWithNonce",
+		"tx_msgs":        msgs,
+		"signer":         signer,
+		"is_bech32_addr": isBech32Addr,
+	}).Debug("")
 	return txhash, nil
 }
 

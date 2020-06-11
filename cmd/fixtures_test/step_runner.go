@@ -65,10 +65,18 @@ func RunMultiMsgTx(step FixtureStep, t *testing.T) {
 		t.MustNil(err)
 
 		err = inttest.WaitForNextBlock()
-		inttest.ErrValidation(t, "error waiting for check execution %+v", err)
+		if err != nil {
+			t.WithFields(testing.Fields{
+				"error": err,
+			}).Fatal("error waiting for check execution")
+		}
 
 		_, err = inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
-		inttest.ErrValidation(t, "error getting tx result bytes %+v", err)
+		if err != nil {
+			t.WithFields(testing.Fields{
+				"error": err,
+			}).Fatal("error getting tx result bytes")
+		}
 
 		CheckErrorOnTxFromTxHash(txhash, t)
 		t.WithFields(testing.Fields{
@@ -114,10 +122,18 @@ func RunCheckExecution(step FixtureStep, t *testing.T) {
 		txhash := inttest.TestTxWithMsgWithNonce(t, chkExecMsg, chkExecMsg.Sender.String(), true)
 
 		err := inttest.WaitForNextBlock()
-		inttest.ErrValidation(t, "error waiting for check execution %+v", err)
+		if err != nil {
+			t.WithFields(testing.Fields{
+				"error": err,
+			}).Fatal("error waiting for check execution")
+		}
 
 		txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
-		inttest.ErrValidation(t, "error getting tx result bytes %+v", err)
+		if err != nil {
+			t.WithFields(testing.Fields{
+				"error": err,
+			}).Fatal("error getting tx result bytes")
+		}
 
 		CheckErrorOnTxFromTxHash(txhash, t)
 		resp := handlers.CheckExecutionResp{}
@@ -125,7 +141,11 @@ func RunCheckExecution(step FixtureStep, t *testing.T) {
 		t.WithFields(testing.Fields{
 			"txhash": txhash,
 		}).Debug("")
-		inttest.ErrValidation(t, "error unmarshaling tx response %+v", err)
+		if err != nil {
+			t.WithFields(testing.Fields{
+				"error": err,
+			}).Fatal("error unmarshaling tx response")
+		}
 		t.MustTrue(resp.Status == step.Output.TxResult.Status)
 		if len(step.Output.TxResult.Message) > 0 {
 			t.MustTrue(resp.Message == step.Output.TxResult.Message)
@@ -168,10 +188,18 @@ func RunFiatItem(step FixtureStep, t *testing.T) {
 		txhash := inttest.TestTxWithMsgWithNonce(t, itmMsg, itmMsg.Sender.String(), true)
 
 		err := inttest.WaitForNextBlock()
-		inttest.ErrValidation(t, "error waiting for fiat item %+v", err)
+		if err != nil {
+			t.WithFields(testing.Fields{
+				"error": err,
+			}).Fatal("error waiting for fiat item")
+		}
 
 		txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
-		inttest.ErrValidation(t, "error getting tx result bytes %+v", err)
+		if err != nil {
+			t.WithFields(testing.Fields{
+				"error": err,
+			}).Fatal("error getting tx result bytes")
+		}
 
 		CheckErrorOnTxFromTxHash(txhash, t)
 		resp := handlers.FiatItemResponse{}
@@ -180,7 +208,11 @@ func RunFiatItem(step FixtureStep, t *testing.T) {
 		t.WithFields(testing.Fields{
 			"txhash": txhash,
 		}).Debug("")
-		inttest.ErrValidation(t, "error unmarshaling tx response %+v", err)
+		if err != nil {
+			t.WithFields(testing.Fields{
+				"error": err,
+			}).Fatal("error unmarshaling tx response")
+		}
 		t.MustTrue(resp.ItemID != "")
 	}
 }
@@ -214,19 +246,29 @@ func RunUpdateItemString(step FixtureStep, t *testing.T) {
 		txhash := inttest.TestTxWithMsgWithNonce(t, sTypeMsg, sTypeMsg.Sender.String(), true)
 
 		err := inttest.WaitForNextBlock()
-		inttest.ErrValidation(t, "error waiting for set item field string %+v", err)
+		if err != nil {
+			t.WithFields(testing.Fields{
+				"error": err,
+			}).Fatal("error waiting for set item field string")
+		}
 
 		txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
-		inttest.ErrValidation(t, "error getting tx result bytes %+v", err)
+		if err != nil {
+			t.WithFields(testing.Fields{
+				"error": err,
+			}).Fatal("error getting tx result bytes")
+		}
 
 		CheckErrorOnTxFromTxHash(txhash, t)
 		resp := handlers.UpdateItemStringResp{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 
-		t.WithFields(testing.Fields{
-			"txhash": txhash,
-		}).Debug("")
-		inttest.ErrValidation(t, "error unmarshaling tx response %+v", err)
+		if err != nil {
+			t.WithFields(testing.Fields{
+				"txhash": txhash,
+				"error":  err,
+			}).Fatal("error unmarshaling tx response")
+		}
 	}
 }
 
@@ -271,19 +313,30 @@ func RunCreateCookbook(step FixtureStep, t *testing.T) {
 		txhash := inttest.TestTxWithMsgWithNonce(t, cbMsg, cbMsg.Sender.String(), true)
 
 		err := inttest.WaitForNextBlock()
-		inttest.ErrValidation(t, "error waiting for creating cookbook %+v", err)
+		if err != nil {
+			t.WithFields(testing.Fields{
+				"error": err,
+			}).Fatal("error waiting for creating cookbook")
+		}
 
 		txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
-		inttest.ErrValidationWithOutputLog(t, "error getting transaction data for creating cookbook %+v ----- %+v", txHandleResBytes, err)
+		if err != nil {
+			t.WithFields(testing.Fields{
+				"tx_result_bytes": string(txHandleResBytes),
+				"error":           err,
+			}).Fatal("error getting transaction data for creating cookbook")
+		}
 
 		CheckErrorOnTxFromTxHash(txhash, t)
 		resp := handlers.CreateCBResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 
-		t.WithFields(testing.Fields{
-			"txhash": txhash,
-		}).Debug("")
-		inttest.ErrValidation(t, "error unmarshaling tx response %+v", err)
+		if err != nil {
+			t.WithFields(testing.Fields{
+				"txhash": txhash,
+				"error":  err,
+			}).Fatal("error unmarshaling tx response")
+		}
 		t.MustTrue(resp.CookbookID != "")
 	}
 }
@@ -333,7 +386,11 @@ func RunCreateRecipe(step FixtureStep, t *testing.T) {
 		txhash := inttest.TestTxWithMsgWithNonce(t, rcpMsg, rcpMsg.Sender.String(), true)
 
 		err := inttest.WaitForNextBlock()
-		inttest.ErrValidation(t, "error waiting for creating recipe %+v", err)
+		if err != nil {
+			t.WithFields(testing.Fields{
+				"error": err,
+			}).Fatal("error waiting for creating recipe")
+		}
 
 		txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
 		t.MustNil(err)
@@ -342,10 +399,12 @@ func RunCreateRecipe(step FixtureStep, t *testing.T) {
 		resp := handlers.CreateRecipeResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 
-		t.WithFields(testing.Fields{
-			"txhash": txhash,
-		}).Debug("")
-		inttest.ErrValidation(t, "error unmarshaling tx response %+v", err)
+		if err != nil {
+			t.WithFields(testing.Fields{
+				"txhash": txhash,
+				"error":  err,
+			}).Fatal("error unmarshaling tx response")
+		}
 		t.MustTrue(resp.RecipeID != "")
 	}
 }
@@ -389,8 +448,11 @@ func RunExecuteRecipe(step FixtureStep, t *testing.T) {
 		txhash := inttest.TestTxWithMsgWithNonce(t, execMsg, execMsg.Sender.String(), true)
 
 		err := inttest.WaitForNextBlock()
-		inttest.ErrValidation(t, "error waiting for executing recipe %+v", err)
-
+		if err != nil {
+			t.WithFields(testing.Fields{
+				"error": err,
+			}).Fatal("error waiting for executing recipe")
+		}
 		if len(step.Output.TxResult.ErrorLog) > 0 {
 			hmrErrMsg := inttest.GetHumanReadableErrorFromTxHash(txhash, t)
 
@@ -478,18 +540,28 @@ func RunCreateTrade(step FixtureStep, t *testing.T) {
 		}).Debug("createTrd")
 		txhash := inttest.TestTxWithMsgWithNonce(t, createTrd, createTrd.Sender.String(), true)
 		err := inttest.WaitForNextBlock()
-		inttest.ErrValidation(t, "error while creating trade %+v", err)
+		if err != nil {
+			t.WithFields(testing.Fields{
+				"error": err,
+			}).Fatal("error waiting for creating trade")
+		}
 
 		txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
-		inttest.ErrValidation(t, "error while waiting for create trade transaction %+v", err)
+		if err != nil {
+			t.WithFields(testing.Fields{
+				"error": err,
+			}).Fatal("error while waiting for create trade transaction")
+		}
 
 		CheckErrorOnTxFromTxHash(txhash, t)
 		resp := handlers.CreateTradeResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
-		t.WithFields(testing.Fields{
-			"txhash": txhash,
-		}).Debug("")
-		inttest.ErrValidation(t, "error unmarshaling tx response %+v", err)
+		if err != nil {
+			t.WithFields(testing.Fields{
+				"txhash": txhash,
+				"error":  err,
+			}).Fatal("error unmarshaling tx response")
+		}
 		t.MustTrue(resp.TradeID != "")
 	}
 }
@@ -531,7 +603,11 @@ func RunFulfillTrade(step FixtureStep, t *testing.T) {
 		txhash := inttest.TestTxWithMsgWithNonce(t, ffTrdMsg, ffTrdMsg.Sender.String(), true)
 
 		err := inttest.WaitForNextBlock()
-		inttest.ErrValidation(t, "error waiting for fulfilling trade %+v", err)
+		if err != nil {
+			t.WithFields(testing.Fields{
+				"error": err,
+			}).Fatal("error waiting for fulfilling trade")
+		}
 
 		if len(step.Output.TxResult.ErrorLog) > 0 {
 		} else {
@@ -587,7 +663,11 @@ func RunDisableTrade(step FixtureStep, t *testing.T) {
 		txhash := inttest.TestTxWithMsgWithNonce(t, dsTrdMsg, dsTrdMsg.Sender.String(), true)
 
 		err := inttest.WaitForNextBlock()
-		inttest.ErrValidation(t, "error waiting for disabling trade %+v", err)
+		if err != nil {
+			t.WithFields(testing.Fields{
+				"error": err,
+			}).Fatal("error waiting for disabling trade")
+		}
 
 		if len(step.Output.TxResult.ErrorLog) > 0 {
 		} else {

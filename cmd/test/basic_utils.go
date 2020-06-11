@@ -205,19 +205,10 @@ func WaitForBlockInterval(interval int64) error {
 // CleanFile is a function to remove file
 func CleanFile(filePath string, t *testing.T) {
 	err := os.Remove(filePath)
-	ErrValidation(t, "error removing raw tx file json %+v", err)
-}
-
-// ErrValidation is a function to log output and finish test if error is available
-func ErrValidation(t *testing.T, format string, err error) {
 	if err != nil {
-		t.Fatalf(format, err)
-	}
-}
-
-// ErrValidationWithOutputLog is a function to log output and finish test if error is available
-func ErrValidationWithOutputLog(t *testing.T, format string, bytes []byte, err error) {
-	if err != nil {
-		t.Fatalf(format, string(bytes), err)
+		t.WithFields(testing.Fields{
+			"error":     err,
+			"file_path": filePath,
+		}).Fatal("error removing file")
 	}
 }

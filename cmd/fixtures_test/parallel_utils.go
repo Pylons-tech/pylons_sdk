@@ -40,7 +40,7 @@ func GoodToGoForStep(file string, idx int, step FixtureStep, t *testing.T) bool 
 		queID := GetQueueID(file, idx, condition)
 		if queID == -1 {
 			t.WithFields(testing.Fields{
-				"ID":          step.ID,
+				"stepID":      step.ID,
 				"idx":         idx,
 				"file":        file,
 				"work_queues": workQueues,
@@ -60,7 +60,7 @@ func UpdateWorkQueueStatus(file string, idx int, fixtureSteps []FixtureStep, tar
 	queID := GetQueueID(file, idx, step.ID)
 	if queID == -1 {
 		t.WithFields(testing.Fields{
-			"ID":          step.ID,
+			"stepID":      step.ID,
 			"idx":         idx,
 			"file":        file,
 			"work_queues": workQueues,

@@ -218,7 +218,11 @@ func PropertyExistCheck(step FixtureStep, t *testing.T) {
 		if len(pCheck.Recipes) > 0 {
 			for _, rcpName := range pCheck.Recipes {
 				guid, err := inttest.GetRecipeGUIDFromName(rcpName, pOwnerAddr)
-				inttest.ErrValidation(t, "error checking if recipe already exist %+v", err)
+				if err != nil {
+					t.WithFields(testing.Fields{
+						"error": err,
+					}).Fatal("error checking if recipe already exist")
+				}
 
 				if !shouldNotExist {
 					if len(guid) > 0 {
@@ -248,10 +252,14 @@ func PropertyExistCheck(step FixtureStep, t *testing.T) {
 				fitItemExist := false
 				// t.WithFields(testing.Fields{
 				// 	// "id": idx,
-				// 	"spec": itemCheck,
+				// 	"item_spec": itemCheck,
 				// }).Info("checking item")
 				items, err := inttest.ListItemsViaCLI(pOwnerAddr)
-				inttest.ErrValidation(t, "error listing items %+v", err)
+				if err != nil {
+					t.WithFields(testing.Fields{
+						"error": err,
+					}).Fatal("error listing items")
+				}
 				for _, item := range items {
 					if CheckItemWithStringKeys(item, itemCheck.StringKeys) &&
 						CheckItemWithStringValues(item, itemCheck.StringValues) &&
@@ -262,30 +270,29 @@ func PropertyExistCheck(step FixtureStep, t *testing.T) {
 						fitItemExist = true
 					}
 				}
-				inttest.ErrValidation(t, "error checking items with string keys %+v", err)
 
 				if !shouldNotExist {
 					if fitItemExist {
 						t.WithFields(testing.Fields{
 							"owner_address": pOwnerAddr,
-							"spec":          itemCheck,
+							"item_spec":     itemCheck,
 						}).Info("checked item existence")
 					} else {
 						t.WithFields(testing.Fields{
 							"owner_address": pOwnerAddr,
-							"spec":          itemCheck,
+							"item_spec":     itemCheck,
 						}).Fatal("no item exist which fit item spec")
 					}
 				} else {
 					if fitItemExist {
 						t.WithFields(testing.Fields{
 							"owner_address": pOwnerAddr,
-							"spec":          itemCheck,
+							"item_spec":     itemCheck,
 						}).Fatal("item exist but shouldn't exist")
 					} else {
 						t.WithFields(testing.Fields{
 							"owner_address": pOwnerAddr,
-							"spec":          itemCheck,
+							"item_spec":     itemCheck,
 						}).Info("item does not exist as expected, ok")
 					}
 				}

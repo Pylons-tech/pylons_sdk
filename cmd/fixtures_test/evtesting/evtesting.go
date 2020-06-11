@@ -189,11 +189,10 @@ func (t *T) Warn(args ...interface{}) {
 
 // Debug is modified Debug
 func (t *T) Debug(args ...interface{}) {
+	t.printCallerLine()
 	if t.useLogPkg {
-		t.printCallerLine()
 		log.WithFields(t.fields).Debugln(args...)
 	} else {
-		t.origin.Log(t.FormatFields())
 		t.origin.Log(args...)
 	}
 }
