@@ -108,13 +108,17 @@ func CheckSteps(steps []FixtureStep, t *testing.T) {
 			t.Fatal("please add ID field for all steps")
 		}
 		if ok := g.AddVertice(step.ID); !ok {
-			t.Fatal("same ID is available for stepID=", step.ID)
+			t.WithFields(testing.Fields{
+				"stepID": step.ID,
+			}).Fatal("same stepID is available")
 		}
 	}
 	for _, step := range steps {
 		for _, pd := range step.RunAfter.PreCondition {
 			if ok := g.AddEdge(pd, step.ID); !ok {
-				t.Fatal("ID is not available which is refering as precondition pd=", pd)
+				t.WithFields(testing.Fields{
+					"precondition": pd,
+				}).Fatal("ID is not available which is refering to.")
 			}
 		}
 	}

@@ -1,6 +1,7 @@
 package inttest
 
 import (
+	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -58,7 +59,9 @@ func GetMaxBroadcastRetry() int {
 func ReadFile(fileURL string, t *testing.T) []byte {
 	jsonFile, err := os.Open(fileURL)
 	if err != nil {
-		t.Fatalf("%+v", err)
+		t.WithFields(testing.Fields{
+			"error": err,
+		}).Fatal("error reading file")
 	}
 
 	defer jsonFile.Close()
@@ -113,7 +116,7 @@ func RunPylonsCli(args []string, stdinInput string) ([]byte, string, error) {
 	cmd.Stdin = strings.NewReader(stdinInput)
 	res, err := cmd.CombinedOutput()
 	cliMux.Unlock()
-	return res, fmt.Sprintf("cmd is \"pylonscli %s\", result is \"%s\"", strings.Join(args, " "), string(res)), err
+	return res, fmt.Sprintf("\"pylonscli %s\" ==>\n%s\n", strings.Join(args, " "), string(res)), err
 }
 
 // GetAccountAddr is a function to get account address from key
@@ -121,7 +124,11 @@ func GetAccountAddr(account string, t *testing.T) string {
 	addrBytes, logstr, err := RunPylonsCli([]string{"keys", "show", account, "-a"}, "")
 	addr := strings.Trim(string(addrBytes), "\n ")
 	if t != nil && err != nil {
-		t.Fatalf("error getting account address, account=%s, err=%+v, logstr=%s", account, err, logstr)
+		t.WithFields(testing.Fields{
+			"account": account,
+			"error":   err,
+			"log":     logstr,
+		}).Fatal("error getting account address")
 	}
 	return addr
 }
@@ -130,12 +137,18 @@ func GetAccountAddr(account string, t *testing.T) string {
 func GetAccountInfoFromAddr(addr string, t *testing.T) auth.BaseAccount {
 	accBytes, logstr, err := RunPylonsCli([]string{"query", "account", addr}, "")
 	if t != nil && err != nil {
-		t.Fatalf("error getting account info addr=%s err=%+v, logstr=%s", addr, err, logstr)
+		t.WithFields(testing.Fields{
+			"address": addr,
+			"error":   err,
+			"log":     logstr,
+		}).Fatal("error getting account info")
 	}
 	var accInfo auth.BaseAccount
 	err = GetAminoCdc().UnmarshalJSON(accBytes, &accInfo)
 	t.MustNil(err)
-	// t.Log("GetAccountInfo", accInfo)
+	// t.WithFields(testing.Fields{
+	// 	"account_info": accInfo,
+	// }).Debug("")
 	return accInfo
 }
 
@@ -193,19 +206,29 @@ func WaitForBlockInterval(interval int64) error {
 // CleanFile is a function to remove file
 func CleanFile(filePath string, t *testing.T) {
 	err := os.Remove(filePath)
-	ErrValidation(t, "error removing raw tx file json %+v", err)
-}
-
-// ErrValidation is a function to log output and finish test if error is available
-func ErrValidation(t *testing.T, format string, err error) {
 	if err != nil {
-		t.Fatalf(format, err)
+		t.WithFields(testing.Fields{
+			"error":     err,
+			"file_path": filePath,
+		}).Fatal("error removing file")
 	}
 }
 
-// ErrValidationWithOutputLog is a function to log output and finish test if error is available
-func ErrValidationWithOutputLog(t *testing.T, format string, bytes []byte, err error) {
-	if err != nil {
-		t.Fatalf(format, string(bytes), err)
+// AminoCodecFormatter format structs better by encoding in amino codec
+func AminoCodecFormatter(param interface{}) string {
+	cdc := GetAminoCdc()
+	output, err := cdc.MarshalJSON(param)
+	if err == nil {
+		return string(output)
 	}
+	return fmt.Sprintf("%+v", param)
+}
+
+// JSONFormatter format structs better by encoding in amino codec
+func JSONFormatter(param interface{}) string {
+	output, err := json.Marshal(param)
+	if err == nil {
+		return string(output)
+	}
+	return fmt.Sprintf("%+v", param)
 }
