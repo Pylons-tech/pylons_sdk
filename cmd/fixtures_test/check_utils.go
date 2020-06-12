@@ -22,10 +22,9 @@ type FixtureStep struct {
 		PreCondition []string `json:"precondition"`
 		BlockWait    int64    `json:"blockWait"`
 	} `json:"runAfter"`
-	Action        string `json:"action"`
-	ParamsRef     string `json:"paramsRef"`
-	BlockInterval int64  `json:"blockInterval"`
-	MsgRefs       []struct {
+	Action    string `json:"action"`
+	ParamsRef string `json:"paramsRef"`
+	MsgRefs   []struct {
 		Action    string `json:"action"`
 		ParamsRef string `json:"paramsRef"`
 	} `json:"msgRefs"`
@@ -271,6 +270,12 @@ func ProcessSingleFixtureQueueItem(file string, idx int, fixtureSteps []FixtureS
 	lv1t.Run(strconv.Itoa(idx)+"_"+step.ID, func(t *testing.T) {
 		if FixtureTestOpts.IsParallel {
 			t.Parallel()
+		}
+		if step.RunAfter.BlockWait > 0 {
+			err := inttest.WaitForBlockInterval(step.RunAfter.BlockWait)
+			if err != nil {
+				t.Fatal(err)
+			}
 		}
 		RunActionRunner(step.Action, step, t)
 		PropertyExistCheck(step, t)
