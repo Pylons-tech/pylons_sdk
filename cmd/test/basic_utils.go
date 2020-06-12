@@ -1,6 +1,7 @@
 package inttest
 
 import (
+	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -211,4 +212,23 @@ func CleanFile(filePath string, t *testing.T) {
 			"file_path": filePath,
 		}).Fatal("error removing file")
 	}
+}
+
+// AminoCodecFormatter format structs better by encoding in amino codec
+func AminoCodecFormatter(param interface{}) string {
+	cdc := GetAminoCdc()
+	output, err := cdc.MarshalJSON(param)
+	if err == nil {
+		return string(output)
+	}
+	return fmt.Sprintf("%+v", param)
+}
+
+// JSONFormatter format structs better by encoding in amino codec
+func JSONFormatter(param interface{}) string {
+	output, err := json.Marshal(param)
+	if err == nil {
+		return string(output)
+	}
+	return fmt.Sprintf("%+v", param)
 }

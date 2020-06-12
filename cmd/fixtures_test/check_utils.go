@@ -275,24 +275,24 @@ func PropertyExistCheck(step FixtureStep, t *testing.T) {
 					if fitItemExist {
 						t.WithFields(testing.Fields{
 							"owner_address": pOwnerAddr,
-							"item_spec":     itemCheck,
+							"item_spec":     inttest.JSONFormatter(itemCheck),
 						}).Info("checked item existence")
 					} else {
 						t.WithFields(testing.Fields{
 							"owner_address": pOwnerAddr,
-							"item_spec":     itemCheck,
+							"item_spec":     inttest.JSONFormatter(itemCheck),
 						}).Fatal("no item exist which fit item spec")
 					}
 				} else {
 					if fitItemExist {
 						t.WithFields(testing.Fields{
 							"owner_address": pOwnerAddr,
-							"item_spec":     itemCheck,
+							"item_spec":     inttest.JSONFormatter(itemCheck),
 						}).Fatal("item exist but shouldn't exist")
 					} else {
 						t.WithFields(testing.Fields{
 							"owner_address": pOwnerAddr,
-							"item_spec":     itemCheck,
+							"item_spec":     inttest.JSONFormatter(itemCheck),
 						}).Info("item does not exist as expected, ok")
 					}
 				}

@@ -2,6 +2,7 @@ package fixturetest
 
 import (
 	testing "github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test/evtesting"
+	inttest "github.com/Pylons-tech/pylons_sdk/cmd/test"
 )
 
 // Status is a type to manage work queue status
@@ -43,7 +44,7 @@ func GoodToGoForStep(file string, idx int, step FixtureStep, t *testing.T) bool 
 				"stepID":      step.ID,
 				"idx":         idx,
 				"file":        file,
-				"work_queues": workQueues,
+				"work_queues": inttest.JSONFormatter(workQueues),
 			}).Fatal("No WorkQueue found from specified param")
 		}
 		work := workQueues[queID]
@@ -63,7 +64,7 @@ func UpdateWorkQueueStatus(file string, idx int, fixtureSteps []FixtureStep, tar
 			"stepID":      step.ID,
 			"idx":         idx,
 			"file":        file,
-			"work_queues": workQueues,
+			"work_queues": inttest.JSONFormatter(workQueues),
 		}).Fatal("No WorkQueue found from specified param")
 	}
 	switch targetStatus {

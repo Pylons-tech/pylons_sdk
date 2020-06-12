@@ -190,7 +190,7 @@ func TestTxWithMsg(t *testing.T, msgValue sdk.Msg, signer string) string {
 func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech32Addr bool) (string, error) {
 	t.WithFields(testing.Fields{
 		"func_start":     "SendMultiMsgTxWithNonce",
-		"tx_msgs":        msgs,
+		"tx_msgs":        AminoCodecFormatter(msgs),
 		"signer":         signer,
 		"is_bech32_addr": isBech32Addr,
 	}).Debug("")
@@ -295,7 +295,7 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 
 	t.WithFields(testing.Fields{
 		"func_end":       "SendMultiMsgTxWithNonce",
-		"tx_msgs":        msgs,
+		"tx_msgs":        AminoCodecFormatter(msgs),
 		"signer":         signer,
 		"is_bech32_addr": isBech32Addr,
 	}).Debug("")
