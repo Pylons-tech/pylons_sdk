@@ -252,6 +252,7 @@ func (t *T) Debug(args ...interface{}) {
 	if t.useLogPkg {
 		log.WithFields(t.fields).Debugln(args...)
 	} else {
+		t.origin.Log(t.FormatFields())
 		t.origin.Log(args...)
 	}
 }
