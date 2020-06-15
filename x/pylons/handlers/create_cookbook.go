@@ -1,6 +1,8 @@
 package handlers
 
-// CreateCBResponse is a struct of create cookbook response
-type CreateCBResponse struct {
+// CreateCookbookResponse is a struct of create cookbook response
+type CreateCookbookResponse struct {
 	CookbookID string `json:"CookbookID"`
+	Message    string
+	Status     string
 }

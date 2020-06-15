@@ -1,7 +1,7 @@
 package handlers
 
-// FulfillTradeResp is a struct to control fulfill trade response
-type FulfillTradeResp struct {
+// FulfillTradeResponse is a struct to control fulfill trade response
+type FulfillTradeResponse struct {
 	Message string
 	Status  string
 }

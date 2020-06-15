@@ -9,7 +9,7 @@ const (
 	KeyItemsByCookbook = "items_by_cookbook"
 )
 
-// ItemResp is the response for Items
-type ItemResp struct {
+// ItemResponse is the response for Items
+type ItemResponse struct {
 	Items []types.Item
 }

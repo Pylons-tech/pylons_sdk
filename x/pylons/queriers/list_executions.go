@@ -9,7 +9,7 @@ const (
 	KeyListExecutions = "list_executions"
 )
 
-// ExecResp is the response for ListExecutions
-type ExecResp struct {
+// ExecResponse is the response for ListExecutions
+type ExecResponse struct {
 	Executions []types.Execution
 }
