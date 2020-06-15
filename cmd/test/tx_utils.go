@@ -69,7 +69,7 @@ func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) string {
 		// 	"broadcast_log": logstr,
 		// 	"query_account": logstr2,
 		// 	"output2":       string(output2),
-		// }).Debug("")
+		// }).Debug("debug")
 
 		t.MustNil(err)
 		txResponse := sdk.TxResponse{}
@@ -193,7 +193,7 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 		"tx_msgs":        AminoCodecFormatter(msgs),
 		"signer":         signer,
 		"is_bech32_addr": isBech32Addr,
-	}).Debug("")
+	}).Debug("debug")
 
 	if len(msgs) == 0 {
 		return "msgs validation error", errors.New("length of msgs shouldn't be zero")
@@ -298,7 +298,7 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 		"tx_msgs":        AminoCodecFormatter(msgs),
 		"signer":         signer,
 		"is_bech32_addr": isBech32Addr,
-	}).Debug("")
+	}).Debug("debug")
 	return txhash, nil
 }
 

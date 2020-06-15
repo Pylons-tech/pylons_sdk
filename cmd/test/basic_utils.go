@@ -148,7 +148,7 @@ func GetAccountInfoFromAddr(addr string, t *testing.T) auth.BaseAccount {
 	t.MustNil(err)
 	// t.WithFields(testing.Fields{
 	// 	"account_info": accInfo,
-	// }).Debug("")
+	// }).Debug("debug")
 	return accInfo
 }
 
