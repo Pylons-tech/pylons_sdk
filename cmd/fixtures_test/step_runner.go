@@ -60,7 +60,7 @@ func RunMultiMsgTx(step FixtureStep, t *testing.T) {
 			"len_msgs": len(msgs),
 			"tx_msgs":  inttest.AminoCodecFormatter(msgs),
 			"msg_refs": step.MsgRefs,
-		}).Debug("debug")
+		}).Debug("debug log")
 		txhash, err := inttest.SendMultiMsgTxWithNonce(t, msgs, sender.String(), true)
 		t.MustNil(err)
 
@@ -81,7 +81,7 @@ func RunMultiMsgTx(step FixtureStep, t *testing.T) {
 		CheckErrorOnTxFromTxHash(txhash, t)
 		t.WithFields(testing.Fields{
 			"txhash": txhash,
-		}).Debug("debug")
+		}).Debug("debug log")
 	}
 }
 
@@ -140,7 +140,7 @@ func RunCheckExecution(step FixtureStep, t *testing.T) {
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 		t.WithFields(testing.Fields{
 			"txhash": txhash,
-		}).Debug("debug")
+		}).Debug("debug log")
 		if err != nil {
 			t.WithFields(testing.Fields{
 				"error": err,
@@ -207,7 +207,7 @@ func RunFiatItem(step FixtureStep, t *testing.T) {
 
 		t.WithFields(testing.Fields{
 			"txhash": txhash,
-		}).Debug("debug")
+		}).Debug("debug log")
 		if err != nil {
 			t.WithFields(testing.Fields{
 				"error": err,
@@ -458,7 +458,7 @@ func RunExecuteRecipe(step FixtureStep, t *testing.T) {
 
 			t.WithFields(testing.Fields{
 				"tx_error": hmrErrMsg,
-			}).Debug("debug")
+			}).Debug("debug log")
 			t.MustTrue(strings.Contains(hmrErrMsg, step.Output.TxResult.ErrorLog))
 		} else {
 			txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)

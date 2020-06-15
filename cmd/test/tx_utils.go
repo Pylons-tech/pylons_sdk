@@ -69,7 +69,7 @@ func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) string {
 		// 	"broadcast_log": logstr,
 		// 	"query_account": logstr2,
 		// 	"output2":       string(output2),
-		// }).Debug("debug")
+		// }).Debug("debug log")
 
 		t.MustNil(err)
 		txResponse := sdk.TxResponse{}
@@ -115,13 +115,13 @@ func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) string {
 	if err != nil {
 		t.WithFields(testing.Fields{
 			"error": err,
-		}).Fatal("")
+		}).Fatal("fatal log")
 	}
 	resp, err := http.Post(CLIOpts.RestEndpoint+"/txs", "application/json", bytes.NewBuffer(postBody))
 	if err != nil {
 		t.WithFields(testing.Fields{
 			"error": err,
-		}).Fatal("")
+		}).Fatal("fatal log")
 	}
 
 	var result map[string]string
@@ -131,7 +131,7 @@ func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) string {
 	defer resp.Body.Close()
 	t.WithFields(testing.Fields{
 		"get_pylons_api_response": result,
-	}).Info("")
+	}).Info("info log")
 	t.MustTrue(len(result["txhash"]) == 64)
 	return result["txhash"]
 }
@@ -193,7 +193,7 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 		"tx_msgs":        AminoCodecFormatter(msgs),
 		"signer":         signer,
 		"is_bech32_addr": isBech32Addr,
-	}).Debug("debug")
+	}).Debug("debug log")
 
 	if len(msgs) == 0 {
 		return "msgs validation error", errors.New("length of msgs shouldn't be zero")
@@ -298,7 +298,7 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 		"tx_msgs":        AminoCodecFormatter(msgs),
 		"signer":         signer,
 		"is_bech32_addr": isBech32Addr,
-	}).Debug("debug")
+	}).Debug("debug log")
 	return txhash, nil
 }
 
@@ -310,7 +310,7 @@ func TestTxWithMsgWithNonce(t *testing.T, msgValue sdk.Msg, signer string, isBec
 			"txhash": txhash,
 			"error":  err,
 			"func":   "TestTxWithMsgWithNonce",
-		}).Fatal("")
+		}).Fatal("fatal log")
 	}
 	return txhash
 }

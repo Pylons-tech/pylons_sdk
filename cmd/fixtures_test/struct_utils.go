@@ -19,7 +19,7 @@ func ReadFile(fileURL string, t *testing.T) []byte {
 	if err != nil {
 		t.WithFields(testing.Fields{
 			"error": err,
-		}).Fatal("")
+		}).Fatal("fatal log")
 	}
 
 	defer jsonFile.Close()
