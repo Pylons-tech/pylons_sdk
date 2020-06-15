@@ -101,11 +101,11 @@ github.com/Pylons-tech/pylons_sdk/x/pylons/handlers
 | No | Type   | Name                        | Description                                                                                 |
 |----|--------|-----------------------------|---------------------------------------------------------------------------------------------|
 | 1  | Struct | CheckExecutionResponse      | CheckExecutionResponse is the response for checkExecution                                   |
-| 2  | Struct | CreateCBResponse            | CreateCBResponse is a struct of create cookbook response                                    |
+| 2  | Struct | CreateCookbookResponse      | CreateCookbookResponse is a struct of create cookbook response                              |
 | 3  | Struct | CreateRecipeResponse        | CreateRecipeResponse is struct of create recipe response                                    |
 | 4  | Struct | ExecuteRecipeResponse       | ExecuteRecipeResponse is the response for executeRecipe                                     |
 | 5  | Struct | ExecuteRecipeScheduleOutput | ExecuteRecipeScheduleOutput is a struct that shows how execute recipe schedule output works |
-| 6  | Struct | FiatItemResponseonse        | FiatItemResponseonse is a struct to control fiat item response                              |
+| 6  | Struct | FiatItemResponse            | FiatItemResponse is a struct to control fiat item response                                  |
 | 7  | Struct | FulfillTradeResponse        | FulfillTradeResponse is a struct to control fulfill trade response                          |
 | 8  | Struct | GetParamsForPopularRecipe   | GetParamsForPopularRecipe is a function to get popular recipe's attributes                  |
 | 9  | Struct | PopularRecipeType           | PopularRecipeType is a type for popular recipes                                             |

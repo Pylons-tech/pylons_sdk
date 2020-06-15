@@ -202,7 +202,7 @@ func RunFiatItem(step FixtureStep, t *testing.T) {
 		}
 
 		CheckErrorOnTxFromTxHash(txhash, t)
-		resp := handlers.FiatItemResponseonse{}
+		resp := handlers.FiatItemResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 
 		t.WithFields(testing.Fields{
@@ -328,7 +328,7 @@ func RunCreateCookbook(step FixtureStep, t *testing.T) {
 		}
 
 		CheckErrorOnTxFromTxHash(txhash, t)
-		resp := handlers.CreateCBResponse{}
+		resp := handlers.CreateCookbookResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 
 		if err != nil {
