@@ -94,6 +94,7 @@ func getFrame(skipFrames int) runtime.Frame {
 }
 
 func (t *T) printCallerLine() {
+	requiredLevel := log.DebugLevel
 	frame := getFrame(2)
 	if t.useLogPkg {
 		text := fmt.Sprintf("%s:%d %s", frame.File, frame.Line, frame.Function)
@@ -106,13 +107,36 @@ func (t *T) printCallerLine() {
 			"file_line": fmt.Sprintf("%s:%d", frame.File, frame.Line),
 			"func":      frame.Function,
 		})
-		t.origin.Log(nT.FormatFields())
+		logOutput := fmt.Sprintf("\x1b[%dm%s\x1b[0m ", FieldColorByLogLevel(requiredLevel), nT.FormatFields(requiredLevel))
+		t.origin.Log(logOutput)
 	}
 }
 
+// FieldColorByLogLevel returns color
+func FieldColorByLogLevel(logLevel log.Level) int {
+	const (
+		red    = 31
+		yellow = 33
+		blue   = 36
+		gray   = 37
+	)
+	var levelColor int
+	switch logLevel {
+	case log.DebugLevel, log.TraceLevel:
+		levelColor = gray
+	case log.WarnLevel:
+		levelColor = yellow
+	case log.ErrorLevel, log.FatalLevel, log.PanicLevel:
+		levelColor = red
+	default:
+		levelColor = blue
+	}
+	return levelColor
+}
+
 // FormatFields renders a single log entry
-func (t *T) FormatFields() string {
-	var formated string
+func (t *T) FormatFields(logLevel log.Level) string {
+	formated := fmt.Sprintf("level=%+v", logLevel)
 	data := make(Fields)
 	for k, v := range t.fields {
 		data[k] = v
@@ -135,25 +159,29 @@ func (t *T) FormatFields() string {
 
 // Fatal is a modified Fatal
 func (t *T) Fatal(args ...interface{}) {
+	requiredLevel := log.FatalLevel
 	t.DispatchEvent("FAIL")
 	t.printCallerLine()
 	if t.useLogPkg {
 		log.WithFields(t.fields).Fatal(args...)
 	} else {
-		t.origin.Log(t.FormatFields())
-		t.origin.Fatal(args...)
+		text := fmt.Sprintf("%s msg=%s", t.FormatFields(requiredLevel), fmt.Sprintln(args...))
+		logOutput := fmt.Sprintf("\x1b[%dm%s\x1b[0m ", FieldColorByLogLevel(requiredLevel), text)
+		t.origin.Log(logOutput)
 	}
 }
 
 // Fatalf is a modified Fatalf
 func (t *T) Fatalf(format string, args ...interface{}) {
+	requiredLevel := log.FatalLevel
 	t.DispatchEvent("FAIL")
 	t.printCallerLine()
 	if t.useLogPkg {
 		log.WithFields(t.fields).Fatalf(format, args...)
 	} else {
-		t.origin.Log(t.FormatFields())
-		t.origin.Fatalf(format, args...)
+		text := fmt.Sprintf("%s msg=%s", t.FormatFields(requiredLevel), fmt.Sprintln(args...))
+		logOutput := fmt.Sprintf("\x1b[%dm%s\x1b[0m ", FieldColorByLogLevel(requiredLevel), text)
+		t.origin.Log(logOutput)
 	}
 }
 
@@ -194,29 +222,34 @@ func (t *T) Parallel() {
 
 // Log is modified Log
 func (t *T) Log(args ...interface{}) {
+	requiredLevel := log.InfoLevel
 	if t.useLogPkg {
 		log.WithFields(t.fields).Infoln(args...)
 	} else {
-		t.origin.Log(t.FormatFields())
-		t.origin.Log(args...)
+		text := fmt.Sprintf("%s msg=%s", t.FormatFields(requiredLevel), fmt.Sprintln(args...))
+		logOutput := fmt.Sprintf("\x1b[%dm%s\x1b[0m ", FieldColorByLogLevel(requiredLevel), text)
+		t.origin.Log(logOutput)
 	}
 }
 
 // Info is modified Info
 func (t *T) Info(args ...interface{}) {
+	requiredLevel := log.InfoLevel
 	if t.logLevel < log.InfoLevel {
 		return
 	}
 	if t.useLogPkg {
 		log.WithFields(t.fields).Infoln(args...)
 	} else {
-		t.origin.Log(t.FormatFields())
-		t.origin.Log(args...)
+		text := fmt.Sprintf("%s msg=%s", t.FormatFields(requiredLevel), fmt.Sprintln(args...))
+		logOutput := fmt.Sprintf("\x1b[%dm%s\x1b[0m ", FieldColorByLogLevel(requiredLevel), text)
+		t.origin.Log(logOutput)
 	}
 }
 
 // Warn is modified Info
 func (t *T) Warn(args ...interface{}) {
+	requiredLevel := log.WarnLevel
 	if t.logLevel < log.WarnLevel {
 		return
 	}
@@ -224,35 +257,40 @@ func (t *T) Warn(args ...interface{}) {
 	if t.useLogPkg {
 		log.WithFields(t.fields).Warnln(args...)
 	} else {
-		t.origin.Log(t.FormatFields())
-		t.origin.Log(args...)
+		text := fmt.Sprintf("%s msg=%s", t.FormatFields(requiredLevel), fmt.Sprintln(args...))
+		logOutput := fmt.Sprintf("\x1b[%dm%s\x1b[0m ", FieldColorByLogLevel(requiredLevel), text)
+		t.origin.Log(logOutput)
 	}
 }
 
 // Trace is modified Trace
 func (t *T) Trace(args ...interface{}) {
-	if t.logLevel < log.TraceLevel {
+	requiredLevel := log.TraceLevel
+	if t.logLevel < requiredLevel {
 		return
 	}
 	t.printCallerLine()
 	if t.useLogPkg {
 		log.WithFields(t.fields).Traceln(args...)
 	} else {
-		t.origin.Log(t.FormatFields())
-		t.origin.Log(args...)
+		text := fmt.Sprintf("%s msg=%s", t.FormatFields(requiredLevel), fmt.Sprintln(args...))
+		logOutput := fmt.Sprintf("\x1b[%dm%s\x1b[0m ", FieldColorByLogLevel(requiredLevel), text)
+		t.origin.Log(logOutput)
 	}
 }
 
 // Debug is modified Debug
 func (t *T) Debug(args ...interface{}) {
-	if t.logLevel < log.DebugLevel {
+	requiredLevel := log.DebugLevel
+	if t.logLevel < requiredLevel {
 		return
 	}
 	t.printCallerLine()
 	if t.useLogPkg {
 		log.WithFields(t.fields).Debugln(args...)
 	} else {
-		t.origin.Log(t.FormatFields())
-		t.origin.Log(args...)
+		text := fmt.Sprintf("%s msg=%s", t.FormatFields(requiredLevel), fmt.Sprintln(args...))
+		logOutput := fmt.Sprintf("\x1b[%dm%s\x1b[0m ", FieldColorByLogLevel(requiredLevel), text)
+		t.origin.Log(logOutput)
 	}
 }
