@@ -24,6 +24,7 @@ func TestFixturesViaCLI(t *testing.T) {
 	if useRest {
 		inttest.CLIOpts.RestEndpoint = "http://localhost:1317"
 	}
+	inttest.CLIOpts.MaxBroadcast = 50
 	RegisterDefaultActionRunners()
 	// Register custom action runners
 	// RegisterActionRunner("custom_action", CustomActionRunner)
