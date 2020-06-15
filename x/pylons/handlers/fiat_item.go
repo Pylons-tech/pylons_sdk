@@ -1,6 +1,6 @@
 package handlers
 
-// FiatItemResponse is a struct to control fiat item response
-type FiatItemResponse struct {
+// FiatItemResponseonse is a struct to control fiat item response
+type FiatItemResponseonse struct {
 	ItemID string `json:"ItemID"`
 }

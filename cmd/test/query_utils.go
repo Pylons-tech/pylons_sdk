@@ -89,7 +89,7 @@ func ListExecutionsViaCLI(account string, t *testing.T) ([]types.Execution, erro
 		}).Fatal("error running list_executions cli command")
 		return []types.Execution{}, err
 	}
-	var listExecutionsResp queriers.ExecResp
+	var listExecutionsResp queriers.ExecResponse
 	err = GetAminoCdc().UnmarshalJSON(output, &listExecutionsResp)
 	if err != nil {
 		t.WithFields(testing.Fields{
@@ -110,12 +110,12 @@ func ListItemsViaCLI(account string) ([]types.Item, error) {
 	if err != nil {
 		return types.ItemList{}, err
 	}
-	var itemResp queriers.ItemResp
-	err = GetAminoCdc().UnmarshalJSON(output, &itemResp)
+	var ItemResponse queriers.ItemResponse
+	err = GetAminoCdc().UnmarshalJSON(output, &ItemResponse)
 	if err != nil {
 		return types.ItemList{}, err
 	}
-	return itemResp.Items, err
+	return ItemResponse.Items, err
 }
 
 // WaitAndGetTxError is a function to wait and get transaction error from hash

@@ -1,7 +1,7 @@
 package handlers
 
-// ExecuteRecipeResp is the response for executeRecipe
-type ExecuteRecipeResp struct {
+// ExecuteRecipeResponse is the response for executeRecipe
+type ExecuteRecipeResponse struct {
 	Message string
 	Status  string
 	Output  []byte

@@ -136,7 +136,7 @@ func RunCheckExecution(step FixtureStep, t *testing.T) {
 		}
 
 		CheckErrorOnTxFromTxHash(txhash, t)
-		resp := handlers.CheckExecutionResp{}
+		resp := handlers.CheckExecutionResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 		t.WithFields(testing.Fields{
 			"txhash": txhash,
@@ -202,7 +202,7 @@ func RunFiatItem(step FixtureStep, t *testing.T) {
 		}
 
 		CheckErrorOnTxFromTxHash(txhash, t)
-		resp := handlers.FiatItemResponse{}
+		resp := handlers.FiatItemResponseonse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 
 		t.WithFields(testing.Fields{
@@ -260,7 +260,7 @@ func RunUpdateItemString(step FixtureStep, t *testing.T) {
 		}
 
 		CheckErrorOnTxFromTxHash(txhash, t)
-		resp := handlers.UpdateItemStringResp{}
+		resp := handlers.UpdateItemStringResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 
 		if err != nil {
@@ -464,7 +464,7 @@ func RunExecuteRecipe(step FixtureStep, t *testing.T) {
 			txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
 			t.MustNil(err)
 			CheckErrorOnTxFromTxHash(txhash, t)
-			resp := handlers.ExecuteRecipeResp{}
+			resp := handlers.ExecuteRecipeResponse{}
 			err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 			if err != nil {
 				t.WithFields(testing.Fields{
@@ -614,7 +614,7 @@ func RunFulfillTrade(step FixtureStep, t *testing.T) {
 			txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
 			t.MustNil(err)
 			CheckErrorOnTxFromTxHash(txhash, t)
-			resp := handlers.FulfillTradeResp{}
+			resp := handlers.FulfillTradeResponse{}
 			err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 			if err != nil {
 				t.WithFields(testing.Fields{
@@ -674,7 +674,7 @@ func RunDisableTrade(step FixtureStep, t *testing.T) {
 			txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
 			t.MustNil(err)
 			CheckErrorOnTxFromTxHash(txhash, t)
-			resp := handlers.DisableTradeResp{}
+			resp := handlers.DisableTradeResponse{}
 			err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 			if err != nil {
 				t.WithFields(testing.Fields{
