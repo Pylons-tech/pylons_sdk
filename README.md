@@ -207,3 +207,8 @@ ExecResponse is the response for ListExecutions
 #### ItemResponse  
 ItemResponse is the response for Items
 
+## How to debug logs
+
+To find the errors happened in that log, you need to search for `warning`, `error`, `fatal`, `panic`.
+Once that's found you can debug the `debug` and `info` logs near that log and it will make sense for you what happened.
+
