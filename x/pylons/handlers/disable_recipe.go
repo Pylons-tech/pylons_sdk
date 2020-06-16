@@ -1,7 +1,7 @@
 package handlers
 
-// DisableRecipeResp is a struct of disable recipe response
-type DisableRecipeResp struct {
+// DisableRecipeResponse is a struct of disable recipe response
+type DisableRecipeResponse struct {
 	Message string
 	Status  string
 }

@@ -1,7 +1,7 @@
 package handlers
 
-// CheckExecutionResp is the response for checkExecution
-type CheckExecutionResp struct {
+// CheckExecutionResponse is the response for checkExecution
+type CheckExecutionResponse struct {
 	Message string
 	Status  string
 	Output  []byte

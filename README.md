@@ -201,13 +201,16 @@ MakeCodec make codec for message marshal/unmarshal
 ## Queriers package
 github.com/Pylons-tech/pylons_sdk/x/pylons/queriers
 
-#### ExecResp  
-ExecResp is the response for ListExecutions
+#### ExecResponse  
+ExecResponse is the response for ListExecutions
 
 #### ItemResp  
 ItemResp is the response for 
 
-### How to debug log
+#### ItemResponse  
+ItemResponse is the response for Items
+
+## How to debug logs
 
 To find the errors happened in that log, you need to search for `warning`, `error`, `fatal`, `panic`.
 Once that's found you can debug the `debug` and `info` logs near that log and it will make sense for you what happened.

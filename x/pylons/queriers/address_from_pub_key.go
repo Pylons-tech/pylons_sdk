@@ -5,7 +5,7 @@ const (
 	KeyAddrFromPubKey = "addr_from_pub_key"
 )
 
-// AddrResp holds the bech32 encoded address
-type AddrResp struct {
+// AddrResponse holds the bech32 encoded address
+type AddrResponse struct {
 	Bech32Addr string
 }
