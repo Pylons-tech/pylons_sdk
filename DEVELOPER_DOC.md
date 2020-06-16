@@ -182,6 +182,8 @@ Sample Entries JSON
   ]
 }
 ```
+**Warn** There shouldn't be any recipes that generate pylon denom as an output.
+
 #### ItemOutputs
 This describes item which can be generated from recipe.
 
@@ -265,6 +267,12 @@ Sample ItemOutputs JSON using ModifyItem
   }
 }
 ```
+
+### Recipes Fee distribution
+ 
+For every recipe execution that has pylons denom as input, fee rule is applied.  
+Specific amount of fee percentage configured as `recipe_fee_percentage` in `pylons.yml` is distributed to Pylons LLC validator for every recipe execution. e.g. If someone purchase game item from cookbook owner at `100pylon`, `recipe_fee_percentage` is 10%, `10pylon` is sent to Pylons LLC validator for that transaction and the rest `90%` is sent to cookbook owner.
+**Warn** If the amount of pylons for the recipe execution is more than `1pylon` at least `1pylon` should be sent to Pylons LLC validator. e.g. if `1pylon` is spent for recipe execution, `1pylon` is sent to Pylons LLC validator and nothing is sent to cookbook owner.
 
 ##### ModifyItem
 
@@ -594,3 +602,9 @@ Sample JSON
 Here `TradeID` can be the one fetched from `list_trade` command.
 `Sender` is fulfiller address.
 `ItemIDs` field is used to mention which items of filfiller is going to participate in fulfilling trades.
+
+**Warn** The total amount of pylons participate in coin input and output should be more than `minimum_trade_price` configured in `pylons.yml`. Currently it's set to 10 pylons.
+
+### Trading fee distribution
+
+Specific amount of fee percentage configured as `pylons_trade_percentage` in `pylons.yml` is distributed to Pylons LLC validator for every transaction. e.g. If someone sell an item at `100pylon`, `pylons_trade_percentage` is 10%, `10pylon` is sent to Pylons LLC validator for that trade when trading is fulfilled.
