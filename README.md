@@ -101,16 +101,16 @@ github.com/Pylons-tech/pylons_sdk/x/pylons/handlers
 
 | No | Type   | Name                        | Description                                                                                 |
 |----|--------|-----------------------------|---------------------------------------------------------------------------------------------|
-| 1  | Struct | CheckExecutionResp          | CheckExecutionResp is the response for checkExecution                                       |
-| 2  | Struct | CreateCBResponse            | CreateCBResponse is a struct of create cookbook response                                    |
+| 1  | Struct | CheckExecutionResponse      | CheckExecutionResponse is the response for checkExecution                                   |
+| 2  | Struct | CreateCookbookResponse      | CreateCookbookResponse is a struct of create cookbook response                              |
 | 3  | Struct | CreateRecipeResponse        | CreateRecipeResponse is struct of create recipe response                                    |
-| 4  | Struct | ExecuteRecipeResp           | ExecuteRecipeResp is the response for executeRecipe                                         |
+| 4  | Struct | ExecuteRecipeResponse       | ExecuteRecipeResponse is the response for executeRecipe                                     |
 | 5  | Struct | ExecuteRecipeScheduleOutput | ExecuteRecipeScheduleOutput is a struct that shows how execute recipe schedule output works |
 | 6  | Struct | FiatItemResponse            | FiatItemResponse is a struct to control fiat item response                                  |
-| 7  | Struct | FulfillTradeResp            | FulfillTradeResp is a struct to control fulfill trade response                              |
+| 7  | Struct | FulfillTradeResponse        | FulfillTradeResponse is a struct to control fulfill trade response                          |
 | 8  | Struct | GetParamsForPopularRecipe   | GetParamsForPopularRecipe is a function to get popular recipe's attributes                  |
 | 9  | Struct | PopularRecipeType           | PopularRecipeType is a type for popular recipes                                             |
-| 10 | Struct | UpdateItemStringResp        | UpdateItemStringResp is a struct to control update item string response                     |
+| 10 | Struct | UpdateItemStringResponse    | UpdateItemStringResponse is a struct to control update item string response                 |
 
 ## Msgs package
 github.com/Pylons-tech/pylons_sdk/x/pylons/msgs
@@ -205,5 +205,10 @@ github.com/Pylons-tech/pylons_sdk/x/pylons/queriers
 ExecResp is the response for ListExecutions
 
 #### ItemResp  
-ItemResp is the response for Items
+ItemResp is the response for 
+
+### How to debug log
+
+To find the errors happened in that log, you need to search for `warning`, `error`, `fatal`, `panic`.
+Once that's found you can debug the `debug` and `info` logs near that log and it will make sense for you what happened.
 
