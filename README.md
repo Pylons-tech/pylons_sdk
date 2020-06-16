@@ -204,9 +204,6 @@ github.com/Pylons-tech/pylons_sdk/x/pylons/queriers
 #### ExecResponse  
 ExecResponse is the response for ListExecutions
 
-#### ItemResp  
-ItemResp is the response for 
-
 #### ItemResponse  
 ItemResponse is the response for Items
 
