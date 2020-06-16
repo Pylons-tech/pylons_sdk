@@ -60,7 +60,7 @@ func RunMultiMsgTx(step FixtureStep, t *testing.T) {
 			"len_msgs": len(msgs),
 			"tx_msgs":  inttest.AminoCodecFormatter(msgs),
 			"msg_refs": step.MsgRefs,
-		}).Debug("debug log")
+		}).AddFields(inttest.GetLogFieldsFromMsgs(msgs)).Debug("debug log")
 		txhash, err := inttest.SendMultiMsgTxWithNonce(t, msgs, sender.String(), true)
 		t.MustNil(err)
 
@@ -536,8 +536,8 @@ func RunCreateTrade(step FixtureStep, t *testing.T) {
 	if step.ParamsRef != "" {
 		createTrd := CreateTradeMsgFromRef(step.ParamsRef, t)
 		t.WithFields(testing.Fields{
-			"tx_msg": inttest.AminoCodecFormatter(createTrd),
-		}).Debug("createTrd")
+			"tx_msgs": inttest.AminoCodecFormatter(createTrd),
+		}).AddFields(inttest.GetLogFieldsFromMsgs([]sdk.Msg{createTrd})).Debug("createTrd")
 		txhash := inttest.TestTxWithMsgWithNonce(t, createTrd, createTrd.Sender.String(), true)
 		err := inttest.WaitForNextBlock()
 		if err != nil {

@@ -3,6 +3,7 @@ package evtesting
 import (
 	"fmt"
 	"runtime"
+	"sort"
 	"testing"
 
 	log "github.com/sirupsen/logrus"
@@ -10,12 +11,22 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// sort types
+const (
+	NoSort          = 0
+	SortKeyAlphaBet = 1
+	SortCustomKey   = 2 // sort by passed custom keys and rest are done by length of value
+	SortValueLength = 3 // sort by length of value
+)
+
 // T is a modified testing.T
 type T struct {
-	origin    *testing.T
-	useLogPkg bool
-	fields    log.Fields
-	logLevel  log.Level
+	origin     *testing.T
+	useLogPkg  bool
+	fields     log.Fields
+	logLevel   log.Level
+	sortType   int
+	sortFields []string
 }
 
 // Fields is a type to manage json based output
@@ -26,28 +37,56 @@ var listeners = make(map[string]func())
 // NewT is function returns modified T from original testing.T
 func NewT(origin *testing.T) T {
 	newT := T{
-		origin:    origin,
-		useLogPkg: false,
-		fields:    log.Fields{},
-		logLevel:  log.DebugLevel,
+		origin:     origin,
+		useLogPkg:  false,
+		fields:     log.Fields{},
+		logLevel:   log.DebugLevel,
+		sortType:   SortValueLength,
+		sortFields: []string{},
 	}
 	if origin == nil {
 		orgT := testing.T{}
 		newT.origin = &orgT
 		newT.useLogPkg = true
 		newT.logLevel = log.TraceLevel
+		newT.sortType = SortValueLength
+		newT.sortFields = []string{}
 	}
+	return newT
+}
+
+// NewLogLevelT is a NewT variant that has custom logLevel
+func NewLogLevelT(origin *testing.T, logLevel log.Level) T {
+	newT := NewT(origin)
+	newT.logLevel = logLevel
 	return newT
 }
 
 // WithFields is to manage data in json format
 func (t *T) WithFields(fields Fields) *T {
 	return &T{
-		fields:    log.Fields(fields),
-		origin:    t.origin,
-		useLogPkg: t.useLogPkg,
-		logLevel:  t.logLevel,
+		fields:     log.Fields(fields),
+		origin:     t.origin,
+		useLogPkg:  t.useLogPkg,
+		logLevel:   t.logLevel,
+		sortType:   t.sortType,
+		sortFields: t.sortFields,
 	}
+}
+
+// AddFields is to add additional data to existing fields
+func (t *T) AddFields(fields log.Fields) *T {
+	for k, v := range fields {
+		t.fields[k] = v
+	}
+	return t
+}
+
+// SetFieldsOrder is to set fields order for better debugging
+func (t *T) SetFieldsOrder(sortType int, sortFields []string) *T {
+	t.sortType = sortType
+	t.sortFields = sortFields
+	return t
 }
 
 // Run is modified Run
@@ -149,6 +188,32 @@ func (t *T) FormatFields(logLevel log.Level) string {
 
 	fixedKeys := []string{}
 	fixedKeys = append(fixedKeys, keys...)
+	switch t.sortType {
+	case NoSort:
+	case SortKeyAlphaBet:
+		sort.Strings(fixedKeys)
+	case SortCustomKey:
+		customIndexMap := map[string]int{}
+		for i, k := range t.sortFields {
+			customIndexMap[k] = len(t.sortFields) - i + 1
+		}
+		sort.Slice(fixedKeys, func(i, j int) bool {
+			cik := customIndexMap[fixedKeys[i]]
+			cjk := customIndexMap[fixedKeys[j]]
+			if cik != cjk {
+				return cik > cjk
+			}
+			sik := fmt.Sprintf("%+v", data[fixedKeys[i]])
+			sjk := fmt.Sprintf("%+v", data[fixedKeys[j]])
+			return len(sik) < len(sjk)
+		})
+	case SortValueLength:
+		sort.Slice(fixedKeys, func(i, j int) bool {
+			sik := fmt.Sprintf("%+v", data[fixedKeys[i]])
+			sjk := fmt.Sprintf("%+v", data[fixedKeys[j]])
+			return len(sik) < len(sjk)
+		})
+	}
 
 	for _, key := range fixedKeys {
 		formated += fmt.Sprintf(" %s=%+v", key, data[key])
