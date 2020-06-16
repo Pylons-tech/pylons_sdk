@@ -10,15 +10,16 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"strings"
 	"sync"
 	"time"
 
-	testing "github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test/evtesting"
-
-	"strings"
-
 	"github.com/Pylons-tech/pylons_sdk/app"
+	testing "github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test/evtesting"
+	"github.com/Pylons-tech/pylons_sdk/x/pylons/msgs"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	log "github.com/sirupsen/logrus"
 	amino "github.com/tendermint/go-amino"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 )
@@ -222,6 +223,51 @@ func AminoCodecFormatter(param interface{}) string {
 		return string(output)
 	}
 	return fmt.Sprintf("%+v", param)
+}
+
+// GetLogFieldsFromMsgs fetch mandatory keys from msgs for debugging
+func GetLogFieldsFromMsgs(txMsgs []sdk.Msg) log.Fields {
+	fields := log.Fields{}
+	for idx, msg := range txMsgs {
+		ikeypref := fmt.Sprintf("tx_msg%d_", idx)
+		if len(txMsgs) == 1 {
+			ikeypref = "tx_msg_"
+		}
+		switch msg := msg.(type) {
+		case msgs.MsgCreateCookbook:
+			fields[ikeypref+"type"] = "MsgCreateCookbook"
+			fields[ikeypref+"cb_name"] = msg.Name
+			fields[ikeypref+"sender"] = msg.Sender.String()
+		case msgs.MsgCreateRecipe:
+			fields[ikeypref+"type"] = "MsgCreateRecipe"
+			fields[ikeypref+"rcp_name"] = msg.Name
+			fields[ikeypref+"sender"] = msg.Sender.String()
+		case msgs.MsgExecuteRecipe:
+			fields[ikeypref+"type"] = "MsgCreateRecipe"
+			fields[ikeypref+"rcp_id"] = msg.RecipeID
+			fields[ikeypref+"sender"] = msg.Sender
+		case msgs.MsgCheckExecution:
+			fields[ikeypref+"type"] = "MsgCheckExecution"
+			fields[ikeypref+"exec_id"] = msg.ExecID
+			fields[ikeypref+"sender"] = msg.Sender.String()
+		case msgs.MsgCreateTrade:
+			fields[ikeypref+"type"] = "MsgCreateTrade"
+			fields[ikeypref+"trade_info"] = msg.ExtraInfo
+			fields[ikeypref+"sender"] = msg.Sender.String()
+		case msgs.MsgFulfillTrade:
+			fields[ikeypref+"type"] = "MsgFulfillTrade"
+			fields[ikeypref+"trade_id"] = msg.TradeID
+			fields[ikeypref+"sender"] = msg.Sender.String()
+		case msgs.MsgFiatItem:
+			fields[ikeypref+"type"] = "MsgFiatItem"
+			fields[ikeypref+"sender"] = msg.Sender.String()
+		case msgs.MsgUpdateItemString:
+			fields[ikeypref+"type"] = "MsgUpdateItemString"
+			fields[ikeypref+"item_id"] = msg.ItemID
+			fields[ikeypref+"sender"] = msg.Sender.String()
+		}
+	}
+	return fields
 }
 
 // JSONFormatter format structs better by encoding in amino codec

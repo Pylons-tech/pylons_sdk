@@ -13,6 +13,7 @@ import (
 	"time"
 
 	testing "github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test/evtesting"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
@@ -189,11 +190,16 @@ func TestTxWithMsg(t *testing.T, msgValue sdk.Msg, signer string) string {
 // SendMultiMsgTxWithNonce is a function to send multiple messages in one transaction
 func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech32Addr bool) (string, error) {
 	t.WithFields(testing.Fields{
-		"func_start":     "SendMultiMsgTxWithNonce",
-		"tx_msgs":        AminoCodecFormatter(msgs),
-		"signer":         signer,
-		"is_bech32_addr": isBech32Addr,
-	}).Debug("debug log")
+		"action":    "func_start",
+		"signer":    signer,
+		"is_bech32": isBech32Addr,
+	}).
+		AddFields(GetLogFieldsFromMsgs(msgs)).
+		AddFields(log.Fields{
+			"tx_msgs": AminoCodecFormatter(msgs),
+		}).
+		SetFieldsOrder(testing.SortCustomKey, []string{"action", "signer", "is_bech32"}).
+		Debug("debug log")
 
 	if len(msgs) == 0 {
 		return "msgs validation error", errors.New("length of msgs shouldn't be zero")
@@ -294,11 +300,17 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 	CleanFile(signedTxFile, t)
 
 	t.WithFields(testing.Fields{
-		"func_end":       "SendMultiMsgTxWithNonce",
-		"tx_msgs":        AminoCodecFormatter(msgs),
-		"signer":         signer,
-		"is_bech32_addr": isBech32Addr,
-	}).Debug("debug log")
+		"action":    "func_end",
+		"txhash":    txhash,
+		"signer":    signer,
+		"is_bech32": isBech32Addr,
+	}).
+		AddFields(GetLogFieldsFromMsgs(msgs)).
+		AddFields(log.Fields{
+			"tx_msgs": AminoCodecFormatter(msgs),
+		}).
+		SetFieldsOrder(testing.SortCustomKey, []string{"action", "txhash", "signer", "is_bech32"}).
+		Debug("debug log")
 	return txhash, nil
 }
 
