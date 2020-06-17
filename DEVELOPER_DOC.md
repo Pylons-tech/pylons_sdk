@@ -419,9 +419,9 @@ Values can be integer or double type.
 Example:
 ```
 max(10, 11) //result: 11
-max(6.87, 12.32) //result: 6.87
-max(20, 2.32) //result: 2.32
-max(3.45, 2) //result: 2
+max(6.87, 12.32) //result: 12.32
+max(20, 2.32) //result: 20
+max(3.45, 2) //result: 3.45
 ```
 
 ### Outputs
