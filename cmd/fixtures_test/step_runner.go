@@ -506,7 +506,7 @@ func CreateTradeMsgFromRef(ref string, t *testing.T) msgs.MsgCreateTrade {
 	// translate sender from account name to account address
 	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
 	// get item inputs from fileNames
-	itemInputs := GetItemInputsFromBytes(newByteValue, t)
+	tradeItemInputs := GetTradeItemInputsFromBytes(newByteValue, t)
 	var trdType types.Trade
 	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &trdType)
 	if err != nil {
@@ -523,7 +523,7 @@ func CreateTradeMsgFromRef(ref string, t *testing.T) msgs.MsgCreateTrade {
 
 	return msgs.NewMsgCreateTrade(
 		trdType.CoinInputs,
-		itemInputs,
+		tradeItemInputs,
 		trdType.CoinOutputs,
 		itemOutputs,
 		trdType.ExtraInfo,
