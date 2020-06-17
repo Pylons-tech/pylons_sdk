@@ -200,6 +200,33 @@ func GetItemInputsFromBytes(bytes []byte, t *testing.T) types.ItemInputList {
 	return itemInputs
 }
 
+// GetTradeItemInputsFromBytes is a function to get item input list from bytes
+func GetTradeItemInputsFromBytes(bytes []byte, t *testing.T) types.TradeItemInputList {
+	var itemInputRefsReader struct {
+		ItemInputRefs []string
+	}
+	if err := json.Unmarshal(bytes, &itemInputRefsReader); err != nil {
+		t.WithFields(testing.Fields{
+			"error": err,
+		}).Fatal("error unmarshaling")
+	}
+
+	var itemInputs types.TradeItemInputList
+
+	for _, tiiRef := range itemInputRefsReader.ItemInputRefs {
+		var tii types.TradeItemInput
+		tiiBytes := ReadFile(tiiRef, t)
+		err := inttest.GetAminoCdc().UnmarshalJSON(tiiBytes, &tii)
+		if err != nil {
+			t.WithFields(testing.Fields{
+				"error": err,
+			}).Fatal("error unmarshaling")
+		}
+		itemInputs = append(itemInputs, tii)
+	}
+	return itemInputs
+}
+
 // GetItemOutputsFromBytes is a function to get item outputs from bytes
 func GetItemOutputsFromBytes(bytes []byte, sender string, t *testing.T) types.ItemList {
 	var itemOutputNamesReader struct {
