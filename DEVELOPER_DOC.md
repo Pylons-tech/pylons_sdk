@@ -390,29 +390,39 @@ To convert to string type
 
 ##### Custom functions within program
 
-- `rand_int` function
+- `rand` function
 Usecase: generate random value.
 Example:  
 ```
-rand_int(10)
+rand(10)
 ```
 Above code is for generation of random number from 0 - 9.
+```
+rand()
+```
+Above code is for generation of random number from 0 - 1.
 
-- `min_int` function
-Usecase: get minimum value from two integer values
+- `min` function
+Usecase: get minimum value from two values. 
+Values can be integer or double type.
 Example:
 ```
-min_int(10, 11)
+min(10, 11) //result: 10
+min(6.87, 12.32) //result: 6.87
+min(20, 2.32) //result: 2.32
+min(3.45, 2) //result: 2
 ```
-Above code's return value is 10
 
-- `max_int` function
-Usecase: get maximum value from two integer values
+- `max` function
+Usecase: get maximum value from two values.
+Values can be integer or double type.
 Example:
 ```
-max_int(10, 11)
+max(10, 11) //result: 11
+max(6.87, 12.32) //result: 12.32
+max(20, 2.32) //result: 20
+max(3.45, 2) //result: 3.45
 ```
-Above code's return value is 11
 
 ### Outputs
 
