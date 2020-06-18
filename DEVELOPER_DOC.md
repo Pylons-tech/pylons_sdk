@@ -425,8 +425,8 @@ max(3.45, 2) //result: 3.45
 ```
 
 - `log2` function
-Usecase: get log 2 value from parameter.
-Prameter can be integer or double type.
+Usecase: get log 2 value from one parameter.
+The parameter can be integer or double type.
 Example:
 ```
 log2(1024) //result: 10
