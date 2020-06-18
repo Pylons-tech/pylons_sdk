@@ -424,6 +424,16 @@ max(20, 2.32) //result: 20
 max(3.45, 2) //result: 3.45
 ```
 
+- `log2` function
+Usecase: get log 2 value from parameter.
+Prameter can be integer or double type.
+Example:
+```
+log2(1024) //result: 10
+log2(0) //result: -Inf
+log2(-1) //result: NaN
+```
+
 ### Outputs
 
 Outputs is an array of result sets by weights.
