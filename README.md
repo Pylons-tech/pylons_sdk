@@ -30,14 +30,16 @@ package fixturetest
 
 import (
 	"flag"
+	"strings"
 	"testing"
 
+	fixturetestSDK "github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test"
+	inttest "github.com/Pylons-tech/pylons_sdk/cmd/test"
 	inttestSDK "github.com/Pylons-tech/pylons_sdk/cmd/test"
-	fixturetestSDK "github.com/Pylons-tech/pylons_sdk/cmd/fixture_test"
 )
 
-var runSerialMode = false
-var useRest = false
+var runSerialMode bool = false
+var useRest bool = false
 var useKnownCookbook = false
 var scenarios = ""
 
@@ -65,7 +67,6 @@ func TestFixturesViaCLI(t *testing.T) {
 	}
 	fixturetestSDK.RunTestScenarios("scenarios", scenarioFileNames, t)
 }
-
 ```
 
 
