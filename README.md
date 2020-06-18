@@ -36,9 +36,10 @@ import (
 	fixturetestSDK "github.com/Pylons-tech/pylons_sdk/cmd/fixture_test"
 )
 
-var runSerialMode bool = false
-var useRest bool = false
-var useKnownCookbook bool = false
+var runSerialMode = false
+var useRest = false
+var useKnownCookbook = false
+var scenarios = ""
 
 func init() {
 	flag.BoolVar(&runSerialMode, "runserial", false, "true/false value to check if test will be running in parallel")
