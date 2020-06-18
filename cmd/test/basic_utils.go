@@ -278,3 +278,13 @@ func JSONFormatter(param interface{}) string {
 	}
 	return fmt.Sprintf("%+v", param)
 }
+
+// Exist check if element exist in an array
+func Exists(slice []string, val string) bool {
+	for _, item := range slice {
+		if item == val {
+			return true
+		}
+	}
+	return false
+}

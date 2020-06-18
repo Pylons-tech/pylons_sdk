@@ -11,7 +11,7 @@ import (
 	"github.com/Pylons-tech/pylons_sdk/x/pylons/types"
 )
 
-var execIDs map[string]string = make(map[string]string)
+var execIDs = make(map[string]string)
 
 // ReadFile is a function to read file
 func ReadFile(fileURL string, t *testing.T) []byte {
