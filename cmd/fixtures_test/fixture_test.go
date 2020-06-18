@@ -2,19 +2,22 @@ package fixturetest
 
 import (
 	"flag"
+	"strings"
 	"testing"
 
 	inttest "github.com/Pylons-tech/pylons_sdk/cmd/test"
 )
 
-var runSerialMode bool = false
-var useRest bool = false
-var useKnownCookbook bool = false
+var runSerialMode = false
+var useRest = false
+var useKnownCookbook = false
+var scenarios = ""
 
 func init() {
 	flag.BoolVar(&runSerialMode, "runserial", false, "true/false value to check if test will be running in parallel")
 	flag.BoolVar(&useRest, "userest", false, "use rest endpoint for Tx send")
 	flag.BoolVar(&useKnownCookbook, "use-known-cookbook", false, "use existing cookbook or not")
+	flag.StringVar(&scenarios, "scenarios", "", "custom scenario file names")
 }
 
 func TestFixturesViaCLI(t *testing.T) {
@@ -28,5 +31,5 @@ func TestFixturesViaCLI(t *testing.T) {
 	RegisterDefaultActionRunners()
 	// Register custom action runners
 	// RegisterActionRunner("custom_action", CustomActionRunner)
-	RunTestScenarios("scenarios", t)
+	RunTestScenarios("scenarios", strings.Split(scenarios, ","), t)
 }

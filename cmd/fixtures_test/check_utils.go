@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 
 	originT "testing"
 
@@ -62,7 +63,7 @@ type TestOptions struct {
 }
 
 // FixtureTestOpts is a variable to have fixture test options
-var FixtureTestOpts TestOptions = TestOptions{
+var FixtureTestOpts = TestOptions{
 	IsParallel: true,
 }
 
@@ -354,13 +355,22 @@ func RunSingleFixtureTest(file string, t *testing.T) {
 }
 
 // RunTestScenarios execute all scenarios
-func RunTestScenarios(scenarioDir string, t *originT.T) {
+func RunTestScenarios(scenarioDir string, scenarioFileNames []string, t *originT.T) {
 	newT := testing.NewT(t)
 
 	var files []string
 
 	scenarioDirectory := "scenarios"
 	err := filepath.Walk(scenarioDirectory, func(path string, info os.FileInfo, err error) error {
+		if filepath.Ext(path) != ".json" {
+			return nil
+		}
+		scenarioName := strings.TrimSuffix(info.Name(), ".json")
+		t.Log("checking", scenarioName)
+		if len(scenarioFileNames) != 0 && !inttest.Exists(scenarioFileNames, scenarioName) {
+			return nil
+		}
+		t.Log("added", scenarioName)
 		files = append(files, path)
 		return nil
 	})
@@ -368,9 +378,6 @@ func RunTestScenarios(scenarioDir string, t *originT.T) {
 		t.Fatal("error walking through scenario directory", err)
 	}
 	for _, file := range files {
-		if filepath.Ext(file) != ".json" {
-			continue
-		}
 		t.Log("Running scenario path=", file)
 		RunSingleFixtureTest(file, &newT)
 	}
