@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -19,6 +20,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 
 	"github.com/spf13/viper"
@@ -60,7 +62,7 @@ func GenTxWithMsg(messages []sdk.Msg) (auth.StdTx, error) {
 	return auth.NewStdTx(stdSignMsg.Msgs, stdSignMsg.Fee, nil, stdSignMsg.Memo), nil
 }
 
-func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) string {
+func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) (string, error) {
 	if len(CLIOpts.RestEndpoint) == 0 { // broadcast using cli
 		// pylonscli tx broadcast signedCreateCookbookTx.json
 		txBroadcastArgs := []string{"tx", "broadcast", signedTxFile}
@@ -84,7 +86,8 @@ func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) string {
 			}).Fatal("error in broadcasting signed transaction output")
 		}
 
-		if txResponse.Code != 0 && maxRetry > 0 {
+		if txResponse.Code == sdkerrors.ErrUnauthorized.ABCICode() &&
+			strings.Contains(txResponse.RawLog, "signature verification failed") && maxRetry > 0 {
 			t.WithFields(testing.Fields{
 				"log":       logstr,
 				"output":    string(output),
@@ -93,13 +96,11 @@ func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) string {
 			time.Sleep(1 * time.Second)
 			return broadcastTxFile(signedTxFile, maxRetry-1, t)
 		}
-		t.MustTrue(len(txResponse.TxHash) == 64)
 		if txResponse.Code != 0 {
-			t.WithFields(testing.Fields{
-				"output": string(output),
-			}).Fatal("broadcasting failure after maxRetry limitation")
+			return txResponse.TxHash, errors.New(txResponse.RawLog)
 		}
-		return txResponse.TxHash
+		t.MustTrue(len(txResponse.TxHash) == 64)
+		return txResponse.TxHash, nil
 	}
 	// broadcast using rest endpoint
 	signedTx := ReadFile(signedTxFile, t)
@@ -134,7 +135,7 @@ func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) string {
 		"get_pylons_api_response": result,
 	}).Info("info log")
 	t.MustTrue(len(result["txhash"]) == 64)
-	return result["txhash"]
+	return result["txhash"], nil
 }
 
 // TestTxWithMsg is a function to send transaction with message
@@ -179,7 +180,12 @@ func TestTxWithMsg(t *testing.T, msgValue sdk.Msg, signer string) string {
 		}).Fatal("error writing signed transaction")
 	}
 
-	txhash := broadcastTxFile(signedTxFile, GetMaxBroadcastRetry(), t)
+	txhash, err := broadcastTxFile(signedTxFile, GetMaxBroadcastRetry(), t)
+	if err != nil {
+		t.WithFields(testing.Fields{
+			"error": err,
+		}).Fatal("broadcasting failure after maxRetry limitation")
+	}
 
 	CleanFile(rawTxFile, t)
 	CleanFile(signedTxFile, t)
@@ -233,29 +239,18 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 		nonce = nonceMap[signer]
 	}
 	t.Trace("tx_with_nonce.step.D")
-	nonceMap[signer] = nonce + 1
-	nonceOutput, err := json.Marshal(nonceMap)
-	if err != nil {
-		return "error marshaling nonceMap", err
-	}
-	t.Trace("tx_with_nonce.step.E")
-	err = ioutil.WriteFile(nonceFile, nonceOutput, 0644)
-	if err != nil {
-		return "error writing nonce output file", err
-	}
 
-	t.Trace("tx_with_nonce.step.F")
 	txModel, err := GenTxWithMsg(msgs)
 	if err != nil {
 		return "error generating transaction with messages", err
 	}
-	t.Trace("tx_with_nonce.step.F")
+	t.Trace("tx_with_nonce.step.E")
 	output, err := GetAminoCdc().MarshalJSON(txModel)
 	if err != nil {
 		return "error marshaling transaction into json", err
 	}
 
-	t.Trace("tx_with_nonce.step.G")
+	t.Trace("tx_with_nonce.step.F")
 	rawTxFile := filepath.Join(tmpDir, "raw_tx_"+strconv.FormatUint(nonce, 10)+".json")
 	signedTxFile := filepath.Join(tmpDir, "signed_tx_"+strconv.FormatUint(nonce, 10)+".json")
 	err = ioutil.WriteFile(rawTxFile, output, 0644)
@@ -266,7 +261,7 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 		}).Fatal("error writing raw transaction")
 	}
 
-	t.Trace("tx_with_nonce.step.H")
+	t.Trace("tx_with_nonce.step.G")
 	// pylonscli tx sign sample_transaction.json --account-number 2 --sequence 10 --offline --from eugen
 	txSignArgs := []string{"tx", "sign", rawTxFile,
 		"--from", signer,
@@ -284,17 +279,36 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 	if err != nil {
 		return "error signing transaction", err
 	}
-	t.Trace("tx_with_nonce.step.I")
+	t.Trace("tx_with_nonce.step.H")
 
 	err = ioutil.WriteFile(signedTxFile, output, 0644)
 	if err != nil {
 		return "error writing signed transaction", err
 	}
 
-	t.Trace("tx_with_nonce.step.J")
+	t.Trace("tx_with_nonce.step.I")
 	nonceMux.Unlock()
 
-	txhash := broadcastTxFile(signedTxFile, GetMaxBroadcastRetry(), t)
+	txhash, err := broadcastTxFile(signedTxFile, GetMaxBroadcastRetry(), t)
+	if err != nil {
+		t.WithFields(testing.Fields{
+			"error": err,
+		}).Fatal("broadcasting failure after maxRetry limitation")
+	}
+	t.Trace("tx_with_nonce.step.J")
+
+	nonceMap[signer] = nonce + 1
+	nonceOutput, err := json.Marshal(nonceMap)
+	if err != nil {
+		return "error marshaling nonceMap", err
+	}
+	t.Trace("tx_with_nonce.step.K")
+	err = ioutil.WriteFile(nonceFile, nonceOutput, 0644)
+	if err != nil {
+		return "error writing nonce output file", err
+	}
+
+	t.Trace("tx_with_nonce.step.L")
 
 	CleanFile(rawTxFile, t)
 	CleanFile(signedTxFile, t)
