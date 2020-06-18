@@ -1,0 +1,26 @@
+[
+  {
+    "ID": "CREATE_INVALID_COOKBOOK",
+    "runAfter": {
+      "precondition": [],
+      "blockWait": 0
+    },
+    "action": "create_cookbook",
+    "paramsRef": "./cookbooks/invalid_cookbook.json",
+    "output": {
+      "txResult": {
+        "broadcastError": "the description should have more than 20 characters",
+        "status": "Success"
+      },
+      "property": [
+        {
+          "owner": "eugen",
+          "shouldNotExist": true,
+          "cookbooks": [
+            "Invalid cookbook"
+          ]
+        }
+      ]
+    }
+  }
+]

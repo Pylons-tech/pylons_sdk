@@ -32,9 +32,10 @@ type FixtureStep struct {
 	} `json:"msgRefs"`
 	Output struct {
 		TxResult struct {
-			Status   string `json:"status"`
-			Message  string `json:"message"`
-			ErrorLog string `json:"errLog"`
+			Status         string `json:"status"`
+			Message        string `json:"message"`
+			ErrorLog       string `json:"errLog"`
+			BroadcastError string `json:"broadcastError"`
 		} `json:"txResult"`
 		Property []struct {
 			Owner          string   `json:"owner"`
