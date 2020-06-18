@@ -238,6 +238,19 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 		}
 		nonce = nonceMap[signer]
 	}
+	t.Trace("tx_with_nonce.step.K")
+
+	nonceMap[signer] = nonce + 1
+	nonceOutput, err := json.Marshal(nonceMap)
+	if err != nil {
+		return "error marshaling nonceMap", err
+	}
+	t.Trace("tx_with_nonce.step.K")
+	err = ioutil.WriteFile(nonceFile, nonceOutput, 0644)
+	if err != nil {
+		return "error writing nonce output file", err
+	}
+
 	t.Trace("tx_with_nonce.step.D")
 
 	txModel, err := GenTxWithMsg(msgs)
@@ -296,19 +309,6 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 		}).Fatal("broadcasting failure after maxRetry limitation")
 	}
 	t.Trace("tx_with_nonce.step.J")
-
-	nonceMap[signer] = nonce + 1
-	nonceOutput, err := json.Marshal(nonceMap)
-	if err != nil {
-		return "error marshaling nonceMap", err
-	}
-	t.Trace("tx_with_nonce.step.K")
-	err = ioutil.WriteFile(nonceFile, nonceOutput, 0644)
-	if err != nil {
-		return "error writing nonce output file", err
-	}
-
-	t.Trace("tx_with_nonce.step.L")
 
 	CleanFile(rawTxFile, t)
 	CleanFile(signedTxFile, t)
