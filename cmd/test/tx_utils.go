@@ -239,19 +239,19 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 		}
 		nonce = nonceMap[signer]
 	}
-	t.Trace("tx_with_nonce.step.F")
+	t.Trace("tx_with_nonce.step.D")
 
 	txModel, err := GenTxWithMsg(msgs)
 	if err != nil {
 		return "error generating transaction with messages", err
 	}
-	t.Trace("tx_with_nonce.step.G")
+	t.Trace("tx_with_nonce.step.E")
 	output, err := GetAminoCdc().MarshalJSON(txModel)
 	if err != nil {
 		return "error marshaling transaction into json", err
 	}
 
-	t.Trace("tx_with_nonce.step.H")
+	t.Trace("tx_with_nonce.step.F")
 	rawTxFile := filepath.Join(tmpDir, "raw_tx_"+strconv.FormatUint(nonce, 10)+".json")
 	signedTxFile := filepath.Join(tmpDir, "signed_tx_"+strconv.FormatUint(nonce, 10)+".json")
 	err = ioutil.WriteFile(rawTxFile, output, 0644)
@@ -262,7 +262,7 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 		}).Fatal("error writing raw transaction")
 	}
 
-	t.Trace("tx_with_nonce.step.I")
+	t.Trace("tx_with_nonce.step.G")
 	// pylonscli tx sign sample_transaction.json --account-number 2 --sequence 10 --offline --from eugen
 	txSignArgs := []string{"tx", "sign", rawTxFile,
 		"--from", signer,
@@ -280,14 +280,14 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 	if err != nil {
 		return "error signing transaction", err
 	}
-	t.Trace("tx_with_nonce.step.J")
+	t.Trace("tx_with_nonce.step.H")
 
 	err = ioutil.WriteFile(signedTxFile, output, 0644)
 	if err != nil {
 		return "error writing signed transaction", err
 	}
 
-	t.Trace("tx_with_nonce.step.J")
+	t.Trace("tx_with_nonce.step.I")
 
 	txhash, err := broadcastTxFile(signedTxFile, GetMaxBroadcastRetry(), t)
 	if err != nil {
@@ -297,18 +297,18 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 		return "error broadcasting tx file", err
 	}
 	// increase nonce file
-	t.Trace("tx_with_nonce.step.K")
+	t.Trace("tx_with_nonce.step.J")
 	nonceMap[signer] = nonce + 1
 	nonceOutput, err := json.Marshal(nonceMap)
 	if err != nil {
 		return "error marshaling nonceMap", err
 	}
-	t.Trace("tx_with_nonce.step.E")
+	t.Trace("tx_with_nonce.step.K")
 	err = ioutil.WriteFile(nonceFile, nonceOutput, 0644)
 	if err != nil {
 		return "error writing nonce output file", err
 	}
-	t.Trace("tx_with_nonce.step.D")
+	t.Trace("tx_with_nonce.step.L")
 
 	CleanFile(rawTxFile, t)
 	CleanFile(signedTxFile, t)
