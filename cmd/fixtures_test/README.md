@@ -100,6 +100,11 @@ ignore create_cookbook message but just do update rest of them
 ```
 make fixture_tests ARGS="-use-known-cookbook"
 ```
+- specific scenarios test
+If not specify this param, it tests all scenario files. If specify only do specific tests.
+```
+make fixture_tests ARGS="--scenarios=multi_msg_tx,double_empty"
+```
 
 ## To make fixture test scenarios clean
 
