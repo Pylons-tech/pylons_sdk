@@ -31,5 +31,9 @@ func TestFixturesViaCLI(t *testing.T) {
 	RegisterDefaultActionRunners()
 	// Register custom action runners
 	// RegisterActionRunner("custom_action", CustomActionRunner)
-	RunTestScenarios("scenarios", strings.Split(scenarios, ","), t)
+	scenarioFileNames := []string{}
+	if len(scenarios) > 0 {
+		scenarioFileNames = strings.Split(scenarios, ",")
+	}
+	RunTestScenarios("scenarios", scenarioFileNames, t)
 }

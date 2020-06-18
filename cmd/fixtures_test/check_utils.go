@@ -2,6 +2,7 @@ package fixturetest
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -366,7 +367,7 @@ func RunTestScenarios(scenarioDir string, scenarioFileNames []string, t *originT
 			return nil
 		}
 		scenarioName := strings.TrimSuffix(info.Name(), ".json")
-		t.Log("checking", scenarioName)
+		t.Log(fmt.Sprintf("checking %s from %+v", scenarioName, scenarioFileNames))
 		if len(scenarioFileNames) != 0 && !inttest.Exists(scenarioFileNames, scenarioName) {
 			return nil
 		}
