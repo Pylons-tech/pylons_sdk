@@ -30,10 +30,11 @@ package fixturetest
 
 import (
 	"flag"
+	"strings"
 	"testing"
 
 	inttestSDK "github.com/Pylons-tech/pylons_sdk/cmd/test"
-	fixturetestSDK "github.com/Pylons-tech/pylons_sdk/cmd/fixture_test"
+	fixturetestSDK "github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test"
 )
 
 var runSerialMode = false
@@ -55,7 +56,7 @@ func TestFixturesViaCLI(t *testing.T) {
 	if useRest {
 		inttestSDK.CLIOpts.RestEndpoint = "http://localhost:1317"
 	}
-	inttest.CLIOpts.MaxBroadcast = 50
+	inttestSDK.CLIOpts.MaxBroadcast = 50
 	fixturetestSDK.RegisterDefaultActionRunners()
 	// Register custom action runners
 	// fixturetestSDK.RegisterActionRunner("custom_action", CustomActionRunner)
@@ -65,7 +66,6 @@ func TestFixturesViaCLI(t *testing.T) {
 	}
 	fixturetestSDK.RunTestScenarios("scenarios", scenarioFileNames, t)
 }
-
 ```
 
 
