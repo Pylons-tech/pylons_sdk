@@ -125,3 +125,17 @@ func NewItem(cookbookID string, doubles []DoubleKeyValue, longs []LongKeyValue, 
 	item.ID = KeyGen(sender)
 	return item
 }
+
+// IsTradable check if an item can be sent to someone else
+func (it Item) IsTradable() bool {
+	if !it.Tradable {
+		return false
+	}
+	if it.OwnerRecipeID != "" {
+		return false
+	}
+	// if it.IsBeingTraded {
+	// 	return false
+	// }
+	return true
+}
