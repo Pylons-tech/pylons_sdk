@@ -229,6 +229,7 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 	nonceMap := make(map[string]uint64)
 
 	nonceMux.Lock()
+	defer nonceMux.Unlock()
 
 	if fileExists(nonceFile) {
 		nonceBytes := ReadFile(nonceFile, t)
@@ -293,9 +294,10 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 		t.WithFields(testing.Fields{
 			"error": err,
 		}).Fatal("broadcasting failure after maxRetry limitation")
+		return "error broadcasting tx file", err
 	}
+	// increase nonce file
 	t.Trace("tx_with_nonce.step.K")
-
 	nonceMap[signer] = nonce + 1
 	nonceOutput, err := json.Marshal(nonceMap)
 	if err != nil {
@@ -306,7 +308,6 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 	if err != nil {
 		return "error writing nonce output file", err
 	}
-	nonceMux.Unlock()
 	t.Trace("tx_with_nonce.step.D")
 
 	CleanFile(rawTxFile, t)
@@ -328,7 +329,7 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 }
 
 // TestTxWithMsgWithNonce is a function to send transaction with message and nonce
-func TestTxWithMsgWithNonce(t *testing.T, msgValue sdk.Msg, signer string, isBech32Addr bool) string {
+func TestTxWithMsgWithNonce(t *testing.T, msgValue sdk.Msg, signer string, isBech32Addr bool) (string, error) {
 	txhash, err := SendMultiMsgTxWithNonce(t, []sdk.Msg{msgValue}, signer, isBech32Addr)
 	if err != nil {
 		t.WithFields(testing.Fields{
@@ -337,5 +338,5 @@ func TestTxWithMsgWithNonce(t *testing.T, msgValue sdk.Msg, signer string, isBec
 			"func":   "TestTxWithMsgWithNonce",
 		}).Fatal("fatal log")
 	}
-	return txhash
+	return txhash, err
 }

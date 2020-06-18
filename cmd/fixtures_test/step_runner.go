@@ -62,7 +62,16 @@ func RunMultiMsgTx(step FixtureStep, t *testing.T) {
 			"msg_refs": step.MsgRefs,
 		}).AddFields(inttest.GetLogFieldsFromMsgs(msgs)).Debug("debug log")
 		txhash, err := inttest.SendMultiMsgTxWithNonce(t, msgs, sender.String(), true)
-		t.MustNil(err)
+		if err != nil {
+			if step.Output.TxResult.BroadcastError != "" {
+				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError))
+			} else {
+				t.WithFields(testing.Fields{
+					"error": err,
+				}).Fatal("unexpected transaction broadcast error")
+			}
+			return
+		}
 
 		err = inttest.WaitForNextBlock()
 		if err != nil {
@@ -119,9 +128,19 @@ func RunCheckExecution(step FixtureStep, t *testing.T) {
 
 	if step.ParamsRef != "" {
 		chkExecMsg := CheckExecutionMsgFromRef(step.ParamsRef, t)
-		txhash := inttest.TestTxWithMsgWithNonce(t, chkExecMsg, chkExecMsg.Sender.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, chkExecMsg, chkExecMsg.Sender.String(), true)
+		if err != nil {
+			if step.Output.TxResult.BroadcastError != "" {
+				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError))
+			} else {
+				t.WithFields(testing.Fields{
+					"error": err,
+				}).Fatal("unexpected transaction broadcast error")
+			}
+			return
+		}
 
-		err := inttest.WaitForNextBlock()
+		err = inttest.WaitForNextBlock()
 		if err != nil {
 			t.WithFields(testing.Fields{
 				"error": err,
@@ -185,9 +204,18 @@ func RunFiatItem(step FixtureStep, t *testing.T) {
 
 	if step.ParamsRef != "" {
 		itmMsg := FiatItemMsgFromRef(step.ParamsRef, t)
-		txhash := inttest.TestTxWithMsgWithNonce(t, itmMsg, itmMsg.Sender.String(), true)
-
-		err := inttest.WaitForNextBlock()
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, itmMsg, itmMsg.Sender.String(), true)
+		if err != nil {
+			if step.Output.TxResult.BroadcastError != "" {
+				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError))
+			} else {
+				t.WithFields(testing.Fields{
+					"error": err,
+				}).Fatal("unexpected transaction broadcast error")
+			}
+			return
+		}
+		err = inttest.WaitForNextBlock()
 		if err != nil {
 			t.WithFields(testing.Fields{
 				"error": err,
@@ -243,9 +271,18 @@ func RunUpdateItemString(step FixtureStep, t *testing.T) {
 
 	if step.ParamsRef != "" {
 		sTypeMsg := UpdateItemStringMsgFromRef(step.ParamsRef, t)
-		txhash := inttest.TestTxWithMsgWithNonce(t, sTypeMsg, sTypeMsg.Sender.String(), true)
-
-		err := inttest.WaitForNextBlock()
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, sTypeMsg, sTypeMsg.Sender.String(), true)
+		if err != nil {
+			if step.Output.TxResult.BroadcastError != "" {
+				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError))
+			} else {
+				t.WithFields(testing.Fields{
+					"error": err,
+				}).Fatal("unexpected transaction broadcast error")
+			}
+			return
+		}
+		err = inttest.WaitForNextBlock()
 		if err != nil {
 			t.WithFields(testing.Fields{
 				"error": err,
@@ -310,9 +347,19 @@ func RunCreateCookbook(step FixtureStep, t *testing.T) {
 	if step.ParamsRef != "" {
 		cbMsg := CreateCookbookMsgFromRef(step.ParamsRef, t)
 
-		txhash := inttest.TestTxWithMsgWithNonce(t, cbMsg, cbMsg.Sender.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, cbMsg, cbMsg.Sender.String(), true)
+		if err != nil {
+			if step.Output.TxResult.BroadcastError != "" {
+				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError))
+			} else {
+				t.WithFields(testing.Fields{
+					"error": err,
+				}).Fatal("unexpected transaction broadcast error")
+			}
+			return
+		}
 
-		err := inttest.WaitForNextBlock()
+		err = inttest.WaitForNextBlock()
 		if err != nil {
 			t.WithFields(testing.Fields{
 				"error": err,
@@ -383,9 +430,19 @@ func RunCreateRecipe(step FixtureStep, t *testing.T) {
 	if step.ParamsRef != "" {
 		rcpMsg := CreateRecipeMsgFromRef(step.ParamsRef, t)
 
-		txhash := inttest.TestTxWithMsgWithNonce(t, rcpMsg, rcpMsg.Sender.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, rcpMsg, rcpMsg.Sender.String(), true)
+		if err != nil {
+			if step.Output.TxResult.BroadcastError != "" {
+				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError))
+			} else {
+				t.WithFields(testing.Fields{
+					"error": err,
+				}).Fatal("unexpected transaction broadcast error")
+			}
+			return
+		}
 
-		err := inttest.WaitForNextBlock()
+		err = inttest.WaitForNextBlock()
 		if err != nil {
 			t.WithFields(testing.Fields{
 				"error": err,
@@ -445,9 +502,19 @@ func RunExecuteRecipe(step FixtureStep, t *testing.T) {
 
 	if step.ParamsRef != "" {
 		execMsg := ExecuteRecipeMsgFromRef(step.ParamsRef, t)
-		txhash := inttest.TestTxWithMsgWithNonce(t, execMsg, execMsg.Sender.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, execMsg, execMsg.Sender.String(), true)
+		if err != nil {
+			if step.Output.TxResult.BroadcastError != "" {
+				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError))
+			} else {
+				t.WithFields(testing.Fields{
+					"error": err,
+				}).Fatal("unexpected transaction broadcast error")
+			}
+			return
+		}
 
-		err := inttest.WaitForNextBlock()
+		err = inttest.WaitForNextBlock()
 		if err != nil {
 			t.WithFields(testing.Fields{
 				"error": err,
@@ -538,8 +605,18 @@ func RunCreateTrade(step FixtureStep, t *testing.T) {
 		t.WithFields(testing.Fields{
 			"tx_msgs": inttest.AminoCodecFormatter(createTrd),
 		}).AddFields(inttest.GetLogFieldsFromMsgs([]sdk.Msg{createTrd})).Debug("createTrd")
-		txhash := inttest.TestTxWithMsgWithNonce(t, createTrd, createTrd.Sender.String(), true)
-		err := inttest.WaitForNextBlock()
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, createTrd, createTrd.Sender.String(), true)
+		if err != nil {
+			if step.Output.TxResult.BroadcastError != "" {
+				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError))
+			} else {
+				t.WithFields(testing.Fields{
+					"error": err,
+				}).Fatal("unexpected transaction broadcast error")
+			}
+			return
+		}
+		err = inttest.WaitForNextBlock()
 		if err != nil {
 			t.WithFields(testing.Fields{
 				"error": err,
@@ -600,9 +677,19 @@ func RunFulfillTrade(step FixtureStep, t *testing.T) {
 
 	if step.ParamsRef != "" {
 		ffTrdMsg := FulfillTradeMsgFromRef(step.ParamsRef, t)
-		txhash := inttest.TestTxWithMsgWithNonce(t, ffTrdMsg, ffTrdMsg.Sender.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, ffTrdMsg, ffTrdMsg.Sender.String(), true)
+		if err != nil {
+			if step.Output.TxResult.BroadcastError != "" {
+				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError))
+			} else {
+				t.WithFields(testing.Fields{
+					"error": err,
+				}).Fatal("unexpected transaction broadcast error")
+			}
+			return
+		}
 
-		err := inttest.WaitForNextBlock()
+		err = inttest.WaitForNextBlock()
 		if err != nil {
 			t.WithFields(testing.Fields{
 				"error": err,
@@ -660,9 +747,19 @@ func RunDisableTrade(step FixtureStep, t *testing.T) {
 
 	if step.ParamsRef != "" {
 		dsTrdMsg := DisableTradeMsgFromRef(step.ParamsRef, t)
-		txhash := inttest.TestTxWithMsgWithNonce(t, dsTrdMsg, dsTrdMsg.Sender.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, dsTrdMsg, dsTrdMsg.Sender.String(), true)
+		if err != nil {
+			if step.Output.TxResult.BroadcastError != "" {
+				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError))
+			} else {
+				t.WithFields(testing.Fields{
+					"error": err,
+				}).Fatal("unexpected transaction broadcast error")
+			}
+			return
+		}
 
-		err := inttest.WaitForNextBlock()
+		err = inttest.WaitForNextBlock()
 		if err != nil {
 			t.WithFields(testing.Fields{
 				"error": err,
