@@ -74,7 +74,7 @@ func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) (string, e
 		// 	"output2":       string(output2),
 		// }).Debug("debug log")
 
-		t.MustNil(err)
+		t.MustNil(err, "there's an issue while running pylonscli broadcast command")
 		txResponse := sdk.TxResponse{}
 
 		err = GetAminoCdc().UnmarshalJSON(output, &txResponse)
@@ -101,7 +101,7 @@ func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) (string, e
 		if txResponse.Code != 0 {
 			return txResponse.TxHash, errors.New(txResponse.RawLog)
 		}
-		t.MustTrue(len(txResponse.TxHash) == 64)
+		t.MustTrue(len(txResponse.TxHash) == 64, "txhash length should have length of 64")
 		return txResponse.TxHash, nil
 	}
 	// broadcast using rest endpoint
@@ -109,7 +109,7 @@ func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) (string, e
 	postBodyJSON := make(map[string]interface{})
 
 	err := json.Unmarshal(signedTx, &postBodyJSON)
-	t.MustNil(err)
+	t.MustNil(err, "something went wrong decoding raw json")
 
 	postBodyJSON["tx"] = postBodyJSON["value"]
 	postBodyJSON["value"] = nil
@@ -133,12 +133,12 @@ func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) (string, e
 	var result map[string]string
 
 	err = json.NewDecoder(resp.Body).Decode(&result)
-	t.MustNil(err)
+	t.MustNil(err, "something went wrong decoding raw json")
 	defer resp.Body.Close()
 	t.WithFields(testing.Fields{
 		"get_pylons_api_response": result,
 	}).Info("info log")
-	t.MustTrue(len(result["txhash"]) == 64)
+	t.MustTrue(len(result["txhash"]) == 64, "txhash length should have length of 64")
 	return result["txhash"], nil
 }
 
@@ -152,9 +152,9 @@ func TestTxWithMsg(t *testing.T, msgValue sdk.Msg, signer string) string {
 	signedTxFile := filepath.Join(tmpDir, "signed_tx.json")
 
 	txModel, err := GenTxWithMsg([]sdk.Msg{msgValue})
-	t.MustNil(err)
+	t.MustNil(err, "there's an issue while while building transaction model from messages")
 	output, err := GetAminoCdc().MarshalJSON(txModel)
-	t.MustNil(err)
+	t.MustNil(err, "something went wrong encoding transaction model")
 
 	err = ioutil.WriteFile(rawTxFile, output, 0644)
 	if err != nil {
@@ -345,7 +345,7 @@ func TestTxWithMsgWithNonce(t *testing.T, msgValue sdk.Msg, signer string, isBec
 			"txhash": txhash,
 			"error":  err,
 			"func":   "TestTxWithMsgWithNonce",
-		}).Error("fatal log")
+		}).Error("error log")
 	}
 	return txhash, err
 }

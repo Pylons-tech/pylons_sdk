@@ -148,7 +148,7 @@ func GetAccountInfoFromAddr(addr string, t *testing.T) auth.BaseAccount {
 		return accInfo
 	}
 	err = GetAminoCdc().UnmarshalJSON(accBytes, &accInfo)
-	t.MustNil(err)
+	t.MustNil(err, "something went wrong decoding raw json")
 	// t.WithFields(testing.Fields{
 	// 	"account_info": accInfo,
 	// }).Debug("debug log")

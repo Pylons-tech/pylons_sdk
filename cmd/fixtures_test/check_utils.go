@@ -304,7 +304,7 @@ func PropertyExistCheck(step FixtureStep, t *testing.T) {
 			for _, coinCheck := range pCheck.Coins {
 				accInfo := inttest.GetAccountInfoFromName(pCheck.Owner, t)
 				// TODO should we have the case of using GTE, LTE, GT or LT ?
-				t.MustTrue(accInfo.Coins.AmountOf(coinCheck.Coin).Equal(sdk.NewInt(coinCheck.Amount)))
+				t.MustTrue(accInfo.Coins.AmountOf(coinCheck.Coin).Equal(sdk.NewInt(coinCheck.Amount)), "account balance is incorrect")
 			}
 		}
 	}
@@ -338,7 +338,7 @@ func RunSingleFixtureTest(file string, t *testing.T) {
 		var fixtureSteps []FixtureStep
 		byteValue := ReadFile(file, t)
 		err := json.Unmarshal([]byte(byteValue), &fixtureSteps)
-		t.MustNil(err)
+		t.MustNil(err, "something went wrong decoding fixture steps")
 
 		CheckSteps(fixtureSteps, t)
 

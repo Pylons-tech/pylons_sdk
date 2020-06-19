@@ -264,14 +264,16 @@ func (t *T) Fatalf(format string, args ...interface{}) {
 }
 
 // MustTrue validate if value is true
-func (t *T) MustTrue(value bool) {
+func (t *T) MustTrue(value bool, args ...interface{}) {
 	if !value {
 		t.DispatchEvent("FAIL")
 	}
 	if t.useLogPkg {
 		if !value {
 			t.printCallerLine()
-			log.Fatal("MustTrue validation failure")
+			log.WithFields(log.Fields{
+				"error_from": "MustTrue validation failure",
+			}).Fatal(args...)
 		}
 	} else {
 		require.True(t.origin, value)
@@ -279,14 +281,15 @@ func (t *T) MustTrue(value bool) {
 }
 
 // MustNil validate if value is nil
-func (t *T) MustNil(err error) {
+func (t *T) MustNil(err error, args ...interface{}) {
 	if err != nil {
 		t.DispatchEvent("FAIL")
 		if t.useLogPkg {
 			t.printCallerLine()
 			t.WithFields(Fields{
-				"error": err,
-			}).Fatal("MustNil validation failure")
+				"error":      err,
+				"error_from": "MustNil validation failure",
+			}).Fatal(args...)
 		} else {
 			require.True(t.origin, err == nil)
 		}
