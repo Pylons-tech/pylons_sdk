@@ -336,7 +336,7 @@ func TestTxWithMsgWithNonce(t *testing.T, msgValue sdk.Msg, signer string, isBec
 			"txhash": txhash,
 			"error":  err,
 			"func":   "TestTxWithMsgWithNonce",
-		}).Fatal("fatal log")
+		}).Error("fatal log")
 	}
 	return txhash, err
 }

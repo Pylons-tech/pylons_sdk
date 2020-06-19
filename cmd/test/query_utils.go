@@ -94,7 +94,7 @@ func ListExecutionsViaCLI(account string, t *testing.T) ([]types.Execution, erro
 	if err != nil {
 		t.WithFields(testing.Fields{
 			"error": err,
-		}).Fatalf("error unmarshaling list executions")
+		}).Fatal("error unmarshaling list executions")
 		return []types.Execution{}, err
 	}
 	return listExecutionsResp.Executions, err

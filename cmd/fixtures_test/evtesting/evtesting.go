@@ -222,6 +222,19 @@ func (t *T) FormatFields(logLevel log.Level) string {
 	return formated
 }
 
+// Error is a modified Error
+func (t *T) Error(args ...interface{}) {
+	requiredLevel := log.ErrorLevel
+	t.printCallerLine()
+	if t.useLogPkg {
+		log.WithFields(t.fields).Error(args...)
+	} else {
+		text := fmt.Sprintf("%s msg=%s", t.FormatFields(requiredLevel), fmt.Sprintln(args...))
+		logOutput := fmt.Sprintf("\x1b[%dm%s\x1b[0m ", FieldColorByLogLevel(requiredLevel), text)
+		t.origin.Log(logOutput)
+	}
+}
+
 // Fatal is a modified Fatal
 func (t *T) Fatal(args ...interface{}) {
 	requiredLevel := log.FatalLevel
