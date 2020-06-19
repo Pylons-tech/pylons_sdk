@@ -81,9 +81,11 @@ func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) (string, e
 		// This can happen when "pylonscli config output json" is not set or when real issue is available
 		if err != nil {
 			t.WithFields(testing.Fields{
-				"broadcast_output": string(output),
-				"error":            err,
-			}).Fatal("error in broadcasting signed transaction output")
+				"broadcast_output":  string(output),
+				"error":             err,
+				"possible_solution": "You can set cli config output as json to solve this issue",
+			}).Fatal("error decoding transaction broadcast result")
+			return txResponse.TxHash, err
 		}
 
 		if txResponse.Code == sdkerrors.ErrUnauthorized.ABCICode() &&
@@ -118,12 +120,14 @@ func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) (string, e
 		t.WithFields(testing.Fields{
 			"error": err,
 		}).Fatal("fatal log")
+		return "", err
 	}
 	resp, err := http.Post(CLIOpts.RestEndpoint+"/txs", "application/json", bytes.NewBuffer(postBody))
 	if err != nil {
 		t.WithFields(testing.Fields{
 			"error": err,
 		}).Fatal("fatal log")
+		return "", err
 	}
 
 	var result map[string]string
@@ -158,6 +162,7 @@ func TestTxWithMsg(t *testing.T, msgValue sdk.Msg, signer string) string {
 			"tx_model_json": string(output),
 			"error":         err,
 		}).Fatal("error writing raw transaction")
+		return ""
 	}
 
 	// pylonscli tx sign raw_tx.json --from eugen --chain-id pylonschain > signed_tx.json
@@ -171,6 +176,7 @@ func TestTxWithMsg(t *testing.T, msgValue sdk.Msg, signer string) string {
 			"signed_tx_json": string(output),
 			"error":          err,
 		}).Fatal("error signing transaction")
+		return ""
 	}
 
 	err = ioutil.WriteFile(signedTxFile, output, 0644)
@@ -178,13 +184,15 @@ func TestTxWithMsg(t *testing.T, msgValue sdk.Msg, signer string) string {
 		t.WithFields(testing.Fields{
 			"error": err,
 		}).Fatal("error writing signed transaction")
+		return ""
 	}
 
 	txhash, err := broadcastTxFile(signedTxFile, GetMaxBroadcastRetry(), t)
 	if err != nil {
 		t.WithFields(testing.Fields{
 			"error": err,
-		}).Fatal("broadcasting failure after maxRetry limitation")
+		}).Fatal("transaction broadcast failure")
+		return ""
 	}
 
 	CleanFile(rawTxFile, t)
@@ -260,6 +268,7 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 			"tx_model_json": string(output),
 			"error":         err,
 		}).Fatal("error writing raw transaction")
+		return "error writing raw transaction", err
 	}
 
 	t.Trace("tx_with_nonce.step.G")
@@ -293,7 +302,7 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 	if err != nil {
 		t.WithFields(testing.Fields{
 			"error": err,
-		}).Fatal("broadcasting failure after maxRetry limitation")
+		}).Fatal("transaction broadcast failure")
 		return "error broadcasting tx file", err
 	}
 	// increase nonce file

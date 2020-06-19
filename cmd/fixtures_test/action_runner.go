@@ -25,7 +25,7 @@ func RunActionRunner(action string, step FixtureStep, t *testing.T) {
 	if fn == nil {
 		t.WithFields(testing.Fields{
 			"action": step.Action,
-		}).Fatalf("step with unrecognizable action found")
+		}).Fatal("step with unrecognizable action found")
 	}
 	t.MustTrue(fn != nil)
 	fn(step, t)
