@@ -44,13 +44,37 @@
       }
   },
   {
+      "ID": "CREATE_SPEAR",
+      "runAfter": {
+          "precondition": ["CREATE_SEND_ITEM_TEST_COOKBOOK"],
+          "blockWait": 0
+      },
+      "action": "fiat_item",
+      "paramsRef": "./items/send_items_test/spear.json",
+      "output": {
+          "txResult": {
+              "status": "Success"
+          },
+          "property": [
+              {
+                  "owner": "michael",
+                  "items": [
+                      {
+                          "stringValues": { "Name": "Spear" }
+                      }
+                  ]
+              }
+          ]
+      }
+  },
+  {
       "ID": "SEND_SWORD",        
       "runAfter": {
-          "precondition": ["CREATE_SWORD"],
+          "precondition": ["CREATE_SWORD", "CREATE_SPEAR"],
           "blockWait": 0
       },
       "action": "send_items",
-      "paramsRef": "./send_items_test/send_sword.json",
+      "paramsRef": "./send_items_test/send_items.json",
       "output": {
           "txResult": {
               "status": "Success"
@@ -61,6 +85,9 @@
                   "items": [
                       {
                           "stringValues": { "Name": "Sword" }
+                      },
+                      {
+                          "stringValues": { "Name": "Spear" }
                       }
                   ]
               }
