@@ -12,12 +12,14 @@ var runSerialMode = false
 var useRest = false
 var useKnownCookbook = false
 var scenarios = ""
+var accounts = ""
 
 func init() {
 	flag.BoolVar(&runSerialMode, "runserial", false, "true/false value to check if test will be running in parallel")
 	flag.BoolVar(&useRest, "userest", false, "use rest endpoint for Tx send")
 	flag.BoolVar(&useKnownCookbook, "use-known-cookbook", false, "use existing cookbook or not")
 	flag.StringVar(&scenarios, "scenarios", "", "custom scenario file names")
+	flag.StringVar(&accounts, "accounts", "", "custom account names")
 }
 
 func TestFixturesViaCLI(t *testing.T) {
@@ -32,8 +34,10 @@ func TestFixturesViaCLI(t *testing.T) {
 	// Register custom action runners
 	// RegisterActionRunner("custom_action", CustomActionRunner)
 	scenarioFileNames := []string{}
+	accountNames := []string{}
 	if len(scenarios) > 0 {
 		scenarioFileNames = strings.Split(scenarios, ",")
+		accountNames = strings.Split(accounts, ",")
 	}
-	RunTestScenarios("scenarios", scenarioFileNames, t)
+	RunTestScenarios("scenarios", scenarioFileNames, accountNames, t)
 }

@@ -13,7 +13,7 @@
           },
           "property": [
               {
-                  "owner": "eugen",
+                  "owner": "account2",
                   "cookbooks": ["send_items_test"]
               }
           ]
@@ -33,7 +33,7 @@
           },
           "property": [
               {
-                  "owner": "michael",
+                  "owner": "account1",
                   "items": [
                       {
                           "stringValues": { "Name": "send_items_test_item1" }
@@ -57,7 +57,7 @@
           },
           "property": [
               {
-                  "owner": "michael",
+                  "owner": "account1",
                   "items": [
                       {
                           "stringValues": { "Name": "send_items_test_item2" }
@@ -81,7 +81,7 @@
           },
           "property": [
               {
-                  "owner": "eugen",
+                  "owner": "account2",
                   "items": [
                       {
                           "stringValues": { "Name": "send_items_test_item1" }
