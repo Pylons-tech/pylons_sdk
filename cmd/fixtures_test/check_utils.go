@@ -330,18 +330,16 @@ func ProcessSingleFixtureQueueItem(file string, idx int, fixtureSteps []FixtureS
 }
 
 // RunSingleFixtureTest add a work queue into fixture test runner and execute work queues
-func RunSingleFixtureTest(file string, accountNames []string, t *testing.T) {
+func RunSingleFixtureTest(file string, t *testing.T) {
 	t.Run(file, func(t *testing.T) {
 		if FixtureTestOpts.IsParallel {
 			t.Parallel()
 		}
 		var fixtureSteps []FixtureStep
 		byteValue := ReadFile(file, t)
-		t.Fatal(string(byteValue))
 
 		for idx, accountName := range accountNames {
 			tempName := "account" + strconv.Itoa(idx+1)
-			t.Fatal(tempName)
 
 			byteValue = []byte(strings.ReplaceAll(string(byteValue), string(tempName), string(accountName)))
 		}
@@ -349,8 +347,6 @@ func RunSingleFixtureTest(file string, accountNames []string, t *testing.T) {
 		lastTempName := "account" + strconv.Itoa(len(accountNames)+1)
 		lastIndex := strings.Index(string(byteValue), string(lastTempName))
 		t.MustTrue(lastIndex == -1, "the account names are not enough to replace all the temporary names")
-
-		t.Fatal(string(byteValue))
 
 		err := json.Unmarshal([]byte(byteValue), &fixtureSteps)
 		t.WithFields(testing.Fields{
@@ -367,6 +363,7 @@ func RunSingleFixtureTest(file string, accountNames []string, t *testing.T) {
 				status:          NotStarted,
 			})
 		}
+
 		for idx := range fixtureSteps {
 			UpdateWorkQueueStatus(file, idx, fixtureSteps, InProgress, t)
 		}
@@ -374,7 +371,7 @@ func RunSingleFixtureTest(file string, accountNames []string, t *testing.T) {
 }
 
 // RunTestScenarios execute all scenarios
-func RunTestScenarios(scenarioDir string, scenarioFileNames []string, accountNames []string, t *originT.T) {
+func RunTestScenarios(scenarioDir string, scenarioFileNames []string, t *originT.T) {
 	newT := testing.NewT(t)
 
 	var files []string
@@ -398,6 +395,6 @@ func RunTestScenarios(scenarioDir string, scenarioFileNames []string, accountNam
 	}
 	for _, file := range files {
 		t.Log("Running scenario path=", file)
-		RunSingleFixtureTest(file, accountNames, &newT)
+		RunSingleFixtureTest(file, &newT)
 	}
 }

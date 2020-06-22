@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os"
+	"strconv"
+	"strings"
 
 	testing "github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test/evtesting"
 
@@ -43,7 +45,14 @@ func UnmarshalIntoEmptyInterface(bytes []byte, t *testing.T) map[string]interfac
 func UpdateSenderKeyToAddress(bytes []byte, t *testing.T) []byte {
 	raw := UnmarshalIntoEmptyInterface(bytes, t)
 
-	senderName, ok := raw["Sender"].(string)
+	senderTempName, ok := raw["Sender"].(string)
+	senderNameIndex, err := strconv.Atoi(strings.TrimLeft(senderTempName, "account"))
+	senderNameIndex--
+
+	senderName := accountNames[senderNameIndex]
+
+	t.MustNil(err, "temp account name doesn't match to the account args")
+
 	t.MustTrue(ok, "sender field is empty")
 	raw["Sender"] = inttest.GetAccountAddr(senderName, t)
 	newBytes, err := json.Marshal(raw)
@@ -57,7 +66,14 @@ func UpdateSenderKeyToAddress(bytes []byte, t *testing.T) []byte {
 func UpdateReceiverKeyToAddress(bytes []byte, t *testing.T) []byte {
 	raw := UnmarshalIntoEmptyInterface(bytes, t)
 
-	receiverName, ok := raw["Receiver"].(string)
+	receiverTempName, ok := raw["Receiver"].(string)
+	receiverNameIndex, err := strconv.Atoi(strings.TrimLeft(receiverTempName, "account"))
+	receiverNameIndex--
+
+	receiverName := accountNames[receiverNameIndex]
+
+	t.MustNil(err, "temp account name doesn't match to the account args")
+
 	t.MustTrue(ok, "receiver field is empty")
 	raw["Receiver"] = inttest.GetAccountAddr(receiverName, t)
 	newBytes, err := json.Marshal(raw)
