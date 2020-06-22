@@ -51,6 +51,18 @@ func UpdateSenderKeyToAddress(bytes []byte, t *testing.T) []byte {
 	return newBytes
 }
 
+// UpdateReceiverKeyToAddress is a function to update receiver key to receiver's address
+func UpdateReceiverKeyToAddress(bytes []byte, t *testing.T) []byte {
+	raw := UnmarshalIntoEmptyInterface(bytes, t)
+
+	receiverName, ok := raw["Receiver"].(string)
+	t.MustTrue(ok)
+	raw["Receiver"] = inttest.GetAccountAddr(receiverName, t)
+	newBytes, err := json.Marshal(raw)
+	t.MustNil(err)
+	return newBytes
+}
+
 // UpdateCBNameToID is a function to update cookbook name to cookbook id if it has cookbook name field
 func UpdateCBNameToID(bytes []byte, t *testing.T) []byte {
 	raw := UnmarshalIntoEmptyInterface(bytes, t)

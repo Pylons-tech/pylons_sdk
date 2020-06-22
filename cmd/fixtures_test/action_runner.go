@@ -35,6 +35,7 @@ func RunActionRunner(action string, step FixtureStep, t *testing.T) {
 func RegisterDefaultActionRunners() {
 	RegisterActionRunner("fiat_item", RunFiatItem)
 	RegisterActionRunner("update_item_string", RunUpdateItemString)
+	RegisterActionRunner("send_items", RunSendItems)
 	RegisterActionRunner("create_cookbook", RunCreateCookbook)
 	RegisterActionRunner("create_recipe", RunCreateRecipe)
 	RegisterActionRunner("execute_recipe", RunExecuteRecipe)
