@@ -271,9 +271,10 @@ func (t *T) MustTrue(value bool, args ...interface{}) {
 	if t.useLogPkg {
 		if !value {
 			t.printCallerLine()
-			log.WithFields(log.Fields{
-				"error_from": "MustTrue validation failure",
-			}).Fatal(args...)
+			t.WithFields(Fields(t.fields)).
+				AddFields(log.Fields{
+					"error_from": "MustTrue validation failure",
+				}).Fatal(args...)
 		}
 	} else {
 		require.True(t.origin, value)
@@ -286,10 +287,11 @@ func (t *T) MustNil(err error, args ...interface{}) {
 		t.DispatchEvent("FAIL")
 		if t.useLogPkg {
 			t.printCallerLine()
-			t.WithFields(Fields{
-				"error":      err,
-				"error_from": "MustNil validation failure",
-			}).Fatal(args...)
+			t.WithFields(Fields(t.fields)).
+				AddFields(log.Fields{
+					"error":      err,
+					"error_from": "MustNil validation failure",
+				}).Fatal(args...)
 		} else {
 			require.True(t.origin, err == nil)
 		}
