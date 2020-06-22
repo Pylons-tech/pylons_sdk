@@ -38,6 +38,8 @@ func TestFixturesViaCLI(t *testing.T) {
 	accountNames = []string{}
 	if len(scenarios) > 0 {
 		scenarioFileNames = strings.Split(scenarios, ",")
+	}
+	if len(accounts) > 0 {
 		accountNames = strings.Split(accounts, ",")
 	}
 	RunTestScenarios("scenarios", scenarioFileNames, t)

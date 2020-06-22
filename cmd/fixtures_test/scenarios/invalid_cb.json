@@ -14,7 +14,7 @@
       },
       "property": [
         {
-          "owner": "eugen",
+          "owner": "account2",
           "shouldNotExist": true,
           "cookbooks": [
             "Invalid cookbook"

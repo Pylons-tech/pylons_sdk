@@ -47,11 +47,11 @@ func UpdateSenderKeyToAddress(bytes []byte, t *testing.T) []byte {
 
 	senderTempName, ok := raw["Sender"].(string)
 	senderNameIndex, err := strconv.Atoi(strings.TrimLeft(senderTempName, "account"))
+	t.MustNil(err, "temp account name doesn't match to the account args")
 	senderNameIndex--
 
+	t.MustTrue(senderNameIndex < len(accountNames), "temp account name doesn't match to the account args")
 	senderName := accountNames[senderNameIndex]
-
-	t.MustNil(err, "temp account name doesn't match to the account args")
 
 	t.MustTrue(ok, "sender field is empty")
 	raw["Sender"] = inttest.GetAccountAddr(senderName, t)
@@ -68,11 +68,11 @@ func UpdateReceiverKeyToAddress(bytes []byte, t *testing.T) []byte {
 
 	receiverTempName, ok := raw["Receiver"].(string)
 	receiverNameIndex, err := strconv.Atoi(strings.TrimLeft(receiverTempName, "account"))
+	t.MustNil(err, "temp account name doesn't match to the account args")
 	receiverNameIndex--
 
+	t.MustTrue(receiverNameIndex < len(accountNames), "temp account name doesn't match to the account args")
 	receiverName := accountNames[receiverNameIndex]
-
-	t.MustNil(err, "temp account name doesn't match to the account args")
 
 	t.MustTrue(ok, "receiver field is empty")
 	raw["Receiver"] = inttest.GetAccountAddr(receiverName, t)

@@ -346,6 +346,7 @@ func RunSingleFixtureTest(file string, t *testing.T) {
 
 		lastTempName := "account" + strconv.Itoa(len(accountNames)+1)
 		lastIndex := strings.Index(string(byteValue), string(lastTempName))
+
 		t.MustTrue(lastIndex == -1, "the account names are not enough to replace all the temporary names")
 
 		err := json.Unmarshal([]byte(byteValue), &fixtureSteps)
