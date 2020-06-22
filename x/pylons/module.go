@@ -14,7 +14,7 @@ type AppModuleBasic struct{}
 
 // Name returns AppModuleBasic name
 func (AppModuleBasic) Name() string {
-	return "pylons"
+	return ModuleName
 }
 
 // RegisterCodec implements RegisterCodec
@@ -35,7 +35,7 @@ func (AppModuleBasic) ValidateGenesis(bz json.RawMessage) error {
 // GetQueryCmd get the root query command of this module
 func (AppModuleBasic) GetQueryCmd(cdc *codec.Codec) *cobra.Command {
 	pylonsQueryCmd := &cobra.Command{
-		Use:   "pylons",
+		Use:   RouterKey,
 		Short: "Querying commands for the pylons module",
 	}
 
@@ -45,7 +45,7 @@ func (AppModuleBasic) GetQueryCmd(cdc *codec.Codec) *cobra.Command {
 // GetTxCmd get the root tx command of this module
 func (AppModuleBasic) GetTxCmd(cdc *codec.Codec) *cobra.Command {
 	pylonsTxCmd := &cobra.Command{
-		Use:   "pylons",
+		Use:   RouterKey,
 		Short: "Pylons transactions subcommands",
 	}
 
