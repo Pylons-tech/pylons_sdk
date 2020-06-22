@@ -245,6 +245,78 @@ func RunFiatItem(step FixtureStep, t *testing.T) {
 	}
 }
 
+// SendItemsMsgFromRef is a function to collect SendItems from reference string
+func SendItemsMsgFromRef(ref string, t *testing.T) msgs.MsgSendItems {
+	byteValue := ReadFile(ref, t)
+	// translate sender from account name to account address
+	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
+	newByteValue = UpdateReceiverKeyToAddress(newByteValue, t)
+
+	ItemIDs := GetItemIDsFromNames(newByteValue, false, t)
+
+	var siType struct {
+		Sender   sdk.AccAddress
+		Receiver sdk.AccAddress
+		ItemIDs  []string `json:"ItemIDs"`
+	}
+
+	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &siType)
+	if err != nil {
+		t.WithFields(testing.Fields{
+			"siType":    inttest.AminoCodecFormatter(siType),
+			"new_bytes": string(newByteValue),
+			"error":     err,
+		}).Fatal("error reading using GetAminoCdc")
+	}
+	t.MustNil(err)
+
+	return msgs.NewMsgSendItems(ItemIDs, siType.Sender, siType.Receiver)
+}
+
+// RunSendItems is a function to send items to another user
+func RunSendItems(step FixtureStep, t *testing.T) {
+
+	if step.ParamsRef != "" {
+		siMsg := SendItemsMsgFromRef(step.ParamsRef, t)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, siMsg, siMsg.Sender.String(), true)
+		if err != nil {
+			if step.Output.TxResult.BroadcastError != "" {
+				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError))
+			} else {
+				t.WithFields(testing.Fields{
+					"error": err,
+				}).Fatal("unexpected transaction broadcast error")
+			}
+			return
+		}
+
+		err = inttest.WaitForNextBlock()
+		if err != nil {
+			t.WithFields(testing.Fields{
+				"error": err,
+			}).Fatal("error waiting for fulfilling trade")
+		}
+
+		if len(step.Output.TxResult.ErrorLog) > 0 {
+		} else {
+			txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
+			t.MustNil(err)
+			CheckErrorOnTxFromTxHash(txhash, t)
+			resp := handlers.SendItemsResponse{}
+			err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+			if err != nil {
+				t.WithFields(testing.Fields{
+					"txhash": txhash,
+				}).Fatal("failed to parse transaction result")
+			}
+			t.MustTrue(resp.Status == step.Output.TxResult.Status)
+			if len(step.Output.TxResult.Message) > 0 {
+				t.MustTrue(resp.Message == step.Output.TxResult.Message)
+			}
+		}
+	}
+}
+
 // UpdateItemStringMsgFromRef is a function to collect UpdateItemStringMsg from reference string
 func UpdateItemStringMsgFromRef(ref string, t *testing.T) msgs.MsgUpdateItemString {
 	byteValue := ReadFile(ref, t)
