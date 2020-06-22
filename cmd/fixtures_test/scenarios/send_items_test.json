@@ -20,13 +20,13 @@
       }
   },
   {
-      "ID": "CREATE_SWORD",        
+      "ID": "CREATE_ITEM1",        
       "runAfter": {
           "precondition": ["CREATE_SEND_ITEM_TEST_COOKBOOK"],
           "blockWait": 0
       },
       "action": "fiat_item",
-      "paramsRef": "./items/send_items_test/sword.json",
+      "paramsRef": "./items/send_items_test/item1.json",
       "output": {
           "txResult": {
               "status": "Success"
@@ -36,7 +36,7 @@
                   "owner": "michael",
                   "items": [
                       {
-                          "stringValues": { "Name": "Sword" }
+                          "stringValues": { "Name": "send_items_test_item1" }
                       }
                   ]
               }
@@ -44,13 +44,13 @@
       }
   },
   {
-      "ID": "CREATE_SPEAR",
+      "ID": "CREATE_ITEM2",
       "runAfter": {
           "precondition": ["CREATE_SEND_ITEM_TEST_COOKBOOK"],
           "blockWait": 0
       },
       "action": "fiat_item",
-      "paramsRef": "./items/send_items_test/spear.json",
+      "paramsRef": "./items/send_items_test/item2.json",
       "output": {
           "txResult": {
               "status": "Success"
@@ -60,7 +60,7 @@
                   "owner": "michael",
                   "items": [
                       {
-                          "stringValues": { "Name": "Spear" }
+                          "stringValues": { "Name": "send_items_test_item2" }
                       }
                   ]
               }
@@ -70,7 +70,7 @@
   {
       "ID": "SEND_SWORD",        
       "runAfter": {
-          "precondition": ["CREATE_SWORD", "CREATE_SPEAR"],
+          "precondition": ["CREATE_ITEM1", "CREATE_ITEM2"],
           "blockWait": 0
       },
       "action": "send_items",
@@ -84,10 +84,10 @@
                   "owner": "eugen",
                   "items": [
                       {
-                          "stringValues": { "Name": "Sword" }
+                          "stringValues": { "Name": "send_items_test_item1" }
                       },
                       {
-                          "stringValues": { "Name": "Spear" }
+                          "stringValues": { "Name": "send_items_test_item2" }
                       }
                   ]
               }
