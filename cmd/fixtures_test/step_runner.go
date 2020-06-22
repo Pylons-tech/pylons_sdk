@@ -15,6 +15,72 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+// TxBroadcastErrorCheck check error is same as expected when it exist
+func TxBroadcastErrorCheck(err error, txhash string, step FixtureStep, t *testing.T) {
+	if step.Output.TxResult.BroadcastError != "" {
+		t.WithFields(testing.Fields{
+			"original_error": err.Error(),
+			"target_error":   step.Output.TxResult.BroadcastError,
+		}).MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
+	} else {
+		t.WithFields(testing.Fields{
+			"txhash": txhash,
+			"error":  err,
+		}).Fatal("unexpected transaction broadcast error")
+	}
+}
+
+// TxResultStatusMessageCheck check result status and message
+func TxResultStatusMessageCheck(status, message, txhash string, step FixtureStep, t *testing.T) {
+	if len(step.Output.TxResult.Status) > 0 {
+		t.WithFields(testing.Fields{
+			"txhash":          txhash,
+			"original_status": status,
+			"target_status":   step.Output.TxResult.Status,
+		}).MustTrue(status == step.Output.TxResult.Status, "transaction result status is different from expected")
+	}
+	if len(step.Output.TxResult.Message) > 0 {
+		t.WithFields(testing.Fields{
+			"txhash":           txhash,
+			"original_message": message,
+			"target_message":   step.Output.TxResult.Message,
+		}).MustTrue(message == step.Output.TxResult.Message, "transaction result message is different from expected")
+	}
+}
+
+// TxResultDecodingErrorCheck check error for tx response data unmarshal
+func TxResultDecodingErrorCheck(err error, txhash string, t *testing.T) {
+	if err != nil {
+		t.WithFields(testing.Fields{
+			"txhash": txhash,
+			"error":  err,
+		}).Fatal("error unmarshaling tx response")
+	}
+}
+
+// GetTxHandleResult check error on tx by hash and return handle result
+func GetTxHandleResult(txhash string, t *testing.T) []byte {
+	txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
+	if err != nil {
+		t.WithFields(testing.Fields{
+			"tx_result_bytes": string(txHandleResBytes),
+			"error":           err,
+		}).Fatal("error getting tx result bytes")
+	}
+	CheckErrorOnTxFromTxHash(txhash, t)
+	return txHandleResBytes
+}
+
+// WaitForNextBlockWithErrorCheck wait 1 block and check the error result
+func WaitForNextBlockWithErrorCheck(t *testing.T) {
+	err := inttest.WaitForNextBlock()
+	if err != nil {
+		t.WithFields(testing.Fields{
+			"error": err,
+		}).Fatal("error waiting for check execution")
+	}
+}
+
 // RunMultiMsgTx is a function to send multiple messages in a transaction
 // This support only 1 sender multi transaction for now
 // TODO we need to support multi-message multi sender transaction
@@ -63,35 +129,12 @@ func RunMultiMsgTx(step FixtureStep, t *testing.T) {
 		}).AddFields(inttest.GetLogFieldsFromMsgs(msgs)).Debug("debug log")
 		txhash, err := inttest.SendMultiMsgTxWithNonce(t, msgs, sender.String(), true)
 		if err != nil {
-			if step.Output.TxResult.BroadcastError != "" {
-				t.WithFields(testing.Fields{
-					"original_error": err.Error(),
-					"target_error":   step.Output.TxResult.BroadcastError,
-				}).MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
-			} else {
-				t.WithFields(testing.Fields{
-					"txhash": txhash,
-					"error":  err,
-				}).Fatal("unexpected transaction broadcast error")
-			}
+			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
 		}
 
-		err = inttest.WaitForNextBlock()
-		if err != nil {
-			t.WithFields(testing.Fields{
-				"error": err,
-			}).Fatal("error waiting for check execution")
-		}
-
-		_, err = inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
-		if err != nil {
-			t.WithFields(testing.Fields{
-				"error": err,
-			}).Fatal("error getting tx result bytes")
-		}
-
-		CheckErrorOnTxFromTxHash(txhash, t)
+		WaitForNextBlockWithErrorCheck(t)
+		GetTxHandleResult(txhash, t)
 		t.WithFields(testing.Fields{
 			"txhash": txhash,
 		}).Debug("debug log")
@@ -133,56 +176,17 @@ func RunCheckExecution(step FixtureStep, t *testing.T) {
 		chkExecMsg := CheckExecutionMsgFromRef(step.ParamsRef, t)
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, chkExecMsg, chkExecMsg.Sender.String(), true)
 		if err != nil {
-			if step.Output.TxResult.BroadcastError != "" {
-				t.WithFields(testing.Fields{
-					"original_error": err.Error(),
-					"target_error":   step.Output.TxResult.BroadcastError,
-				}).MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
-			} else {
-				t.WithFields(testing.Fields{
-					"error": err,
-				}).Fatal("unexpected transaction broadcast error")
-			}
+			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
 		}
 
-		err = inttest.WaitForNextBlock()
-		if err != nil {
-			t.WithFields(testing.Fields{
-				"error": err,
-			}).Fatal("error waiting for check execution")
-		}
+		WaitForNextBlockWithErrorCheck(t)
 
-		txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
-		if err != nil {
-			t.WithFields(testing.Fields{
-				"error": err,
-			}).Fatal("error getting tx result bytes")
-		}
-
-		CheckErrorOnTxFromTxHash(txhash, t)
+		txHandleResBytes := GetTxHandleResult(txhash, t)
 		resp := handlers.CheckExecutionResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
-		t.WithFields(testing.Fields{
-			"txhash": txhash,
-		}).Debug("debug log")
-		if err != nil {
-			t.WithFields(testing.Fields{
-				"error": err,
-			}).Fatal("error unmarshaling tx response")
-		}
-		t.WithFields(testing.Fields{
-			"txhash":          txhash,
-			"original_status": resp.Status,
-			"target_status":   step.Output.TxResult.Status,
-		}).MustTrue(resp.Status == step.Output.TxResult.Status, "transaction result status is different from expected")
-		if len(step.Output.TxResult.Message) > 0 {
-			t.WithFields(testing.Fields{
-				"txhash":           txhash,
-				"original_message": resp.Message,
-				"target_message":   step.Output.TxResult.Message,
-			}).MustTrue(resp.Message == step.Output.TxResult.Message, "transaction result message is different from expected")
-		}
+		TxResultDecodingErrorCheck(err, txhash, t)
+		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
 	}
 }
 
@@ -219,44 +223,16 @@ func RunFiatItem(step FixtureStep, t *testing.T) {
 		itmMsg := FiatItemMsgFromRef(step.ParamsRef, t)
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, itmMsg, itmMsg.Sender.String(), true)
 		if err != nil {
-			if step.Output.TxResult.BroadcastError != "" {
-				t.WithFields(testing.Fields{
-					"original_error": err.Error(),
-					"target_error":   step.Output.TxResult.BroadcastError,
-				}).MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
-			} else {
-				t.WithFields(testing.Fields{
-					"error": err,
-				}).Fatal("unexpected transaction broadcast error")
-			}
+			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
 		}
-		err = inttest.WaitForNextBlock()
-		if err != nil {
-			t.WithFields(testing.Fields{
-				"error": err,
-			}).Fatal("error waiting for fiat item")
-		}
 
-		txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
-		if err != nil {
-			t.WithFields(testing.Fields{
-				"error": err,
-			}).Fatal("error getting tx result bytes")
-		}
+		WaitForNextBlockWithErrorCheck(t)
 
-		CheckErrorOnTxFromTxHash(txhash, t)
+		txHandleResBytes := GetTxHandleResult(txhash, t)
 		resp := handlers.FiatItemResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
-
-		t.WithFields(testing.Fields{
-			"txhash": txhash,
-		}).Debug("debug log")
-		if err != nil {
-			t.WithFields(testing.Fields{
-				"error": err,
-			}).Fatal("error unmarshaling tx response")
-		}
+		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(resp.ItemID != "", "item id shouldn't be empty")
 	}
 }
@@ -295,33 +271,15 @@ func RunSendItems(step FixtureStep, t *testing.T) {
 		siMsg := SendItemsMsgFromRef(step.ParamsRef, t)
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, siMsg, siMsg.Sender.String(), true)
 		if err != nil {
-			if step.Output.TxResult.BroadcastError != "" {
-				t.WithFields(testing.Fields{
-					"original_error": err.Error(),
-					"target_error":   step.Output.TxResult.BroadcastError,
-				}).MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError))
-			} else {
-				t.WithFields(testing.Fields{
-					"error": err,
-				}).Fatal("unexpected transaction broadcast error")
-			}
+			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
 		}
 
-		err = inttest.WaitForNextBlock()
-		if err != nil {
-			t.WithFields(testing.Fields{
-				"error": err,
-			}).Fatal("error waiting for fulfilling trade")
-		}
+		WaitForNextBlockWithErrorCheck(t)
 
 		if len(step.Output.TxResult.ErrorLog) > 0 {
 		} else {
-			txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
-			t.WithFields(testing.Fields{
-				"tx_result_bytes": string(txHandleResBytes),
-			}).MustNil(err, "error while waiting for a transaction")
-			CheckErrorOnTxFromTxHash(txhash, t)
+			txHandleResBytes := GetTxHandleResult(txhash, t)
 			resp := handlers.SendItemsResponse{}
 			err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 			if err != nil {
@@ -329,16 +287,7 @@ func RunSendItems(step FixtureStep, t *testing.T) {
 					"txhash": txhash,
 				}).Fatal("failed to parse transaction result")
 			}
-			t.WithFields(testing.Fields{
-				"original_status": resp.Status,
-				"target_status":   step.Output.TxResult.Status,
-			}).MustTrue(resp.Status == step.Output.TxResult.Status)
-			if len(step.Output.TxResult.Message) > 0 {
-				t.WithFields(testing.Fields{
-					"original_message": resp.Message,
-					"target_message":   step.Output.TxResult.Message,
-				}).MustTrue(resp.Message == step.Output.TxResult.Message)
-			}
+			TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
 		}
 	}
 }
@@ -370,42 +319,14 @@ func RunUpdateItemString(step FixtureStep, t *testing.T) {
 		sTypeMsg := UpdateItemStringMsgFromRef(step.ParamsRef, t)
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, sTypeMsg, sTypeMsg.Sender.String(), true)
 		if err != nil {
-			if step.Output.TxResult.BroadcastError != "" {
-				t.WithFields(testing.Fields{
-					"original_error": err.Error(),
-					"target_error":   step.Output.TxResult.BroadcastError,
-				}).MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
-			} else {
-				t.WithFields(testing.Fields{
-					"error": err,
-				}).Fatal("unexpected transaction broadcast error")
-			}
+			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
 		}
-		err = inttest.WaitForNextBlock()
-		if err != nil {
-			t.WithFields(testing.Fields{
-				"error": err,
-			}).Fatal("error waiting for set item field string")
-		}
-
-		txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
-		if err != nil {
-			t.WithFields(testing.Fields{
-				"error": err,
-			}).Fatal("error getting tx result bytes")
-		}
-
-		CheckErrorOnTxFromTxHash(txhash, t)
+		WaitForNextBlockWithErrorCheck(t)
+		txHandleResBytes := GetTxHandleResult(txhash, t)
 		resp := handlers.UpdateItemStringResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
-
-		if err != nil {
-			t.WithFields(testing.Fields{
-				"txhash": txhash,
-				"error":  err,
-			}).Fatal("error unmarshaling tx response")
-		}
+		TxResultDecodingErrorCheck(err, txhash, t)
 	}
 }
 
@@ -448,44 +369,16 @@ func RunCreateCookbook(step FixtureStep, t *testing.T) {
 
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, cbMsg, cbMsg.Sender.String(), true)
 		if err != nil {
-			if step.Output.TxResult.BroadcastError != "" {
-				t.WithFields(testing.Fields{
-					"original_error": err.Error(),
-					"target_error":   step.Output.TxResult.BroadcastError,
-				}).MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
-			} else {
-				t.WithFields(testing.Fields{
-					"error": err,
-				}).Fatal("unexpected transaction broadcast error")
-			}
+			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
 		}
 
-		err = inttest.WaitForNextBlock()
-		if err != nil {
-			t.WithFields(testing.Fields{
-				"error": err,
-			}).Fatal("error waiting for creating cookbook")
-		}
+		WaitForNextBlockWithErrorCheck(t)
 
-		txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
-		if err != nil {
-			t.WithFields(testing.Fields{
-				"tx_result_bytes": string(txHandleResBytes),
-				"error":           err,
-			}).Fatal("error getting transaction data for creating cookbook")
-		}
-
-		CheckErrorOnTxFromTxHash(txhash, t)
+		txHandleResBytes := GetTxHandleResult(txhash, t)
 		resp := handlers.CreateCookbookResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
-
-		if err != nil {
-			t.WithFields(testing.Fields{
-				"txhash": txhash,
-				"error":  err,
-			}).Fatal("error unmarshaling tx response")
-		}
+		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(resp.CookbookID != "", "coookbook id shouldn't be empty")
 	}
 }
@@ -533,41 +426,15 @@ func RunCreateRecipe(step FixtureStep, t *testing.T) {
 
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, rcpMsg, rcpMsg.Sender.String(), true)
 		if err != nil {
-			if step.Output.TxResult.BroadcastError != "" {
-				t.WithFields(testing.Fields{
-					"original_error": err.Error(),
-					"target_error":   step.Output.TxResult.BroadcastError,
-				}).MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
-			} else {
-				t.WithFields(testing.Fields{
-					"error": err,
-				}).Fatal("unexpected transaction broadcast error")
-			}
+			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
 		}
 
-		err = inttest.WaitForNextBlock()
-		if err != nil {
-			t.WithFields(testing.Fields{
-				"error": err,
-			}).Fatal("error waiting for creating recipe")
-		}
-
-		txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
-		t.WithFields(testing.Fields{
-			"tx_result_bytes": string(txHandleResBytes),
-		}).MustNil(err, "error while waiting for a transaction")
-
-		CheckErrorOnTxFromTxHash(txhash, t)
+		WaitForNextBlockWithErrorCheck(t)
+		txHandleResBytes := GetTxHandleResult(txhash, t)
 		resp := handlers.CreateRecipeResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
-
-		if err != nil {
-			t.WithFields(testing.Fields{
-				"txhash": txhash,
-				"error":  err,
-			}).Fatal("error unmarshaling tx response")
-		}
+		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(resp.RecipeID != "", "recipe id shouldn't be empty")
 	}
 }
@@ -609,25 +476,11 @@ func RunExecuteRecipe(step FixtureStep, t *testing.T) {
 		execMsg := ExecuteRecipeMsgFromRef(step.ParamsRef, t)
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, execMsg, execMsg.Sender.String(), true)
 		if err != nil {
-			if step.Output.TxResult.BroadcastError != "" {
-				t.WithFields(testing.Fields{
-					"original_error": err.Error(),
-					"target_error":   step.Output.TxResult.BroadcastError,
-				}).MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
-			} else {
-				t.WithFields(testing.Fields{
-					"error": err,
-				}).Fatal("unexpected transaction broadcast error")
-			}
+			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
 		}
 
-		err = inttest.WaitForNextBlock()
-		if err != nil {
-			t.WithFields(testing.Fields{
-				"error": err,
-			}).Fatal("error waiting for executing recipe")
-		}
+		WaitForNextBlockWithErrorCheck(t)
 		if len(step.Output.TxResult.ErrorLog) > 0 {
 			hmrErrMsg := inttest.GetHumanReadableErrorFromTxHash(txhash, t)
 
@@ -636,11 +489,7 @@ func RunExecuteRecipe(step FixtureStep, t *testing.T) {
 				"expected_error": step.Output.TxResult.ErrorLog,
 			}).MustTrue(strings.Contains(hmrErrMsg, step.Output.TxResult.ErrorLog), "transaction error log is different from expected one.")
 		} else {
-			txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
-			t.WithFields(testing.Fields{
-				"tx_result_bytes": string(txHandleResBytes),
-			}).MustNil(err, "error while waiting for a transaction")
-			CheckErrorOnTxFromTxHash(txhash, t)
+			txHandleResBytes := GetTxHandleResult(txhash, t)
 			resp := handlers.ExecuteRecipeResponse{}
 			err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 			if err != nil {
@@ -648,18 +497,7 @@ func RunExecuteRecipe(step FixtureStep, t *testing.T) {
 					"txhash": txhash,
 				}).Fatal("failed to parse transaction result")
 			}
-			t.WithFields(testing.Fields{
-				"txhash":          txhash,
-				"original_status": resp.Status,
-				"target_status":   step.Output.TxResult.Status,
-			}).MustTrue(resp.Status == step.Output.TxResult.Status, "transaction result status is different from expected")
-			if len(step.Output.TxResult.Message) > 0 {
-				t.WithFields(testing.Fields{
-					"txhash":           txhash,
-					"original_message": resp.Message,
-					"target_message":   step.Output.TxResult.Message,
-				}).MustTrue(resp.Message == step.Output.TxResult.Message, "transaction result message is different from expected")
-			}
+			TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
 
 			if resp.Message == "scheduled the recipe" { // delayed execution
 				var scheduleRes handlers.ExecuteRecipeScheduleOutput
@@ -728,41 +566,15 @@ func RunCreateTrade(step FixtureStep, t *testing.T) {
 		}).AddFields(inttest.GetLogFieldsFromMsgs([]sdk.Msg{createTrd})).Debug("createTrd")
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, createTrd, createTrd.Sender.String(), true)
 		if err != nil {
-			if step.Output.TxResult.BroadcastError != "" {
-				t.WithFields(testing.Fields{
-					"original_error": err.Error(),
-					"target_error":   step.Output.TxResult.BroadcastError,
-				}).MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
-			} else {
-				t.WithFields(testing.Fields{
-					"error": err,
-				}).Fatal("unexpected transaction broadcast error")
-			}
+			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
 		}
-		err = inttest.WaitForNextBlock()
-		if err != nil {
-			t.WithFields(testing.Fields{
-				"error": err,
-			}).Fatal("error waiting for creating trade")
-		}
 
-		txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
-		if err != nil {
-			t.WithFields(testing.Fields{
-				"error": err,
-			}).Fatal("error while waiting for create trade transaction")
-		}
-
-		CheckErrorOnTxFromTxHash(txhash, t)
+		WaitForNextBlockWithErrorCheck(t)
+		txHandleResBytes := GetTxHandleResult(txhash, t)
 		resp := handlers.CreateTradeResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
-		if err != nil {
-			t.WithFields(testing.Fields{
-				"txhash": txhash,
-				"error":  err,
-			}).Fatal("error unmarshaling tx response")
-		}
+		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(resp.TradeID != "", "trade id shouldn't be empty")
 	}
 }
@@ -802,33 +614,15 @@ func RunFulfillTrade(step FixtureStep, t *testing.T) {
 		ffTrdMsg := FulfillTradeMsgFromRef(step.ParamsRef, t)
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, ffTrdMsg, ffTrdMsg.Sender.String(), true)
 		if err != nil {
-			if step.Output.TxResult.BroadcastError != "" {
-				t.WithFields(testing.Fields{
-					"original_error": err.Error(),
-					"target_error":   step.Output.TxResult.BroadcastError,
-				}).MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
-			} else {
-				t.WithFields(testing.Fields{
-					"error": err,
-				}).Fatal("unexpected transaction broadcast error")
-			}
+			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
 		}
 
-		err = inttest.WaitForNextBlock()
-		if err != nil {
-			t.WithFields(testing.Fields{
-				"error": err,
-			}).Fatal("error waiting for fulfilling trade")
-		}
+		WaitForNextBlockWithErrorCheck(t)
 
 		if len(step.Output.TxResult.ErrorLog) > 0 {
 		} else {
-			txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
-			t.WithFields(testing.Fields{
-				"tx_result_bytes": string(txHandleResBytes),
-			}).MustNil(err, "error while waiting for a transaction")
-			CheckErrorOnTxFromTxHash(txhash, t)
+			txHandleResBytes := GetTxHandleResult(txhash, t)
 			resp := handlers.FulfillTradeResponse{}
 			err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 			if err != nil {
@@ -836,18 +630,7 @@ func RunFulfillTrade(step FixtureStep, t *testing.T) {
 					"txhash": txhash,
 				}).Fatal("failed to parse transaction result")
 			}
-			t.WithFields(testing.Fields{
-				"txhash":          txhash,
-				"original_status": resp.Status,
-				"target_status":   step.Output.TxResult.Status,
-			}).MustTrue(resp.Status == step.Output.TxResult.Status, "transaction result status is different from expected")
-			if len(step.Output.TxResult.Message) > 0 {
-				t.WithFields(testing.Fields{
-					"txhash":           txhash,
-					"original_message": resp.Message,
-					"target_message":   step.Output.TxResult.Message,
-				}).MustTrue(resp.Message == step.Output.TxResult.Message, "transaction result message is different from expected")
-			}
+			TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
 		}
 	}
 }
@@ -884,33 +667,15 @@ func RunDisableTrade(step FixtureStep, t *testing.T) {
 		dsTrdMsg := DisableTradeMsgFromRef(step.ParamsRef, t)
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, dsTrdMsg, dsTrdMsg.Sender.String(), true)
 		if err != nil {
-			if step.Output.TxResult.BroadcastError != "" {
-				t.WithFields(testing.Fields{
-					"original_error": err.Error(),
-					"target_error":   step.Output.TxResult.BroadcastError,
-				}).MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
-			} else {
-				t.WithFields(testing.Fields{
-					"error": err,
-				}).Fatal("unexpected transaction broadcast error")
-			}
+			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
 		}
 
-		err = inttest.WaitForNextBlock()
-		if err != nil {
-			t.WithFields(testing.Fields{
-				"error": err,
-			}).Fatal("error waiting for disabling trade")
-		}
+		WaitForNextBlockWithErrorCheck(t)
 
 		if len(step.Output.TxResult.ErrorLog) > 0 {
 		} else {
-			txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
-			t.WithFields(testing.Fields{
-				"tx_result_bytes": string(txHandleResBytes),
-			}).MustNil(err, "error while waiting for a transaction")
-			CheckErrorOnTxFromTxHash(txhash, t)
+			txHandleResBytes := GetTxHandleResult(txhash, t)
 			resp := handlers.DisableTradeResponse{}
 			err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 			if err != nil {
@@ -918,18 +683,7 @@ func RunDisableTrade(step FixtureStep, t *testing.T) {
 					"txhash": txhash,
 				}).Fatal("failed to parse transaction result")
 			}
-			t.WithFields(testing.Fields{
-				"txhash":          txhash,
-				"original_status": resp.Status,
-				"target_status":   step.Output.TxResult.Status,
-			}).MustTrue(resp.Status == step.Output.TxResult.Status, "transaction result status is different from expected")
-			if len(step.Output.TxResult.Message) > 0 {
-				t.WithFields(testing.Fields{
-					"txhash":           txhash,
-					"original_message": resp.Message,
-					"target_message":   step.Output.TxResult.Message,
-				}).MustTrue(resp.Message == step.Output.TxResult.Message, "transaction result message is different from expected")
-			}
+			TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
 		}
 	}
 }
