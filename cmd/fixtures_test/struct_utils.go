@@ -44,10 +44,10 @@ func UpdateSenderKeyToAddress(bytes []byte, t *testing.T) []byte {
 	raw := UnmarshalIntoEmptyInterface(bytes, t)
 
 	senderName, ok := raw["Sender"].(string)
-	t.MustTrue(ok)
+	t.MustTrue(ok, "update sender key to address didn't success")
 	raw["Sender"] = inttest.GetAccountAddr(senderName, t)
 	newBytes, err := json.Marshal(raw)
-	t.MustNil(err)
+	t.MustNil(err, "something went wrong encoding raw json")
 	return newBytes
 }
 
@@ -75,7 +75,7 @@ func UpdateCBNameToID(bytes []byte, t *testing.T) []byte {
 	if exist && err != nil {
 		raw["CookbookID"] = cbID
 		newBytes, err := json.Marshal(raw)
-		t.MustNil(err)
+		t.MustNil(err, "something went wrong encoding raw json")
 		return newBytes
 	}
 	return bytes
@@ -86,13 +86,13 @@ func UpdateRecipeName(bytes []byte, t *testing.T) []byte {
 	raw := UnmarshalIntoEmptyInterface(bytes, t)
 
 	rcpName, ok := raw["RecipeName"].(string)
-	t.MustTrue(ok)
+	t.MustTrue(ok, "recipe name does not exist in json")
 	rcpID, exist, err := inttest.GetRecipeIDFromName(rcpName)
-	t.MustTrue(exist)
-	t.MustNil(err)
+	t.MustTrue(exist, "there's no recipe id with specific recipe name")
+	t.MustNil(err, "there's an issue while getting recipe id from name")
 	raw["RecipeID"] = rcpID
 	newBytes, err := json.Marshal(raw)
-	t.MustNil(err)
+	t.MustNil(err, "something went wrong encoding raw json")
 	return newBytes
 }
 
@@ -101,13 +101,13 @@ func UpdateTradeExtraInfoToID(bytes []byte, t *testing.T) []byte {
 	raw := UnmarshalIntoEmptyInterface(bytes, t)
 
 	trdInfo, ok := raw["TradeInfo"].(string)
-	t.MustTrue(ok)
+	t.MustTrue(ok, "trade info does not exist in json")
 	trdID, exist, err := inttest.GetTradeIDFromExtraInfo(trdInfo)
-	t.MustTrue(exist)
-	t.MustNil(err)
+	t.MustTrue(exist, "there's not trade id with specific info")
+	t.MustNil(err, "there's an issue while getting trade id from info")
 	raw["TradeID"] = trdID
 	newBytes, err := json.Marshal(raw)
-	t.MustNil(err)
+	t.MustNil(err, "something went wrong encoding raw json")
 	return newBytes
 }
 
@@ -132,7 +132,7 @@ func UpdateExecID(bytes []byte, t *testing.T) []byte {
 		}).Fatal("execID not available")
 	}
 	newBytes, err := json.Marshal(raw)
-	t.MustNil(err)
+	t.MustNil(err, "something went wrong encoding raw json")
 	return newBytes
 }
 
@@ -142,7 +142,7 @@ func UpdateItemIDFromName(bytes []byte, includeLockedByRcp bool, t *testing.T) [
 
 	itemName, ok := raw["ItemName"].(string)
 
-	t.MustTrue(ok)
+	t.MustTrue(ok, "item name does not exist in json")
 	itemID, exist, err := inttest.GetItemIDFromName(itemName, includeLockedByRcp)
 	if !exist {
 		t.WithFields(testing.Fields{
@@ -150,11 +150,11 @@ func UpdateItemIDFromName(bytes []byte, includeLockedByRcp bool, t *testing.T) [
 			"include_locked": includeLockedByRcp,
 		}).Debug("no item fit params")
 	}
-	t.MustTrue(exist)
-	t.MustNil(err)
+	t.MustTrue(exist, "item id with specific name does not exist")
+	t.MustNil(err, "there's an issue while getting item id from info")
 	raw["ItemID"] = itemID
 	newBytes, err := json.Marshal(raw)
-	t.MustNil(err)
+	t.MustNil(err, "something went wrong encoding raw json")
 	return newBytes
 }
 
@@ -178,8 +178,8 @@ func GetItemIDsFromNames(bytes []byte, includeLockedByRcp bool, t *testing.T) []
 				"include_locked": includeLockedByRcp,
 			}).Debug("no item fit params")
 		}
-		t.MustTrue(exist)
-		t.MustNil(err)
+		t.MustTrue(exist, "item id with specific name does not exist")
+		t.MustNil(err, "something went wrong encoding raw json")
 		ItemIDs = append(ItemIDs, itemID)
 	}
 	return ItemIDs
@@ -255,10 +255,10 @@ func GetItemOutputsFromBytes(bytes []byte, sender string, t *testing.T) types.It
 	for _, iN := range itemOutputNamesReader.ItemOutputNames {
 		var io types.Item
 		iID, ok, err := inttest.GetItemIDFromName(iN, false)
-		t.MustNil(err)
-		t.MustTrue(ok)
+		t.MustTrue(ok, "item id with specific name does not exist")
+		t.MustNil(err, "there's an issue while getting item id from info")
 		io, err = inttest.GetItemByGUID(iID)
-		t.MustNil(err)
+		t.MustNil(err, "there's an issue while getting item from id")
 		itemOutputs = append(itemOutputs, io)
 	}
 	return itemOutputs

@@ -222,6 +222,19 @@ func (t *T) FormatFields(logLevel log.Level) string {
 	return formated
 }
 
+// Error is a modified Error
+func (t *T) Error(args ...interface{}) {
+	requiredLevel := log.ErrorLevel
+	t.printCallerLine()
+	if t.useLogPkg {
+		log.WithFields(t.fields).Error(args...)
+	} else {
+		text := fmt.Sprintf("%s msg=%s", t.FormatFields(requiredLevel), fmt.Sprintln(args...))
+		logOutput := fmt.Sprintf("\x1b[%dm%s\x1b[0m ", FieldColorByLogLevel(requiredLevel), text)
+		t.origin.Log(logOutput)
+	}
+}
+
 // Fatal is a modified Fatal
 func (t *T) Fatal(args ...interface{}) {
 	requiredLevel := log.FatalLevel
@@ -251,14 +264,16 @@ func (t *T) Fatalf(format string, args ...interface{}) {
 }
 
 // MustTrue validate if value is true
-func (t *T) MustTrue(value bool) {
+func (t *T) MustTrue(value bool, args ...interface{}) {
 	if !value {
 		t.DispatchEvent("FAIL")
 	}
 	if t.useLogPkg {
 		if !value {
 			t.printCallerLine()
-			log.Fatal("MustTrue validation failure")
+			log.WithFields(log.Fields{
+				"error_from": "MustTrue validation failure",
+			}).Fatal(args...)
 		}
 	} else {
 		require.True(t.origin, value)
@@ -266,14 +281,15 @@ func (t *T) MustTrue(value bool) {
 }
 
 // MustNil validate if value is nil
-func (t *T) MustNil(err error) {
+func (t *T) MustNil(err error, args ...interface{}) {
 	if err != nil {
 		t.DispatchEvent("FAIL")
 		if t.useLogPkg {
 			t.printCallerLine()
 			t.WithFields(Fields{
-				"error": err,
-			}).Fatal("MustNil validation failure")
+				"error":      err,
+				"error_from": "MustNil validation failure",
+			}).Fatal(args...)
 		} else {
 			require.True(t.origin, err == nil)
 		}

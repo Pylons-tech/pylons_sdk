@@ -64,10 +64,11 @@ func RunMultiMsgTx(step FixtureStep, t *testing.T) {
 		txhash, err := inttest.SendMultiMsgTxWithNonce(t, msgs, sender.String(), true)
 		if err != nil {
 			if step.Output.TxResult.BroadcastError != "" {
-				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError))
+				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
 			} else {
 				t.WithFields(testing.Fields{
-					"error": err,
+					"txhash": txhash,
+					"error":  err,
 				}).Fatal("unexpected transaction broadcast error")
 			}
 			return
@@ -114,7 +115,6 @@ func CheckExecutionMsgFromRef(ref string, t *testing.T) msgs.MsgCheckExecution {
 			"error":    err,
 		}).Fatal("error reading using GetAminoCdc")
 	}
-	t.MustNil(err)
 
 	return msgs.NewMsgCheckExecution(
 		execType.ExecID,
@@ -131,7 +131,7 @@ func RunCheckExecution(step FixtureStep, t *testing.T) {
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, chkExecMsg, chkExecMsg.Sender.String(), true)
 		if err != nil {
 			if step.Output.TxResult.BroadcastError != "" {
-				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError))
+				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
 			} else {
 				t.WithFields(testing.Fields{
 					"error": err,
@@ -165,9 +165,9 @@ func RunCheckExecution(step FixtureStep, t *testing.T) {
 				"error": err,
 			}).Fatal("error unmarshaling tx response")
 		}
-		t.MustTrue(resp.Status == step.Output.TxResult.Status)
+		t.MustTrue(resp.Status == step.Output.TxResult.Status, "transaction result status is different from expected")
 		if len(step.Output.TxResult.Message) > 0 {
-			t.MustTrue(resp.Message == step.Output.TxResult.Message)
+			t.MustTrue(resp.Message == step.Output.TxResult.Message, "transaction result message is different from expected")
 		}
 	}
 }
@@ -188,7 +188,6 @@ func FiatItemMsgFromRef(ref string, t *testing.T) msgs.MsgFiatItem {
 			"error":    err,
 		}).Fatal("error reading using GetAminoCdc itemType", itemType, err)
 	}
-	t.MustNil(err)
 
 	return msgs.NewMsgFiatItem(
 		itemType.CookbookID,
@@ -207,7 +206,7 @@ func RunFiatItem(step FixtureStep, t *testing.T) {
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, itmMsg, itmMsg.Sender.String(), true)
 		if err != nil {
 			if step.Output.TxResult.BroadcastError != "" {
-				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError))
+				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
 			} else {
 				t.WithFields(testing.Fields{
 					"error": err,
@@ -241,7 +240,7 @@ func RunFiatItem(step FixtureStep, t *testing.T) {
 				"error": err,
 			}).Fatal("error unmarshaling tx response")
 		}
-		t.MustTrue(resp.ItemID != "")
+		t.MustTrue(resp.ItemID != "", "item id shouldn't be empty")
 	}
 }
 
@@ -334,7 +333,6 @@ func UpdateItemStringMsgFromRef(ref string, t *testing.T) msgs.MsgUpdateItemStri
 			"error":     err,
 		}).Fatal("error reading using GetAminoCdc")
 	}
-	t.MustNil(err)
 	return sTypeMsg
 }
 
@@ -346,7 +344,7 @@ func RunUpdateItemString(step FixtureStep, t *testing.T) {
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, sTypeMsg, sTypeMsg.Sender.String(), true)
 		if err != nil {
 			if step.Output.TxResult.BroadcastError != "" {
-				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError))
+				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
 			} else {
 				t.WithFields(testing.Fields{
 					"error": err,
@@ -396,7 +394,6 @@ func CreateCookbookMsgFromRef(ref string, t *testing.T) msgs.MsgCreateCookbook {
 			"error":     err,
 		}).Fatal("error reading using GetAminoCdc")
 	}
-	t.MustNil(err)
 
 	return msgs.NewMsgCreateCookbook(
 		cbType.Name,
@@ -422,7 +419,7 @@ func RunCreateCookbook(step FixtureStep, t *testing.T) {
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, cbMsg, cbMsg.Sender.String(), true)
 		if err != nil {
 			if step.Output.TxResult.BroadcastError != "" {
-				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError))
+				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
 			} else {
 				t.WithFields(testing.Fields{
 					"error": err,
@@ -456,7 +453,7 @@ func RunCreateCookbook(step FixtureStep, t *testing.T) {
 				"error":  err,
 			}).Fatal("error unmarshaling tx response")
 		}
-		t.MustTrue(resp.CookbookID != "")
+		t.MustTrue(resp.CookbookID != "", "coookbook id shouldn't be empty")
 	}
 }
 
@@ -481,7 +478,6 @@ func CreateRecipeMsgFromRef(ref string, t *testing.T) msgs.MsgCreateRecipe {
 			"error":     err,
 		}).Fatal("error reading using GetAminoCdc")
 	}
-	t.MustNil(err)
 
 	return msgs.NewMsgCreateRecipe(
 		rcpTempl.Name,
@@ -505,7 +501,7 @@ func RunCreateRecipe(step FixtureStep, t *testing.T) {
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, rcpMsg, rcpMsg.Sender.String(), true)
 		if err != nil {
 			if step.Output.TxResult.BroadcastError != "" {
-				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError))
+				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
 			} else {
 				t.WithFields(testing.Fields{
 					"error": err,
@@ -522,7 +518,7 @@ func RunCreateRecipe(step FixtureStep, t *testing.T) {
 		}
 
 		txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
-		t.MustNil(err)
+		t.MustNil(err, "error while waiting for transaction")
 
 		CheckErrorOnTxFromTxHash(txhash, t)
 		resp := handlers.CreateRecipeResponse{}
@@ -534,7 +530,7 @@ func RunCreateRecipe(step FixtureStep, t *testing.T) {
 				"error":  err,
 			}).Fatal("error unmarshaling tx response")
 		}
-		t.MustTrue(resp.RecipeID != "")
+		t.MustTrue(resp.RecipeID != "", "recipe id shouldn't be empty")
 	}
 }
 
@@ -562,7 +558,6 @@ func ExecuteRecipeMsgFromRef(ref string, t *testing.T) msgs.MsgExecuteRecipe {
 			"error":     err,
 		}).Fatal("error reading using GetAminoCdc")
 	}
-	t.MustNil(err)
 
 	return msgs.NewMsgExecuteRecipe(execType.RecipeID, execType.Sender, ItemIDs)
 }
@@ -577,7 +572,7 @@ func RunExecuteRecipe(step FixtureStep, t *testing.T) {
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, execMsg, execMsg.Sender.String(), true)
 		if err != nil {
 			if step.Output.TxResult.BroadcastError != "" {
-				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError))
+				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
 			} else {
 				t.WithFields(testing.Fields{
 					"error": err,
@@ -598,10 +593,10 @@ func RunExecuteRecipe(step FixtureStep, t *testing.T) {
 			t.WithFields(testing.Fields{
 				"tx_error": hmrErrMsg,
 			}).Debug("debug log")
-			t.MustTrue(strings.Contains(hmrErrMsg, step.Output.TxResult.ErrorLog))
+			t.MustTrue(strings.Contains(hmrErrMsg, step.Output.TxResult.ErrorLog), "transaction error log is different from expected one.")
 		} else {
 			txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
-			t.MustNil(err)
+			t.MustNil(err, "error while waiting for transaction")
 			CheckErrorOnTxFromTxHash(txhash, t)
 			resp := handlers.ExecuteRecipeResponse{}
 			err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
@@ -610,21 +605,21 @@ func RunExecuteRecipe(step FixtureStep, t *testing.T) {
 					"txhash": txhash,
 				}).Fatal("failed to parse transaction result")
 			}
-			t.MustTrue(resp.Status == step.Output.TxResult.Status)
+			t.MustTrue(resp.Status == step.Output.TxResult.Status, "transaction result status is different from expected")
 			if len(step.Output.TxResult.Message) > 0 {
-				t.MustTrue(resp.Message == step.Output.TxResult.Message)
+				t.MustTrue(resp.Message == step.Output.TxResult.Message, "transaction result message is different from expected")
 			}
 
 			if resp.Message == "scheduled the recipe" { // delayed execution
 				var scheduleRes handlers.ExecuteRecipeScheduleOutput
 
 				err := json.Unmarshal(resp.Output, &scheduleRes)
-				t.MustNil(err)
+				t.MustNil(err, "something went wrong decoding raw json")
 				execIDs[step.ID] = scheduleRes.ExecID
 				for _, itemID := range execMsg.ItemIDs {
 					item, err := inttest.GetItemByGUID(itemID)
-					t.MustNil(err)
-					t.MustTrue(len(item.OwnerRecipeID) != 0)
+					t.MustNil(err, "there's an issue while getting item from id")
+					t.MustTrue(len(item.OwnerRecipeID) != 0, "OwnerRecipeID shouldn't be set but it's set")
 				}
 
 				t.WithFields(testing.Fields{
@@ -655,7 +650,6 @@ func CreateTradeMsgFromRef(ref string, t *testing.T) msgs.MsgCreateTrade {
 			"error":     err,
 		}).Fatal("error reading using GetAminoCdc")
 	}
-	t.MustTrue(err == nil)
 
 	// get ItemOutputs from ItemOutputNames
 	itemOutputs := GetItemOutputsFromBytes(newByteValue, trdType.Sender.String(), t)
@@ -680,7 +674,7 @@ func RunCreateTrade(step FixtureStep, t *testing.T) {
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, createTrd, createTrd.Sender.String(), true)
 		if err != nil {
 			if step.Output.TxResult.BroadcastError != "" {
-				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError))
+				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
 			} else {
 				t.WithFields(testing.Fields{
 					"error": err,
@@ -711,7 +705,7 @@ func RunCreateTrade(step FixtureStep, t *testing.T) {
 				"error":  err,
 			}).Fatal("error unmarshaling tx response")
 		}
-		t.MustTrue(resp.TradeID != "")
+		t.MustTrue(resp.TradeID != "", "trade id shouldn't be empty")
 	}
 }
 
@@ -739,7 +733,6 @@ func FulfillTradeMsgFromRef(ref string, t *testing.T) msgs.MsgFulfillTrade {
 			"error":     err,
 		}).Fatal("error reading using GetAminoCdc")
 	}
-	t.MustNil(err)
 
 	return msgs.NewMsgFulfillTrade(trdType.TradeID, trdType.Sender, ItemIDs)
 }
@@ -752,7 +745,7 @@ func RunFulfillTrade(step FixtureStep, t *testing.T) {
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, ffTrdMsg, ffTrdMsg.Sender.String(), true)
 		if err != nil {
 			if step.Output.TxResult.BroadcastError != "" {
-				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError))
+				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
 			} else {
 				t.WithFields(testing.Fields{
 					"error": err,
@@ -771,7 +764,7 @@ func RunFulfillTrade(step FixtureStep, t *testing.T) {
 		if len(step.Output.TxResult.ErrorLog) > 0 {
 		} else {
 			txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
-			t.MustNil(err)
+			t.MustNil(err, "error while waiting for transaction")
 			CheckErrorOnTxFromTxHash(txhash, t)
 			resp := handlers.FulfillTradeResponse{}
 			err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
@@ -780,9 +773,9 @@ func RunFulfillTrade(step FixtureStep, t *testing.T) {
 					"txhash": txhash,
 				}).Fatal("failed to parse transaction result")
 			}
-			t.MustTrue(resp.Status == step.Output.TxResult.Status)
+			t.MustTrue(resp.Status == step.Output.TxResult.Status, "transaction result status is different from expected")
 			if len(step.Output.TxResult.Message) > 0 {
-				t.MustTrue(resp.Message == step.Output.TxResult.Message)
+				t.MustTrue(resp.Message == step.Output.TxResult.Message, "transaction result message is different from expected")
 			}
 		}
 	}
@@ -809,7 +802,6 @@ func DisableTradeMsgFromRef(ref string, t *testing.T) msgs.MsgDisableTrade {
 			"error":     err,
 		}).Fatal("error reading using GetAminoCdc")
 	}
-	t.MustNil(err)
 
 	return msgs.NewMsgDisableTrade(trdType.TradeID, trdType.Sender)
 }
@@ -822,7 +814,7 @@ func RunDisableTrade(step FixtureStep, t *testing.T) {
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, dsTrdMsg, dsTrdMsg.Sender.String(), true)
 		if err != nil {
 			if step.Output.TxResult.BroadcastError != "" {
-				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError))
+				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
 			} else {
 				t.WithFields(testing.Fields{
 					"error": err,
@@ -841,7 +833,7 @@ func RunDisableTrade(step FixtureStep, t *testing.T) {
 		if len(step.Output.TxResult.ErrorLog) > 0 {
 		} else {
 			txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
-			t.MustNil(err)
+			t.MustNil(err, "error while waiting for transaction")
 			CheckErrorOnTxFromTxHash(txhash, t)
 			resp := handlers.DisableTradeResponse{}
 			err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
@@ -850,9 +842,9 @@ func RunDisableTrade(step FixtureStep, t *testing.T) {
 					"txhash": txhash,
 				}).Fatal("failed to parse transaction result")
 			}
-			t.MustTrue(resp.Status == step.Output.TxResult.Status)
+			t.MustTrue(resp.Status == step.Output.TxResult.Status, "transaction result status is different from expected")
 			if len(step.Output.TxResult.Message) > 0 {
-				t.MustTrue(resp.Message == step.Output.TxResult.Message)
+				t.MustTrue(resp.Message == step.Output.TxResult.Message, "transaction result message is different from expected")
 			}
 		}
 	}

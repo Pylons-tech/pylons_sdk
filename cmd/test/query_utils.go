@@ -94,8 +94,7 @@ func ListExecutionsViaCLI(account string, t *testing.T) ([]types.Execution, erro
 	if err != nil {
 		t.WithFields(testing.Fields{
 			"error": err,
-		}).Fatalf("error unmarshaling list executions")
-		return []types.Execution{}, err
+		}).Fatal("error unmarshaling list executions")
 	}
 	return listExecutionsResp.Executions, err
 }
@@ -154,7 +153,7 @@ func GetTxError(txhash string, t *testing.T) ([]byte, error) {
 // GetHumanReadableErrorFromTxHash is a function to get human readable error from txhash
 func GetHumanReadableErrorFromTxHash(txhash string, t *testing.T) string {
 	txErrorBytes, err := WaitAndGetTxError(txhash, 3, t)
-	t.MustNil(err)
+	t.MustNil(err, "error while waiting for transaction")
 	return string(txErrorBytes)
 }
 
