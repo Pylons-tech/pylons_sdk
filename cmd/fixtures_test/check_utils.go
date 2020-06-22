@@ -338,7 +338,9 @@ func RunSingleFixtureTest(file string, t *testing.T) {
 		var fixtureSteps []FixtureStep
 		byteValue := ReadFile(file, t)
 		err := json.Unmarshal([]byte(byteValue), &fixtureSteps)
-		t.MustNil(err, "something went wrong decoding fixture steps")
+		t.WithFields(testing.Fields{
+			"raw_json": string(byteValue),
+		}).MustNil(err, "something went wrong decoding fixture steps")
 
 		CheckSteps(fixtureSteps, t)
 

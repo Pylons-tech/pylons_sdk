@@ -64,7 +64,10 @@ func RunMultiMsgTx(step FixtureStep, t *testing.T) {
 		txhash, err := inttest.SendMultiMsgTxWithNonce(t, msgs, sender.String(), true)
 		if err != nil {
 			if step.Output.TxResult.BroadcastError != "" {
-				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
+				t.WithFields(testing.Fields{
+					"original_error": err.Error(),
+					"target_error":   step.Output.TxResult.BroadcastError,
+				}).MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
 			} else {
 				t.WithFields(testing.Fields{
 					"txhash": txhash,
@@ -131,7 +134,10 @@ func RunCheckExecution(step FixtureStep, t *testing.T) {
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, chkExecMsg, chkExecMsg.Sender.String(), true)
 		if err != nil {
 			if step.Output.TxResult.BroadcastError != "" {
-				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
+				t.WithFields(testing.Fields{
+					"original_error": err.Error(),
+					"target_error":   step.Output.TxResult.BroadcastError,
+				}).MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
 			} else {
 				t.WithFields(testing.Fields{
 					"error": err,
@@ -165,9 +171,17 @@ func RunCheckExecution(step FixtureStep, t *testing.T) {
 				"error": err,
 			}).Fatal("error unmarshaling tx response")
 		}
-		t.MustTrue(resp.Status == step.Output.TxResult.Status, "transaction result status is different from expected")
+		t.WithFields(testing.Fields{
+			"txhash":          txhash,
+			"original_status": resp.Status,
+			"target_status":   step.Output.TxResult.Status,
+		}).MustTrue(resp.Status == step.Output.TxResult.Status, "transaction result status is different from expected")
 		if len(step.Output.TxResult.Message) > 0 {
-			t.MustTrue(resp.Message == step.Output.TxResult.Message, "transaction result message is different from expected")
+			t.WithFields(testing.Fields{
+				"txhash":           txhash,
+				"original_message": resp.Message,
+				"target_message":   step.Output.TxResult.Message,
+			}).MustTrue(resp.Message == step.Output.TxResult.Message, "transaction result message is different from expected")
 		}
 	}
 }
@@ -206,7 +220,10 @@ func RunFiatItem(step FixtureStep, t *testing.T) {
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, itmMsg, itmMsg.Sender.String(), true)
 		if err != nil {
 			if step.Output.TxResult.BroadcastError != "" {
-				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
+				t.WithFields(testing.Fields{
+					"original_error": err.Error(),
+					"target_error":   step.Output.TxResult.BroadcastError,
+				}).MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
 			} else {
 				t.WithFields(testing.Fields{
 					"error": err,
@@ -267,7 +284,6 @@ func SendItemsMsgFromRef(ref string, t *testing.T) msgs.MsgSendItems {
 			"error":     err,
 		}).Fatal("error reading using GetAminoCdc")
 	}
-	t.MustNil(err)
 
 	return msgs.NewMsgSendItems(ItemIDs, siType.Sender, siType.Receiver)
 }
@@ -280,7 +296,10 @@ func RunSendItems(step FixtureStep, t *testing.T) {
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, siMsg, siMsg.Sender.String(), true)
 		if err != nil {
 			if step.Output.TxResult.BroadcastError != "" {
-				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError))
+				t.WithFields(testing.Fields{
+					"original_error": err.Error(),
+					"target_error":   step.Output.TxResult.BroadcastError,
+				}).MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError))
 			} else {
 				t.WithFields(testing.Fields{
 					"error": err,
@@ -299,7 +318,9 @@ func RunSendItems(step FixtureStep, t *testing.T) {
 		if len(step.Output.TxResult.ErrorLog) > 0 {
 		} else {
 			txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
-			t.MustNil(err)
+			t.WithFields(testing.Fields{
+				"tx_result_bytes": string(txHandleResBytes),
+			}).MustNil(err, "error while waiting for a transaction")
 			CheckErrorOnTxFromTxHash(txhash, t)
 			resp := handlers.SendItemsResponse{}
 			err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
@@ -308,9 +329,15 @@ func RunSendItems(step FixtureStep, t *testing.T) {
 					"txhash": txhash,
 				}).Fatal("failed to parse transaction result")
 			}
-			t.MustTrue(resp.Status == step.Output.TxResult.Status)
+			t.WithFields(testing.Fields{
+				"original_status": resp.Status,
+				"target_status":   step.Output.TxResult.Status,
+			}).MustTrue(resp.Status == step.Output.TxResult.Status)
 			if len(step.Output.TxResult.Message) > 0 {
-				t.MustTrue(resp.Message == step.Output.TxResult.Message)
+				t.WithFields(testing.Fields{
+					"original_message": resp.Message,
+					"target_message":   step.Output.TxResult.Message,
+				}).MustTrue(resp.Message == step.Output.TxResult.Message)
 			}
 		}
 	}
@@ -344,7 +371,10 @@ func RunUpdateItemString(step FixtureStep, t *testing.T) {
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, sTypeMsg, sTypeMsg.Sender.String(), true)
 		if err != nil {
 			if step.Output.TxResult.BroadcastError != "" {
-				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
+				t.WithFields(testing.Fields{
+					"original_error": err.Error(),
+					"target_error":   step.Output.TxResult.BroadcastError,
+				}).MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
 			} else {
 				t.WithFields(testing.Fields{
 					"error": err,
@@ -419,7 +449,10 @@ func RunCreateCookbook(step FixtureStep, t *testing.T) {
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, cbMsg, cbMsg.Sender.String(), true)
 		if err != nil {
 			if step.Output.TxResult.BroadcastError != "" {
-				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
+				t.WithFields(testing.Fields{
+					"original_error": err.Error(),
+					"target_error":   step.Output.TxResult.BroadcastError,
+				}).MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
 			} else {
 				t.WithFields(testing.Fields{
 					"error": err,
@@ -501,7 +534,10 @@ func RunCreateRecipe(step FixtureStep, t *testing.T) {
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, rcpMsg, rcpMsg.Sender.String(), true)
 		if err != nil {
 			if step.Output.TxResult.BroadcastError != "" {
-				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
+				t.WithFields(testing.Fields{
+					"original_error": err.Error(),
+					"target_error":   step.Output.TxResult.BroadcastError,
+				}).MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
 			} else {
 				t.WithFields(testing.Fields{
 					"error": err,
@@ -518,7 +554,9 @@ func RunCreateRecipe(step FixtureStep, t *testing.T) {
 		}
 
 		txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
-		t.MustNil(err, "error while waiting for transaction")
+		t.WithFields(testing.Fields{
+			"tx_result_bytes": string(txHandleResBytes),
+		}).MustNil(err, "error while waiting for a transaction")
 
 		CheckErrorOnTxFromTxHash(txhash, t)
 		resp := handlers.CreateRecipeResponse{}
@@ -572,7 +610,10 @@ func RunExecuteRecipe(step FixtureStep, t *testing.T) {
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, execMsg, execMsg.Sender.String(), true)
 		if err != nil {
 			if step.Output.TxResult.BroadcastError != "" {
-				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
+				t.WithFields(testing.Fields{
+					"original_error": err.Error(),
+					"target_error":   step.Output.TxResult.BroadcastError,
+				}).MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
 			} else {
 				t.WithFields(testing.Fields{
 					"error": err,
@@ -591,12 +632,14 @@ func RunExecuteRecipe(step FixtureStep, t *testing.T) {
 			hmrErrMsg := inttest.GetHumanReadableErrorFromTxHash(txhash, t)
 
 			t.WithFields(testing.Fields{
-				"tx_error": hmrErrMsg,
-			}).Debug("debug log")
-			t.MustTrue(strings.Contains(hmrErrMsg, step.Output.TxResult.ErrorLog), "transaction error log is different from expected one.")
+				"tx_error":       hmrErrMsg,
+				"expected_error": step.Output.TxResult.ErrorLog,
+			}).MustTrue(strings.Contains(hmrErrMsg, step.Output.TxResult.ErrorLog), "transaction error log is different from expected one.")
 		} else {
 			txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
-			t.MustNil(err, "error while waiting for transaction")
+			t.WithFields(testing.Fields{
+				"tx_result_bytes": string(txHandleResBytes),
+			}).MustNil(err, "error while waiting for a transaction")
 			CheckErrorOnTxFromTxHash(txhash, t)
 			resp := handlers.ExecuteRecipeResponse{}
 			err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
@@ -605,20 +648,32 @@ func RunExecuteRecipe(step FixtureStep, t *testing.T) {
 					"txhash": txhash,
 				}).Fatal("failed to parse transaction result")
 			}
-			t.MustTrue(resp.Status == step.Output.TxResult.Status, "transaction result status is different from expected")
+			t.WithFields(testing.Fields{
+				"txhash":          txhash,
+				"original_status": resp.Status,
+				"target_status":   step.Output.TxResult.Status,
+			}).MustTrue(resp.Status == step.Output.TxResult.Status, "transaction result status is different from expected")
 			if len(step.Output.TxResult.Message) > 0 {
-				t.MustTrue(resp.Message == step.Output.TxResult.Message, "transaction result message is different from expected")
+				t.WithFields(testing.Fields{
+					"txhash":           txhash,
+					"original_message": resp.Message,
+					"target_message":   step.Output.TxResult.Message,
+				}).MustTrue(resp.Message == step.Output.TxResult.Message, "transaction result message is different from expected")
 			}
 
 			if resp.Message == "scheduled the recipe" { // delayed execution
 				var scheduleRes handlers.ExecuteRecipeScheduleOutput
 
 				err := json.Unmarshal(resp.Output, &scheduleRes)
-				t.MustNil(err, "something went wrong decoding raw json")
+				t.WithFields(testing.Fields{
+					"response_output": string(resp.Output),
+				}).MustNil(err, "something went wrong decoding raw json")
 				execIDs[step.ID] = scheduleRes.ExecID
 				for _, itemID := range execMsg.ItemIDs {
 					item, err := inttest.GetItemByGUID(itemID)
-					t.MustNil(err, "there's an issue while getting item from id")
+					t.WithFields(testing.Fields{
+						"item_id": itemID,
+					}).MustNil(err, "there's an issue while getting item from id")
 					t.MustTrue(len(item.OwnerRecipeID) != 0, "OwnerRecipeID shouldn't be set but it's set")
 				}
 
@@ -674,7 +729,10 @@ func RunCreateTrade(step FixtureStep, t *testing.T) {
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, createTrd, createTrd.Sender.String(), true)
 		if err != nil {
 			if step.Output.TxResult.BroadcastError != "" {
-				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
+				t.WithFields(testing.Fields{
+					"original_error": err.Error(),
+					"target_error":   step.Output.TxResult.BroadcastError,
+				}).MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
 			} else {
 				t.WithFields(testing.Fields{
 					"error": err,
@@ -745,7 +803,10 @@ func RunFulfillTrade(step FixtureStep, t *testing.T) {
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, ffTrdMsg, ffTrdMsg.Sender.String(), true)
 		if err != nil {
 			if step.Output.TxResult.BroadcastError != "" {
-				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
+				t.WithFields(testing.Fields{
+					"original_error": err.Error(),
+					"target_error":   step.Output.TxResult.BroadcastError,
+				}).MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
 			} else {
 				t.WithFields(testing.Fields{
 					"error": err,
@@ -764,7 +825,9 @@ func RunFulfillTrade(step FixtureStep, t *testing.T) {
 		if len(step.Output.TxResult.ErrorLog) > 0 {
 		} else {
 			txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
-			t.MustNil(err, "error while waiting for transaction")
+			t.WithFields(testing.Fields{
+				"tx_result_bytes": string(txHandleResBytes),
+			}).MustNil(err, "error while waiting for a transaction")
 			CheckErrorOnTxFromTxHash(txhash, t)
 			resp := handlers.FulfillTradeResponse{}
 			err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
@@ -773,9 +836,17 @@ func RunFulfillTrade(step FixtureStep, t *testing.T) {
 					"txhash": txhash,
 				}).Fatal("failed to parse transaction result")
 			}
-			t.MustTrue(resp.Status == step.Output.TxResult.Status, "transaction result status is different from expected")
+			t.WithFields(testing.Fields{
+				"txhash":          txhash,
+				"original_status": resp.Status,
+				"target_status":   step.Output.TxResult.Status,
+			}).MustTrue(resp.Status == step.Output.TxResult.Status, "transaction result status is different from expected")
 			if len(step.Output.TxResult.Message) > 0 {
-				t.MustTrue(resp.Message == step.Output.TxResult.Message, "transaction result message is different from expected")
+				t.WithFields(testing.Fields{
+					"txhash":           txhash,
+					"original_message": resp.Message,
+					"target_message":   step.Output.TxResult.Message,
+				}).MustTrue(resp.Message == step.Output.TxResult.Message, "transaction result message is different from expected")
 			}
 		}
 	}
@@ -814,7 +885,10 @@ func RunDisableTrade(step FixtureStep, t *testing.T) {
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, dsTrdMsg, dsTrdMsg.Sender.String(), true)
 		if err != nil {
 			if step.Output.TxResult.BroadcastError != "" {
-				t.MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
+				t.WithFields(testing.Fields{
+					"original_error": err.Error(),
+					"target_error":   step.Output.TxResult.BroadcastError,
+				}).MustTrue(strings.Contains(err.Error(), step.Output.TxResult.BroadcastError), "broadcast error is different from expected one")
 			} else {
 				t.WithFields(testing.Fields{
 					"error": err,
@@ -833,7 +907,9 @@ func RunDisableTrade(step FixtureStep, t *testing.T) {
 		if len(step.Output.TxResult.ErrorLog) > 0 {
 		} else {
 			txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
-			t.MustNil(err, "error while waiting for transaction")
+			t.WithFields(testing.Fields{
+				"tx_result_bytes": string(txHandleResBytes),
+			}).MustNil(err, "error while waiting for a transaction")
 			CheckErrorOnTxFromTxHash(txhash, t)
 			resp := handlers.DisableTradeResponse{}
 			err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
@@ -842,9 +918,17 @@ func RunDisableTrade(step FixtureStep, t *testing.T) {
 					"txhash": txhash,
 				}).Fatal("failed to parse transaction result")
 			}
-			t.MustTrue(resp.Status == step.Output.TxResult.Status, "transaction result status is different from expected")
+			t.WithFields(testing.Fields{
+				"txhash":          txhash,
+				"original_status": resp.Status,
+				"target_status":   step.Output.TxResult.Status,
+			}).MustTrue(resp.Status == step.Output.TxResult.Status, "transaction result status is different from expected")
 			if len(step.Output.TxResult.Message) > 0 {
-				t.MustTrue(resp.Message == step.Output.TxResult.Message, "transaction result message is different from expected")
+				t.WithFields(testing.Fields{
+					"txhash":           txhash,
+					"original_message": resp.Message,
+					"target_message":   step.Output.TxResult.Message,
+				}).MustTrue(resp.Message == step.Output.TxResult.Message, "transaction result message is different from expected")
 			}
 		}
 	}
