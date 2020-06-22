@@ -27,7 +27,6 @@ func RunActionRunner(action string, step FixtureStep, t *testing.T) {
 			"action": step.Action,
 		}).Fatal("step with unrecognizable action found")
 	}
-	t.MustTrue(fn != nil, "action runner does not exist")
 	fn(step, t)
 }
 

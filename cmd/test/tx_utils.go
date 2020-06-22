@@ -69,12 +69,15 @@ func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) (string, e
 		output, logstr, err := RunPylonsCli(txBroadcastArgs, "")
 		// output2, logstr2, err := RunPylonsCli([]string{"query", "account", "cosmos10xgn8t2auxskrf2qjcht0hwq2h5chnrpx87dus"}, "")
 		// t.WithFields(testing.Fields{
-		// 	"broadcast_log": logstr,
 		// 	"query_account": logstr2,
 		// 	"output2":       string(output2),
 		// }).Debug("debug log")
 
-		t.MustNil(err, "there's an issue while running pylonscli broadcast command")
+		t.WithFields(testing.Fields{
+			"broadcast_args": txBroadcastArgs,
+			"output":         string(output),
+			"broadcast_log":  logstr,
+		}).MustNil(err, "there's an issue while running pylonscli broadcast command")
 		txResponse := sdk.TxResponse{}
 
 		err = GetAminoCdc().UnmarshalJSON(output, &txResponse)
@@ -101,7 +104,9 @@ func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) (string, e
 		if txResponse.Code != 0 {
 			return txResponse.TxHash, errors.New(txResponse.RawLog)
 		}
-		t.MustTrue(len(txResponse.TxHash) == 64, "txhash length should have length of 64")
+		t.WithFields(testing.Fields{
+			"txhash": txResponse.TxHash,
+		}).MustTrue(len(txResponse.TxHash) == 64, "txhash length should have length of 64")
 		return txResponse.TxHash, nil
 	}
 	// broadcast using rest endpoint
@@ -109,7 +114,9 @@ func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) (string, e
 	postBodyJSON := make(map[string]interface{})
 
 	err := json.Unmarshal(signedTx, &postBodyJSON)
-	t.MustNil(err, "something went wrong decoding raw json")
+	t.WithFields(testing.Fields{
+		"signed_tx": string(signedTx),
+	}).MustNil(err, "something went wrong decoding raw json")
 
 	postBodyJSON["tx"] = postBodyJSON["value"]
 	postBodyJSON["value"] = nil
@@ -138,7 +145,9 @@ func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) (string, e
 	t.WithFields(testing.Fields{
 		"get_pylons_api_response": result,
 	}).Info("info log")
-	t.MustTrue(len(result["txhash"]) == 64, "txhash length should have length of 64")
+	t.WithFields(testing.Fields{
+		"txhash": result["txhash"],
+	}).MustTrue(len(result["txhash"]) == 64, "txhash length should have length of 64")
 	return result["txhash"], nil
 }
 
