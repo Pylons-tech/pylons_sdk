@@ -13,7 +13,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-	"fmt"
 
 	testing "github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test/evtesting"
 	log "github.com/sirupsen/logrus"
