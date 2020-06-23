@@ -200,7 +200,7 @@ func TestTxWithMsg(t *testing.T, msgValue sdk.Msg, signer string) string {
 	if err != nil {
 		t.WithFields(testing.Fields{
 			"error": err,
-		}).Fatal("transaction broadcast failure")
+		}).Error("transaction broadcast failure")
 		return ""
 	}
 
@@ -311,7 +311,7 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 	if err != nil {
 		t.WithFields(testing.Fields{
 			"error": err,
-		}).Fatal("transaction broadcast failure")
+		}).Error("transaction broadcast failure")
 		return "error broadcasting tx file", err
 	}
 	// increase nonce file
