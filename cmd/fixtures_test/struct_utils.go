@@ -2,9 +2,11 @@ package fixturetest
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -42,16 +44,29 @@ func UnmarshalIntoEmptyInterface(bytes []byte, t *testing.T) map[string]interfac
 	return raw
 }
 
+// ValidateTempAccountNames is a function to validate temp account name
+func ValidateTempAccountNames(e string) error {
+	exp := regexp.MustCompile(`^account[0-9]+$`)
+	if exp.MatchString(string(e)) {
+		return nil
+	}
+
+	return errors.New("Invalid account name")
+}
+
 // GetAccountAddressFromTempName is a function to get account address from temp name
 func GetAccountAddressFromTempName(tempName string, t *testing.T) string {
 
+	err := ValidateTempAccountNames(tempName)
+	t.MustNil(err, fmt.Sprintf("%s is invalid account name", tempName))
+
 	accountNameIndex, err := strconv.Atoi(strings.TrimLeft(tempName, "account"))
-	t.MustNil(err, "temp account name doesn't match to the account args")
-	t.MustTrue(accountNameIndex > 0, fmt.Sprintf("%s doesn't match to the account args", tempName))
+	t.MustNil(err, fmt.Sprintf("%s is invalid account name", tempName))
+	t.MustTrue(accountNameIndex > 0, fmt.Sprintf("%s doesn't match to the account args. temp account names start from account1", tempName))
 	// temp names start from account1, so it's subtracted to match to the index
 	accountNameIndex--
 
-	t.MustTrue(accountNameIndex < len(accountNames), fmt.Sprintf("%s doesn't match to the account args", tempName))
+	t.MustTrue(accountNameIndex < len(accountNames), fmt.Sprintf("%s doesn't match to the account args. the account index is out of the account args length", tempName))
 
 	return inttest.GetAccountAddr(accountNames[accountNameIndex], t)
 }
