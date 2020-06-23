@@ -44,8 +44,8 @@ func UnmarshalIntoEmptyInterface(bytes []byte, t *testing.T) map[string]interfac
 	return raw
 }
 
-// ValidateTempAccountNames is a function to validate temp account name
-func ValidateTempAccountNames(e string) error {
+// ValidateTempAccountName is a function to validate temp account name
+func ValidateTempAccountName(e string) error {
 	exp := regexp.MustCompile(`^account[0-9]+$`)
 	if exp.MatchString(string(e)) {
 		return nil
@@ -57,7 +57,7 @@ func ValidateTempAccountNames(e string) error {
 // GetAccountAddressFromTempName is a function to get account address from temp name
 func GetAccountAddressFromTempName(tempName string, t *testing.T) string {
 
-	err := ValidateTempAccountNames(tempName)
+	err := ValidateTempAccountName(tempName)
 	t.MustNil(err, fmt.Sprintf("%s is invalid account name", tempName))
 
 	accountNameIndex, err := strconv.Atoi(strings.TrimLeft(tempName, "account"))
