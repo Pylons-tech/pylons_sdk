@@ -184,7 +184,7 @@ func PropertyExistCheck(step FixtureStep, t *testing.T) {
 		if len(pCheck.Owner) == 0 {
 			pOwnerAddr = ""
 		} else {
-			pOwnerAddr = inttest.GetAccountAddr(pCheck.Owner, t)
+			pOwnerAddr = GetAccountAddressFromTempName(pCheck.Owner, t)
 		}
 		if len(pCheck.Cookbooks) > 0 {
 			for _, cbName := range pCheck.Cookbooks {
@@ -337,6 +337,7 @@ func RunSingleFixtureTest(file string, t *testing.T) {
 		}
 		var fixtureSteps []FixtureStep
 		byteValue := ReadFile(file, t)
+
 		err := json.Unmarshal([]byte(byteValue), &fixtureSteps)
 		t.WithFields(testing.Fields{
 			"raw_json": string(byteValue),
@@ -352,6 +353,7 @@ func RunSingleFixtureTest(file string, t *testing.T) {
 				status:          NotStarted,
 			})
 		}
+
 		for idx := range fixtureSteps {
 			UpdateWorkQueueStatus(file, idx, fixtureSteps, InProgress, t)
 		}

@@ -22,7 +22,7 @@
             },
             "property": [
                 {
-                    "owner": "eugen",
+                    "owner": "account2",
                     "cookbooks": ["Multi Message Cookbook 1", "Multi Message Cookbook 2"]
                 }
             ]

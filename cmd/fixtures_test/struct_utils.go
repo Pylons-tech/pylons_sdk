@@ -2,8 +2,13 @@ package fixturetest
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
+	"regexp"
+	"strconv"
+	"strings"
 
 	testing "github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test/evtesting"
 
@@ -39,13 +44,41 @@ func UnmarshalIntoEmptyInterface(bytes []byte, t *testing.T) map[string]interfac
 	return raw
 }
 
+// ValidateTempAccountName is a function to validate temp account name
+func ValidateTempAccountName(e string) error {
+	exp := regexp.MustCompile(`^account[0-9]+$`)
+	if exp.MatchString(string(e)) {
+		return nil
+	}
+
+	return errors.New("Invalid account name")
+}
+
+// GetAccountAddressFromTempName is a function to get account address from temp name
+func GetAccountAddressFromTempName(tempName string, t *testing.T) string {
+
+	err := ValidateTempAccountName(tempName)
+	t.MustNil(err, fmt.Sprintf("%s is an invalid account name", tempName))
+
+	accountNameIndex, err := strconv.Atoi(strings.TrimLeft(tempName, "account"))
+	t.MustNil(err, fmt.Sprintf("%s is an invalid account name", tempName))
+	t.MustTrue(accountNameIndex > 0, fmt.Sprintf("%s doesn't match to the accounts args. temp account names start from account1", tempName))
+	// temp names start from account1, so it's subtracted to match to the index
+	accountNameIndex--
+
+	t.MustTrue(accountNameIndex < len(accountNames), fmt.Sprintf("%s doesn't match to the accounts args. the account index is out of the account args length", tempName))
+
+	return inttest.GetAccountAddr(accountNames[accountNameIndex], t)
+}
+
 // UpdateSenderKeyToAddress is a function to update sender key to sender's address
 func UpdateSenderKeyToAddress(bytes []byte, t *testing.T) []byte {
 	raw := UnmarshalIntoEmptyInterface(bytes, t)
 
-	senderName, ok := raw["Sender"].(string)
+	senderTempName, ok := raw["Sender"].(string)
 	t.MustTrue(ok, "sender field is empty")
-	raw["Sender"] = inttest.GetAccountAddr(senderName, t)
+
+	raw["Sender"] = GetAccountAddressFromTempName(senderTempName, t)
 	newBytes, err := json.Marshal(raw)
 	t.WithFields(testing.Fields{
 		"updated_sender_interface": raw,
@@ -57,9 +90,9 @@ func UpdateSenderKeyToAddress(bytes []byte, t *testing.T) []byte {
 func UpdateReceiverKeyToAddress(bytes []byte, t *testing.T) []byte {
 	raw := UnmarshalIntoEmptyInterface(bytes, t)
 
-	receiverName, ok := raw["Receiver"].(string)
+	receiverTempName, ok := raw["Receiver"].(string)
 	t.MustTrue(ok, "receiver field is empty")
-	raw["Receiver"] = inttest.GetAccountAddr(receiverName, t)
+	raw["Receiver"] = GetAccountAddressFromTempName(receiverTempName, t)
 	newBytes, err := json.Marshal(raw)
 	t.WithFields(testing.Fields{
 		"updated_receiver_interface": raw,
