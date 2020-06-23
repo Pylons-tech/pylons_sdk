@@ -41,20 +41,27 @@ func UnmarshalIntoEmptyInterface(bytes []byte, t *testing.T) map[string]interfac
 	return raw
 }
 
+// GetAccountAddressFromTempName is a function to get account address from temp name
+func GetAccountAddressFromTempName(tempName string, t *testing.T) string {
+
+	accountNameIndex, err := strconv.Atoi(strings.TrimLeft(tempName, "account"))
+	t.MustNil(err, "temp account name doesn't match to the account args")
+	t.MustTrue(accountNameIndex > 0, "temp account name doesn't match to the account args")
+	accountNameIndex-- // temp names start from account1, so it's subtracted to match to the index
+
+	t.MustTrue(accountNameIndex < len(accountNames), "temp account name doesn't match to the account args")
+
+	return inttest.GetAccountAddr(accountNames[accountNameIndex], t)
+}
+
 // UpdateSenderKeyToAddress is a function to update sender key to sender's address
 func UpdateSenderKeyToAddress(bytes []byte, t *testing.T) []byte {
 	raw := UnmarshalIntoEmptyInterface(bytes, t)
 
 	senderTempName, ok := raw["Sender"].(string)
-	senderNameIndex, err := strconv.Atoi(strings.TrimLeft(senderTempName, "account"))
-	t.MustNil(err, "temp account name doesn't match to the account args")
-	senderNameIndex--
-
-	t.MustTrue(senderNameIndex < len(accountNames), "temp account name doesn't match to the account args")
-	senderName := accountNames[senderNameIndex]
-
 	t.MustTrue(ok, "sender field is empty")
-	raw["Sender"] = inttest.GetAccountAddr(senderName, t)
+
+	raw["Sender"] = GetAccountAddressFromTempName(senderTempName, t)
 	newBytes, err := json.Marshal(raw)
 	t.WithFields(testing.Fields{
 		"updated_sender_interface": raw,
@@ -67,15 +74,8 @@ func UpdateReceiverKeyToAddress(bytes []byte, t *testing.T) []byte {
 	raw := UnmarshalIntoEmptyInterface(bytes, t)
 
 	receiverTempName, ok := raw["Receiver"].(string)
-	receiverNameIndex, err := strconv.Atoi(strings.TrimLeft(receiverTempName, "account"))
-	t.MustNil(err, "temp account name doesn't match to the account args")
-	receiverNameIndex--
-
-	t.MustTrue(receiverNameIndex < len(accountNames), "temp account name doesn't match to the account args")
-	receiverName := accountNames[receiverNameIndex]
-
 	t.MustTrue(ok, "receiver field is empty")
-	raw["Receiver"] = inttest.GetAccountAddr(receiverName, t)
+	raw["Receiver"] = GetAccountAddressFromTempName(receiverTempName, t)
 	newBytes, err := json.Marshal(raw)
 	t.WithFields(testing.Fields{
 		"updated_receiver_interface": raw,

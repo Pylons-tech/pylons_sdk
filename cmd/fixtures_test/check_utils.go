@@ -184,14 +184,7 @@ func PropertyExistCheck(step FixtureStep, t *testing.T) {
 		if len(pCheck.Owner) == 0 {
 			pOwnerAddr = ""
 		} else {
-			ownerAddrIndex, err := strconv.Atoi(strings.TrimLeft(pCheck.Owner, "account"))
-			t.MustNil(err, "temp account name doesn't match to the account args")
-			ownerAddrIndex--
-
-			t.MustTrue(ownerAddrIndex < len(accountNames), "temp account name doesn't match to the account args")
-			// pOwnerAddr := accountNames[ownerAddrIndex]
-
-			pOwnerAddr = inttest.GetAccountAddr(accountNames[ownerAddrIndex], t)
+			pOwnerAddr = GetAccountAddressFromTempName(pCheck.Owner, t)
 		}
 		if len(pCheck.Cookbooks) > 0 {
 			for _, cbName := range pCheck.Cookbooks {
