@@ -2,6 +2,7 @@ package fixturetest
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"strconv"
@@ -46,10 +47,11 @@ func GetAccountAddressFromTempName(tempName string, t *testing.T) string {
 
 	accountNameIndex, err := strconv.Atoi(strings.TrimLeft(tempName, "account"))
 	t.MustNil(err, "temp account name doesn't match to the account args")
-	t.MustTrue(accountNameIndex > 0, "temp account name doesn't match to the account args")
-	accountNameIndex-- // temp names start from account1, so it's subtracted to match to the index
+	t.MustTrue(accountNameIndex > 0, fmt.Sprintf("%s doesn't match to the account args", tempName))
+	// temp names start from account1, so it's subtracted to match to the index
+	accountNameIndex--
 
-	t.MustTrue(accountNameIndex < len(accountNames), "temp account name doesn't match to the account args")
+	t.MustTrue(accountNameIndex < len(accountNames), fmt.Sprintf("%s doesn't match to the account args", tempName))
 
 	return inttest.GetAccountAddr(accountNames[accountNameIndex], t)
 }
