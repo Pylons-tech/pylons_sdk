@@ -105,7 +105,7 @@ If not specify this param, it tests all scenario files. If specify only do speci
 ```
 make fixture_tests ARGS="--scenarios=multi_msg_tx,double_empty"
 ```
-- set account names to be used for the fixture tests
+- set account names to be used for the fixture tests.
 The account names will replace all the placeholder account names in the fixture test files.
 ```
 make fixture_tests ARGS="--accounts michael,eugen"
