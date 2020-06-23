@@ -24,7 +24,7 @@ Here's sample scenario's step in JSON
             },
             "property": [
                 {
-                    "owner": "eugen",
+                    "owner": "account2",
                     "items": [
                         {
                             "stringKeys": [],
@@ -104,6 +104,11 @@ make fixture_tests ARGS="-use-known-cookbook"
 If not specify this param, it tests all scenario files. If specify only do specific tests.
 ```
 make fixture_tests ARGS="--scenarios=multi_msg_tx,double_empty"
+```
+- set account names to be used for the fixture tests.
+The account names will replace all the placeholder account names in the fixture test files.
+```
+make fixture_tests ARGS="--accounts michael,eugen"
 ```
 
 ## To make fixture test scenarios clean

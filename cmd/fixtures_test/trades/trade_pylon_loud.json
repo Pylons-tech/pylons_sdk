@@ -2,7 +2,7 @@
     "CoinInputs":[
         {
             "Coin": "pylon",
-            "Count": "1"
+            "Count": "10"
         }
     ],
     "ItemInputRefs": [],
@@ -12,6 +12,6 @@
     }],
     "ItemOutputNames": [],
     "ExtraInfo":"pylon to loud trading created by loud game",
-    "Sender":"eugen",
+    "Sender":"account2",
     "CookbookID": "LOUD-v0.0.0-1579053457"
 }

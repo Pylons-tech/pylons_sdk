@@ -63,6 +63,7 @@ func ReadFile(fileURL string, t *testing.T) []byte {
 		t.WithFields(testing.Fields{
 			"error": err,
 		}).Fatal("error reading file")
+		return []byte{}
 	}
 
 	defer jsonFile.Close()
@@ -136,6 +137,7 @@ func GetAccountAddr(account string, t *testing.T) string {
 
 // GetAccountInfoFromAddr is a function to get account information from address
 func GetAccountInfoFromAddr(addr string, t *testing.T) auth.BaseAccount {
+	var accInfo auth.BaseAccount
 	accBytes, logstr, err := RunPylonsCli([]string{"query", "account", addr}, "")
 	if t != nil && err != nil {
 		t.WithFields(testing.Fields{
@@ -143,10 +145,12 @@ func GetAccountInfoFromAddr(addr string, t *testing.T) auth.BaseAccount {
 			"error":   err,
 			"log":     logstr,
 		}).Fatal("error getting account info")
+		return accInfo
 	}
-	var accInfo auth.BaseAccount
 	err = GetAminoCdc().UnmarshalJSON(accBytes, &accInfo)
-	t.MustNil(err)
+	t.WithFields(testing.Fields{
+		"acc_bytes": string(accBytes),
+	}).MustNil(err, "something went wrong decoding raw json")
 	// t.WithFields(testing.Fields{
 	// 	"account_info": accInfo,
 	// }).Debug("debug log")
@@ -211,7 +215,7 @@ func CleanFile(filePath string, t *testing.T) {
 		t.WithFields(testing.Fields{
 			"error":     err,
 			"file_path": filePath,
-		}).Fatal("error removing file")
+		}).Error("error removing file")
 	}
 }
 
@@ -279,7 +283,7 @@ func JSONFormatter(param interface{}) string {
 	return fmt.Sprintf("%+v", param)
 }
 
-// Exist check if element exist in an array
+// Exists check if element exist in an array
 func Exists(slice []string, val string) bool {
 	for _, item := range slice {
 		if item == val {

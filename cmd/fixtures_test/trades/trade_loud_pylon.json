@@ -8,10 +8,10 @@
     "ItemInputRefs": [],
     "CoinOutputs": [{
         "denom":"pylon",
-        "amount": "1"
+        "amount": "10"
     }],
     "ItemOutputNames": [],
     "ExtraInfo":"loud to pylon trading created by loud game",
-    "Sender":"eugen",
+    "Sender":"account2",
     "CookbookID": "LOUD-v0.0.0-1579053457"
 }

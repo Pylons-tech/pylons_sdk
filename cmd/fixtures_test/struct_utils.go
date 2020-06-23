@@ -2,8 +2,13 @@ package fixturetest
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
+	"regexp"
+	"strconv"
+	"strings"
 
 	testing "github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test/evtesting"
 
@@ -39,15 +44,59 @@ func UnmarshalIntoEmptyInterface(bytes []byte, t *testing.T) map[string]interfac
 	return raw
 }
 
+// ValidateTempAccountName is a function to validate temp account name
+func ValidateTempAccountName(e string) error {
+	exp := regexp.MustCompile(`^account[0-9]+$`)
+	if exp.MatchString(string(e)) {
+		return nil
+	}
+
+	return errors.New("Invalid account name")
+}
+
+// GetAccountAddressFromTempName is a function to get account address from temp name
+func GetAccountAddressFromTempName(tempName string, t *testing.T) string {
+
+	err := ValidateTempAccountName(tempName)
+	t.MustNil(err, fmt.Sprintf("%s is an invalid account name", tempName))
+
+	accountNameIndex, err := strconv.Atoi(strings.TrimLeft(tempName, "account"))
+	t.MustNil(err, fmt.Sprintf("%s is an invalid account name", tempName))
+	t.MustTrue(accountNameIndex > 0, fmt.Sprintf("%s doesn't match to the accounts args. temp account names start from account1", tempName))
+	// temp names start from account1, so it's subtracted to match to the index
+	accountNameIndex--
+
+	t.MustTrue(accountNameIndex < len(accountNames), fmt.Sprintf("%s doesn't match to the accounts args. the account index is out of the account args length", tempName))
+
+	return inttest.GetAccountAddr(accountNames[accountNameIndex], t)
+}
+
 // UpdateSenderKeyToAddress is a function to update sender key to sender's address
 func UpdateSenderKeyToAddress(bytes []byte, t *testing.T) []byte {
 	raw := UnmarshalIntoEmptyInterface(bytes, t)
 
-	senderName, ok := raw["Sender"].(string)
-	t.MustTrue(ok)
-	raw["Sender"] = inttest.GetAccountAddr(senderName, t)
+	senderTempName, ok := raw["Sender"].(string)
+	t.MustTrue(ok, "sender field is empty")
+
+	raw["Sender"] = GetAccountAddressFromTempName(senderTempName, t)
 	newBytes, err := json.Marshal(raw)
-	t.MustNil(err)
+	t.WithFields(testing.Fields{
+		"updated_sender_interface": raw,
+	}).MustNil(err, "something went wrong encoding raw json")
+	return newBytes
+}
+
+// UpdateReceiverKeyToAddress is a function to update receiver key to receiver's address
+func UpdateReceiverKeyToAddress(bytes []byte, t *testing.T) []byte {
+	raw := UnmarshalIntoEmptyInterface(bytes, t)
+
+	receiverTempName, ok := raw["Receiver"].(string)
+	t.MustTrue(ok, "receiver field is empty")
+	raw["Receiver"] = GetAccountAddressFromTempName(receiverTempName, t)
+	newBytes, err := json.Marshal(raw)
+	t.WithFields(testing.Fields{
+		"updated_receiver_interface": raw,
+	}).MustNil(err, "something went wrong encoding raw json")
 	return newBytes
 }
 
@@ -63,7 +112,9 @@ func UpdateCBNameToID(bytes []byte, t *testing.T) []byte {
 	if exist && err != nil {
 		raw["CookbookID"] = cbID
 		newBytes, err := json.Marshal(raw)
-		t.MustNil(err)
+		t.WithFields(testing.Fields{
+			"updated_cookbook_id_interface": raw,
+		}).MustNil(err, "something went wrong encoding raw json")
 		return newBytes
 	}
 	return bytes
@@ -74,13 +125,17 @@ func UpdateRecipeName(bytes []byte, t *testing.T) []byte {
 	raw := UnmarshalIntoEmptyInterface(bytes, t)
 
 	rcpName, ok := raw["RecipeName"].(string)
-	t.MustTrue(ok)
+	t.MustTrue(ok, "recipe name field is empty")
 	rcpID, exist, err := inttest.GetRecipeIDFromName(rcpName)
-	t.MustTrue(exist)
-	t.MustNil(err)
+	t.WithFields(testing.Fields{
+		"recipe_name": rcpName,
+	}).MustTrue(exist, "there's no recipe id with specific recipe name")
+	t.MustNil(err, "there's an issue while getting recipe id from name")
 	raw["RecipeID"] = rcpID
 	newBytes, err := json.Marshal(raw)
-	t.MustNil(err)
+	t.WithFields(testing.Fields{
+		"updated_recipe_id_interface": raw,
+	}).MustNil(err, "something went wrong encoding raw json")
 	return newBytes
 }
 
@@ -89,13 +144,17 @@ func UpdateTradeExtraInfoToID(bytes []byte, t *testing.T) []byte {
 	raw := UnmarshalIntoEmptyInterface(bytes, t)
 
 	trdInfo, ok := raw["TradeInfo"].(string)
-	t.MustTrue(ok)
+	t.MustTrue(ok, "trade info does not exist in json")
 	trdID, exist, err := inttest.GetTradeIDFromExtraInfo(trdInfo)
-	t.MustTrue(exist)
-	t.MustNil(err)
+	t.WithFields(testing.Fields{
+		"trade_info": trdInfo,
+	}).MustTrue(exist, "there's not trade id with specific info")
+	t.MustNil(err, "there's an issue while getting trade id from info")
 	raw["TradeID"] = trdID
 	newBytes, err := json.Marshal(raw)
-	t.MustNil(err)
+	t.WithFields(testing.Fields{
+		"updated_trade_id_interface": raw,
+	}).MustNil(err, "something went wrong encoding raw json")
 	return newBytes
 }
 
@@ -120,7 +179,9 @@ func UpdateExecID(bytes []byte, t *testing.T) []byte {
 		}).Fatal("execID not available")
 	}
 	newBytes, err := json.Marshal(raw)
-	t.MustNil(err)
+	t.WithFields(testing.Fields{
+		"updated_exec_id_interface": raw,
+	}).MustNil(err, "something went wrong encoding raw json")
 	return newBytes
 }
 
@@ -130,19 +191,23 @@ func UpdateItemIDFromName(bytes []byte, includeLockedByRcp bool, t *testing.T) [
 
 	itemName, ok := raw["ItemName"].(string)
 
-	t.MustTrue(ok)
+	t.MustTrue(ok, "item name does not exist in json")
 	itemID, exist, err := inttest.GetItemIDFromName(itemName, includeLockedByRcp)
 	if !exist {
 		t.WithFields(testing.Fields{
-			"name":           itemName,
+			"item_name":      itemName,
 			"include_locked": includeLockedByRcp,
 		}).Debug("no item fit params")
 	}
-	t.MustTrue(exist)
-	t.MustNil(err)
+	t.WithFields(testing.Fields{
+		"item_name":      itemName,
+		"include_locked": includeLockedByRcp,
+	}).MustNil(err, "there's an issue while getting item id from name")
 	raw["ItemID"] = itemID
 	newBytes, err := json.Marshal(raw)
-	t.MustNil(err)
+	t.WithFields(testing.Fields{
+		"updated_item_id_interface": raw,
+	}).MustNil(err, "something went wrong encoding raw json")
 	return newBytes
 }
 
@@ -166,8 +231,10 @@ func GetItemIDsFromNames(bytes []byte, includeLockedByRcp bool, t *testing.T) []
 				"include_locked": includeLockedByRcp,
 			}).Debug("no item fit params")
 		}
-		t.MustTrue(exist)
-		t.MustNil(err)
+		t.WithFields(testing.Fields{
+			"name":           itemName,
+			"include_locked": includeLockedByRcp,
+		}).MustNil(err, "something went wrong getting item id from name")
 		ItemIDs = append(ItemIDs, itemID)
 	}
 	return ItemIDs
@@ -243,10 +310,14 @@ func GetItemOutputsFromBytes(bytes []byte, sender string, t *testing.T) types.It
 	for _, iN := range itemOutputNamesReader.ItemOutputNames {
 		var io types.Item
 		iID, ok, err := inttest.GetItemIDFromName(iN, false)
-		t.MustNil(err)
-		t.MustTrue(ok)
+		t.MustTrue(ok, "item id with specific name does not exist")
+		t.WithFields(testing.Fields{
+			"item_name": iN,
+		}).MustNil(err, "there's an issue while getting item id from name")
 		io, err = inttest.GetItemByGUID(iID)
-		t.MustNil(err)
+		t.WithFields(testing.Fields{
+			"item_id": iID,
+		}).MustNil(err, "there's an issue while getting item from id")
 		itemOutputs = append(itemOutputs, io)
 	}
 	return itemOutputs

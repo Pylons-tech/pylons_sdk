@@ -32,9 +32,10 @@ type FixtureStep struct {
 	} `json:"msgRefs"`
 	Output struct {
 		TxResult struct {
-			Status   string `json:"status"`
-			Message  string `json:"message"`
-			ErrorLog string `json:"errLog"`
+			Status         string `json:"status"`
+			Message        string `json:"message"`
+			ErrorLog       string `json:"errLog"`
+			BroadcastError string `json:"broadcastError"`
 		} `json:"txResult"`
 		Property []struct {
 			Owner          string   `json:"owner"`
@@ -183,7 +184,7 @@ func PropertyExistCheck(step FixtureStep, t *testing.T) {
 		if len(pCheck.Owner) == 0 {
 			pOwnerAddr = ""
 		} else {
-			pOwnerAddr = inttest.GetAccountAddr(pCheck.Owner, t)
+			pOwnerAddr = GetAccountAddressFromTempName(pCheck.Owner, t)
 		}
 		if len(pCheck.Cookbooks) > 0 {
 			for _, cbName := range pCheck.Cookbooks {
@@ -303,7 +304,7 @@ func PropertyExistCheck(step FixtureStep, t *testing.T) {
 			for _, coinCheck := range pCheck.Coins {
 				accInfo := inttest.GetAccountInfoFromName(pCheck.Owner, t)
 				// TODO should we have the case of using GTE, LTE, GT or LT ?
-				t.MustTrue(accInfo.Coins.AmountOf(coinCheck.Coin).Equal(sdk.NewInt(coinCheck.Amount)))
+				t.MustTrue(accInfo.Coins.AmountOf(coinCheck.Coin).Equal(sdk.NewInt(coinCheck.Amount)), "account balance is incorrect")
 			}
 		}
 	}
@@ -336,8 +337,11 @@ func RunSingleFixtureTest(file string, t *testing.T) {
 		}
 		var fixtureSteps []FixtureStep
 		byteValue := ReadFile(file, t)
+
 		err := json.Unmarshal([]byte(byteValue), &fixtureSteps)
-		t.MustNil(err)
+		t.WithFields(testing.Fields{
+			"raw_json": string(byteValue),
+		}).MustNil(err, "something went wrong decoding fixture steps")
 
 		CheckSteps(fixtureSteps, t)
 
@@ -349,6 +353,7 @@ func RunSingleFixtureTest(file string, t *testing.T) {
 				status:          NotStarted,
 			})
 		}
+
 		for idx := range fixtureSteps {
 			UpdateWorkQueueStatus(file, idx, fixtureSteps, InProgress, t)
 		}
