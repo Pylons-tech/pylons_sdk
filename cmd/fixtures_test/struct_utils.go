@@ -58,15 +58,15 @@ func ValidateTempAccountName(e string) error {
 func GetAccountAddressFromTempName(tempName string, t *testing.T) string {
 
 	err := ValidateTempAccountName(tempName)
-	t.MustNil(err, fmt.Sprintf("%s is invalid account name", tempName))
+	t.MustNil(err, fmt.Sprintf("%s is an invalid account name", tempName))
 
 	accountNameIndex, err := strconv.Atoi(strings.TrimLeft(tempName, "account"))
-	t.MustNil(err, fmt.Sprintf("%s is invalid account name", tempName))
-	t.MustTrue(accountNameIndex > 0, fmt.Sprintf("%s doesn't match to the account args. temp account names start from account1", tempName))
+	t.MustNil(err, fmt.Sprintf("%s is an invalid account name", tempName))
+	t.MustTrue(accountNameIndex > 0, fmt.Sprintf("%s doesn't match to the accounts args. temp account names start from account1", tempName))
 	// temp names start from account1, so it's subtracted to match to the index
 	accountNameIndex--
 
-	t.MustTrue(accountNameIndex < len(accountNames), fmt.Sprintf("%s doesn't match to the account args. the account index is out of the account args length", tempName))
+	t.MustTrue(accountNameIndex < len(accountNames), fmt.Sprintf("%s doesn't match to the accounts args. the account index is out of the account args length", tempName))
 
 	return inttest.GetAccountAddr(accountNames[accountNameIndex], t)
 }
