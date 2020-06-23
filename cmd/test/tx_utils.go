@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -296,7 +297,7 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 	// 	"log": logstr,
 	// })("TX sign result")
 	if err != nil {
-		return "error signing transaction", err
+		return fmt.Sprintf("error signing transaction, %s", string(output)), err
 	}
 	t.Trace("tx_with_nonce.step.H")
 
@@ -348,13 +349,14 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 
 // TestTxWithMsgWithNonce is a function to send transaction with message and nonce
 func TestTxWithMsgWithNonce(t *testing.T, msgValue sdk.Msg, signer string, isBech32Addr bool) (string, error) {
-	txhash, err := SendMultiMsgTxWithNonce(t, []sdk.Msg{msgValue}, signer, isBech32Addr)
+	output, err := SendMultiMsgTxWithNonce(t, []sdk.Msg{msgValue}, signer, isBech32Addr)
 	if err != nil {
+		// output is txhash if it's a success transaction, if fail, it's output log
 		t.WithFields(testing.Fields{
-			"txhash": txhash,
+			"output": output,
 			"error":  err,
 			"func":   "TestTxWithMsgWithNonce",
 		}).Error("error log")
 	}
-	return txhash, err
+	return output, err
 }
