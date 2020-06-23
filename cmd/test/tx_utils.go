@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"sync"
 	"time"
+	"fmt"
 
 	testing "github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test/evtesting"
 	log "github.com/sirupsen/logrus"
@@ -282,7 +283,7 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 	// 	"log": logstr,
 	// })("TX sign result")
 	if err != nil {
-		return "error signing transaction", err
+		return "error signing transaction", fmt.Errorf("%s;%s", err.Error(), string(output))
 	}
 	t.Trace("tx_with_nonce.step.I")
 
