@@ -66,9 +66,9 @@ func GetAccountAddressFromTempName(tempName string, t *testing.T) string {
 	// temp names start from account1, so it's subtracted to match to the index
 	accountNameIndex--
 
-	t.MustTrue(accountNameIndex < len(accountNames), fmt.Sprintf("%s doesn't match to the accounts args. the account index is out of the account args length", tempName))
+	t.MustTrue(accountNameIndex < len(FixtureTestOpts.AccountNames), fmt.Sprintf("%s doesn't match to the accounts args. the account index is out of the account args length", tempName))
 
-	return inttest.GetAccountAddr(accountNames[accountNameIndex], t)
+	return inttest.GetAccountAddr(FixtureTestOpts.AccountNames[accountNameIndex], t)
 }
 
 // UpdateSenderKeyToAddress is a function to update sender key to sender's address
