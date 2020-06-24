@@ -281,7 +281,7 @@ func (t *T) MustTrue(value bool, args ...interface{}) {
 			t.WithFields(Fields(t.fields)).
 				AddFields(log.Fields{
 					"error_from": "MustTrue validation failure",
-				}).Debug(args...)
+				}).Fatal(args...)
 		}
 		require.True(t.origin, value)
 	}
@@ -299,11 +299,13 @@ func (t *T) MustNil(err error, args ...interface{}) {
 					"error_from": "MustNil validation failure",
 				}).Fatal(args...)
 		} else {
-			t.WithFields(Fields(t.fields)).
-				AddFields(log.Fields{
-					"error":      err,
-					"error_from": "MustNil validation failure",
-				}).Debug(args...)
+			if err != nil {
+				t.WithFields(Fields(t.fields)).
+					AddFields(log.Fields{
+						"error":      err,
+						"error_from": "MustNil validation failure",
+					}).Fatal(args...)
+			}
 			require.True(t.origin, err == nil)
 		}
 	}

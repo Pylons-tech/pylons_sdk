@@ -303,7 +303,7 @@ func PropertyExistCheck(step FixtureStep, t *testing.T) {
 		}
 		if len(pCheck.Coins) > 0 {
 			for _, coinCheck := range pCheck.Coins {
-				accInfo := inttest.GetAccountInfoFromName(pCheck.Owner, t)
+				accInfo := inttest.GetAccountInfoFromAddr(pOwnerAddr, t)
 				// TODO should we have the case of using GTE, LTE, GT or LT ?
 				t.MustTrue(accInfo.Coins.AmountOf(coinCheck.Coin).Equal(sdk.NewInt(coinCheck.Amount)), "account balance is incorrect")
 			}
