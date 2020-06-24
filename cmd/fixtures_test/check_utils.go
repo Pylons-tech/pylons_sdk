@@ -62,6 +62,7 @@ type FixtureStep struct {
 type TestOptions struct {
 	IsParallel        bool
 	CreateNewCookbook bool
+	AccountNames      []string
 }
 
 // FixtureTestOpts is a variable to have fixture test options
