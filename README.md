@@ -68,7 +68,7 @@ func TestFixturesViaCLI(t *testing.T) {
 	}
 	fixturetestSDK.FixtureTestOpts.AccountNames = []string{}
 	if len(accounts) > 0 {
-		FixtureTestOpts.AccountNames = strings.Split(accounts, ",")
+		fixturetestSDK.FixtureTestOpts.AccountNames = strings.Split(accounts, ",")
 	}
 	fixturetestSDK.RunTestScenarios("scenarios", scenarioFileNames, t)
 }
