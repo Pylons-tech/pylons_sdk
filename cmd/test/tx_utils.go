@@ -40,6 +40,11 @@ func fileExists(filename string) bool {
 // GenTxWithMsg is a function to generate transaction from msg
 func GenTxWithMsg(messages []sdk.Msg) (auth.StdTx, error) {
 	var err error
+	for i, msg := range messages {
+		if err = msg.ValidateBasic(); err != nil {
+			return auth.StdTx{}, fmt.Errorf("%dth msg does not pass basic validation for %+v", i, err)
+		}
+	}
 	cdc := GetAminoCdc()
 	cliCtx := context.NewCLIContext().WithCodec(cdc)
 
