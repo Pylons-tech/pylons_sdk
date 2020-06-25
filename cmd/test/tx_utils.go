@@ -42,7 +42,7 @@ func GenTxWithMsg(messages []sdk.Msg) (auth.StdTx, error) {
 	var err error
 	for i, msg := range messages {
 		if err = msg.ValidateBasic(); err != nil {
-			return auth.StdTx{}, fmt.Errorf("%dth msg does not pass basic validation for %+v", i, err)
+			return auth.StdTx{}, fmt.Errorf("%dth msg does not pass basic validation for %s", i, err.Error())
 		}
 	}
 	cdc := GetAminoCdc()
@@ -80,20 +80,20 @@ func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) (string, e
 		// }).Debug("debug log")
 
 		t.WithFields(testing.Fields{
-			"broadcast_args": txBroadcastArgs,
-			"output":         string(output),
-			"broadcast_log":  logstr,
-		}).MustNil(err, "there's an issue while running pylonscli broadcast command")
+			"broadcast_args":   txBroadcastArgs,
+			"broadcast_output": string(output),
+			"broadcast_log":    logstr,
+		}).MustNil(err, "error running pylonscli broadcast command")
 		txResponse := sdk.TxResponse{}
 
 		err = GetAminoCdc().UnmarshalJSON(output, &txResponse)
 		// This can happen when "pylonscli config output json" is not set or when real issue is available
+		t.WithFields(testing.Fields{
+			"broadcast_output":  string(output),
+			"possible_solution": "You can set cli config output as json to solve this issue",
+		}).MustNil(err, "error decoding transaction broadcast result")
+
 		if err != nil {
-			t.WithFields(testing.Fields{
-				"broadcast_output":  string(output),
-				"error":             err,
-				"possible_solution": "You can set cli config output as json to solve this issue",
-			}).Fatal("error decoding transaction broadcast result")
 			return txResponse.TxHash, err
 		}
 
@@ -122,7 +122,7 @@ func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) (string, e
 	err := json.Unmarshal(signedTx, &postBodyJSON)
 	t.WithFields(testing.Fields{
 		"signed_tx": string(signedTx),
-	}).MustNil(err, "something went wrong decoding raw json")
+	}).MustNil(err, "error decoding raw json")
 
 	postBodyJSON["tx"] = postBodyJSON["value"]
 	postBodyJSON["value"] = nil
@@ -146,7 +146,7 @@ func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) (string, e
 	var result map[string]string
 
 	err = json.NewDecoder(resp.Body).Decode(&result)
-	t.MustNil(err, "something went wrong decoding raw json")
+	t.MustNil(err, "error decoding raw json")
 	defer resp.Body.Close()
 	t.WithFields(testing.Fields{
 		"get_pylons_api_response": result,
@@ -167,9 +167,9 @@ func TestTxWithMsg(t *testing.T, msgValue sdk.Msg, signer string) string {
 	signedTxFile := filepath.Join(tmpDir, "signed_tx.json")
 
 	txModel, err := GenTxWithMsg([]sdk.Msg{msgValue})
-	t.MustNil(err, "there's an issue while while building transaction model from messages")
+	t.MustNil(err, "error while building transaction model from messages")
 	output, err := GetAminoCdc().MarshalJSON(txModel)
-	t.MustNil(err, "something went wrong encoding transaction model")
+	t.MustNil(err, "error encoding transaction model")
 
 	err = ioutil.WriteFile(rawTxFile, output, 0644)
 	if err != nil {

@@ -2,8 +2,8 @@ package inttest
 
 import (
 	"encoding/hex"
+	"encoding/json"
 	"errors"
-	"strings"
 
 	testing "github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test/evtesting"
 
@@ -91,11 +91,9 @@ func ListExecutionsViaCLI(account string, t *testing.T) ([]types.Execution, erro
 	}
 	var listExecutionsResp queriers.ExecResponse
 	err = GetAminoCdc().UnmarshalJSON(output, &listExecutionsResp)
-	if err != nil {
-		t.WithFields(testing.Fields{
-			"error": err,
-		}).Fatal("error unmarshaling list executions")
-	}
+	t.WithFields(testing.Fields{
+		"list_executions_output": string(output),
+	}).MustNil(err, "error unmarshaling list executions")
 	return listExecutionsResp.Executions, err
 }
 
@@ -132,6 +130,12 @@ func WaitAndGetTxError(txhash string, maxWaitBlock int64, t *testing.T) ([]byte,
 	return txErrorResBytes, nil
 }
 
+// IsJSON checks if bytes is in json
+func IsJSON(str string) bool {
+	var js json.RawMessage
+	return json.Unmarshal([]byte(str), &js) == nil
+}
+
 // GetTxError is a function to get transaction error from txhash
 func GetTxError(txhash string, t *testing.T) ([]byte, error) {
 	output, _, err := RunPylonsCli([]string{"query", "tx", txhash}, "")
@@ -144,7 +148,7 @@ func GetTxError(txhash string, t *testing.T) ([]byte, error) {
 		return []byte{}, err
 	}
 
-	if strings.Contains(tx.RawLog, "invalid request") {
+	if !IsJSON(tx.RawLog) {
 		return []byte(tx.RawLog), nil
 	}
 	return []byte{}, nil

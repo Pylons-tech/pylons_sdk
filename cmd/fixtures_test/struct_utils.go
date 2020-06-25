@@ -36,11 +36,10 @@ func ReadFile(fileURL string, t *testing.T) []byte {
 // UnmarshalIntoEmptyInterface is a function to convert bytes into map[string]interface{}
 func UnmarshalIntoEmptyInterface(bytes []byte, t *testing.T) map[string]interface{} {
 	var raw map[string]interface{}
-	if err := json.Unmarshal(bytes, &raw); err != nil {
-		t.WithFields(testing.Fields{
-			"error": err,
-		}).Fatal("error unmarshaling")
-	}
+	err := json.Unmarshal(bytes, &raw)
+	t.WithFields(testing.Fields{
+		"bytes": string(bytes),
+	}).MustNil(err, "error unmarshaling")
 	return raw
 }
 
@@ -60,7 +59,7 @@ func GetAccountAddressFromTempName(tempName string, t *testing.T) string {
 	err := ValidateTempAccountName(tempName)
 	t.MustNil(err, fmt.Sprintf("%s is an invalid account name", tempName))
 
-	accountNameIndex, err := strconv.Atoi(strings.TrimLeft(tempName, "account"))
+	accountNameIndex, err := strconv.Atoi(strings.TrimPrefix(tempName, "account"))
 	t.MustNil(err, fmt.Sprintf("%s is an invalid account name", tempName))
 	t.MustTrue(accountNameIndex > 0, fmt.Sprintf("%s doesn't match to the accounts args. temp account names start from account1", tempName))
 	// temp names start from account1, so it's subtracted to match to the index
@@ -82,7 +81,7 @@ func UpdateSenderKeyToAddress(bytes []byte, t *testing.T) []byte {
 	newBytes, err := json.Marshal(raw)
 	t.WithFields(testing.Fields{
 		"updated_sender_interface": raw,
-	}).MustNil(err, "something went wrong encoding raw json")
+	}).MustNil(err, "error encoding raw json")
 	return newBytes
 }
 
@@ -96,7 +95,7 @@ func UpdateReceiverKeyToAddress(bytes []byte, t *testing.T) []byte {
 	newBytes, err := json.Marshal(raw)
 	t.WithFields(testing.Fields{
 		"updated_receiver_interface": raw,
-	}).MustNil(err, "something went wrong encoding raw json")
+	}).MustNil(err, "error encoding raw json")
 	return newBytes
 }
 
@@ -114,7 +113,7 @@ func UpdateCBNameToID(bytes []byte, t *testing.T) []byte {
 		newBytes, err := json.Marshal(raw)
 		t.WithFields(testing.Fields{
 			"updated_cookbook_id_interface": raw,
-		}).MustNil(err, "something went wrong encoding raw json")
+		}).MustNil(err, "error encoding raw json")
 		return newBytes
 	}
 	return bytes
@@ -130,12 +129,12 @@ func UpdateRecipeName(bytes []byte, t *testing.T) []byte {
 	t.WithFields(testing.Fields{
 		"recipe_name": rcpName,
 	}).MustTrue(exist, "there's no recipe id with specific recipe name")
-	t.MustNil(err, "there's an issue while getting recipe id from name")
+	t.MustNil(err, "error getting recipe id from name")
 	raw["RecipeID"] = rcpID
 	newBytes, err := json.Marshal(raw)
 	t.WithFields(testing.Fields{
 		"updated_recipe_id_interface": raw,
-	}).MustNil(err, "something went wrong encoding raw json")
+	}).MustNil(err, "error encoding raw json")
 	return newBytes
 }
 
@@ -149,12 +148,12 @@ func UpdateTradeExtraInfoToID(bytes []byte, t *testing.T) []byte {
 	t.WithFields(testing.Fields{
 		"trade_info": trdInfo,
 	}).MustTrue(exist, "there's not trade id with specific info")
-	t.MustNil(err, "there's an issue while getting trade id from info")
+	t.MustNil(err, "error getting trade id from info")
 	raw["TradeID"] = trdID
 	newBytes, err := json.Marshal(raw)
 	t.WithFields(testing.Fields{
 		"updated_trade_id_interface": raw,
-	}).MustNil(err, "something went wrong encoding raw json")
+	}).MustNil(err, "error encoding raw json")
 	return newBytes
 }
 
@@ -165,23 +164,20 @@ func UpdateExecID(bytes []byte, t *testing.T) []byte {
 	var execRefReader struct {
 		ExecRef string
 	}
-	if err := json.Unmarshal(bytes, &execRefReader); err != nil {
-		t.WithFields(testing.Fields{
-			"error": err,
-		}).Fatal("error unmarshaling")
-	}
+	err := json.Unmarshal(bytes, &execRefReader)
+	t.WithFields(testing.Fields{
+		"bytes": string(bytes),
+	}).MustNil(err, "error unmarshaling into exec ref")
 
 	var ok bool
 	raw["ExecID"], ok = execIDs[execRefReader.ExecRef]
-	if !ok {
-		t.WithFields(testing.Fields{
-			"execRef": execRefReader.ExecRef,
-		}).Fatal("execID not available")
-	}
+	t.WithFields(testing.Fields{
+		"execRef": execRefReader.ExecRef,
+	}).MustTrue(ok, "execID not available")
 	newBytes, err := json.Marshal(raw)
 	t.WithFields(testing.Fields{
 		"updated_exec_id_interface": raw,
-	}).MustNil(err, "something went wrong encoding raw json")
+	}).MustNil(err, "error encoding raw json")
 	return newBytes
 }
 
@@ -202,12 +198,12 @@ func UpdateItemIDFromName(bytes []byte, includeLockedByRcp bool, t *testing.T) [
 	t.WithFields(testing.Fields{
 		"item_name":      itemName,
 		"include_locked": includeLockedByRcp,
-	}).MustNil(err, "there's an issue while getting item id from name")
+	}).MustNil(err, "error getting item id from name")
 	raw["ItemID"] = itemID
 	newBytes, err := json.Marshal(raw)
 	t.WithFields(testing.Fields{
 		"updated_item_id_interface": raw,
-	}).MustNil(err, "something went wrong encoding raw json")
+	}).MustNil(err, "error encoding raw json")
 	return newBytes
 }
 
@@ -216,11 +212,10 @@ func GetItemIDsFromNames(bytes []byte, includeLockedByRcp bool, t *testing.T) []
 	var itemNamesResp struct {
 		ItemNames []string
 	}
-	if err := json.Unmarshal(bytes, &itemNamesResp); err != nil {
-		t.WithFields(testing.Fields{
-			"error": err,
-		}).Fatal("error unmarshaling")
-	}
+	err := json.Unmarshal(bytes, &itemNamesResp)
+	t.WithFields(testing.Fields{
+		"bytes": string(bytes),
+	}).MustNil(err, "error unmarshaling into item names")
 	ItemIDs := []string{}
 
 	for _, itemName := range itemNamesResp.ItemNames {
@@ -234,7 +229,7 @@ func GetItemIDsFromNames(bytes []byte, includeLockedByRcp bool, t *testing.T) []
 		t.WithFields(testing.Fields{
 			"name":           itemName,
 			"include_locked": includeLockedByRcp,
-		}).MustNil(err, "something went wrong getting item id from name")
+		}).MustNil(err, "error getting item id from name")
 		ItemIDs = append(ItemIDs, itemID)
 	}
 	return ItemIDs
@@ -245,11 +240,10 @@ func GetItemInputsFromBytes(bytes []byte, t *testing.T) types.ItemInputList {
 	var itemInputRefsReader struct {
 		ItemInputRefs []string
 	}
-	if err := json.Unmarshal(bytes, &itemInputRefsReader); err != nil {
-		t.WithFields(testing.Fields{
-			"error": err,
-		}).Fatal("error unmarshaling")
-	}
+	err := json.Unmarshal(bytes, &itemInputRefsReader)
+	t.WithFields(testing.Fields{
+		"bytes": string(bytes),
+	}).MustNil(err, "error unmarshaling into item input refs")
 
 	var itemInputs types.ItemInputList
 
@@ -259,8 +253,8 @@ func GetItemInputsFromBytes(bytes []byte, t *testing.T) types.ItemInputList {
 		err := inttest.GetAminoCdc().UnmarshalJSON(iiBytes, &ii)
 		if err != nil {
 			t.WithFields(testing.Fields{
-				"error": err,
-			}).Fatal("error unmarshaling")
+				"item_input_bytes": string(iiBytes),
+			}).MustNil(err, "error unmarshaling item inputs")
 		}
 		itemInputs = append(itemInputs, ii)
 	}
@@ -272,11 +266,10 @@ func GetTradeItemInputsFromBytes(bytes []byte, t *testing.T) types.TradeItemInpu
 	var itemInputRefsReader struct {
 		ItemInputRefs []string
 	}
-	if err := json.Unmarshal(bytes, &itemInputRefsReader); err != nil {
-		t.WithFields(testing.Fields{
-			"error": err,
-		}).Fatal("error unmarshaling")
-	}
+	err := json.Unmarshal(bytes, &itemInputRefsReader)
+	t.WithFields(testing.Fields{
+		"bytes": string(bytes),
+	}).MustNil(err, "error unmarshaling into trade item input refs")
 
 	var itemInputs types.TradeItemInputList
 
@@ -284,11 +277,9 @@ func GetTradeItemInputsFromBytes(bytes []byte, t *testing.T) types.TradeItemInpu
 		var tii types.TradeItemInput
 		tiiBytes := ReadFile(tiiRef, t)
 		err := inttest.GetAminoCdc().UnmarshalJSON(tiiBytes, &tii)
-		if err != nil {
-			t.WithFields(testing.Fields{
-				"error": err,
-			}).Fatal("error unmarshaling")
-		}
+		t.WithFields(testing.Fields{
+			"trade_item_input_bytes": string(tiiBytes),
+		}).MustNil(err, "error unmarshaling trading item inputs")
 		itemInputs = append(itemInputs, tii)
 	}
 	return itemInputs
@@ -299,11 +290,10 @@ func GetItemOutputsFromBytes(bytes []byte, sender string, t *testing.T) types.It
 	var itemOutputNamesReader struct {
 		ItemOutputNames []string
 	}
-	if err := json.Unmarshal(bytes, &itemOutputNamesReader); err != nil {
-		t.WithFields(testing.Fields{
-			"error": err,
-		}).Fatal("error unmarshaling")
-	}
+	err := json.Unmarshal(bytes, &itemOutputNamesReader)
+	t.WithFields(testing.Fields{
+		"bytes": string(bytes),
+	}).MustNil(err, "error unmarshaling into item output names")
 
 	var itemOutputs types.ItemList
 
@@ -313,11 +303,11 @@ func GetItemOutputsFromBytes(bytes []byte, sender string, t *testing.T) types.It
 		t.MustTrue(ok, "item id with specific name does not exist")
 		t.WithFields(testing.Fields{
 			"item_name": iN,
-		}).MustNil(err, "there's an issue while getting item id from name")
+		}).MustNil(err, "error getting item id from name")
 		io, err = inttest.GetItemByGUID(iID)
 		t.WithFields(testing.Fields{
 			"item_id": iID,
-		}).MustNil(err, "there's an issue while getting item from id")
+		}).MustNil(err, "error getting item from id")
 		itemOutputs = append(itemOutputs, io)
 	}
 	return itemOutputs
@@ -338,11 +328,10 @@ func GetEntriesFromBytes(bytes []byte, t *testing.T) types.EntriesList {
 		}
 	}
 
-	if err := json.Unmarshal(bytes, &entriesReader); err != nil {
-		t.WithFields(testing.Fields{
-			"error": err,
-		}).Fatal("error unmarshaling")
-	}
+	err := json.Unmarshal(bytes, &entriesReader)
+	t.WithFields(testing.Fields{
+		"bytes": string(bytes),
+	}).MustNil(err, "error unmarshaling into entries reader")
 
 	var wpl types.EntriesList
 	for _, co := range entriesReader.Entries.CoinOutputs {
@@ -354,12 +343,9 @@ func GetEntriesFromBytes(bytes []byte, t *testing.T) types.EntriesList {
 		if len(io.Ref) > 0 {
 			ioBytes := ReadFile(io.Ref, t)
 			err := json.Unmarshal(ioBytes, &pio)
-			if err != nil {
-				t.WithFields(testing.Fields{
-					"item_output_bytes": string(ioBytes),
-					"error":             err,
-				}).Fatal("error unmarshaling")
-			}
+			t.WithFields(testing.Fields{
+				"item_output_bytes": string(ioBytes),
+			}).MustNil(err, "error unmarshaling into item outputs")
 		}
 		if io.ModifyItem.ItemInputRef == nil {
 			pio.ModifyItem.ItemInputRef = -1
@@ -404,12 +390,9 @@ func GetModifyParamsFromRef(ref string, t *testing.T) types.ItemModifyParams {
 	}
 	modBytes := ReadFile(ref, t)
 	err := json.Unmarshal(modBytes, &iup)
-	if err != nil {
-		t.WithFields(testing.Fields{
-			"modify_param_bytes": string(modBytes),
-			"error":              err,
-		}).Fatal("error unmarshaling")
-	}
+	t.WithFields(testing.Fields{
+		"modify_param_bytes": string(modBytes),
+	}).MustNil(err, "error unmarshaling")
 
 	return iup
 }

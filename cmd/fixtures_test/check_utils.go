@@ -342,7 +342,7 @@ func RunSingleFixtureTest(file string, t *testing.T) {
 		err := json.Unmarshal([]byte(byteValue), &fixtureSteps)
 		t.WithFields(testing.Fields{
 			"raw_json": string(byteValue),
-		}).MustNil(err, "something went wrong decoding fixture steps")
+		}).MustNil(err, "error decoding fixture steps")
 
 		CheckSteps(fixtureSteps, t)
 
