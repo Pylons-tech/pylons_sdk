@@ -307,10 +307,21 @@ func (t *T) MustNil(err error, args ...interface{}) {
 
 // MustContain check srcstring contains substring
 func (t *T) MustContain(srcstring, substring string, args ...interface{}) {
-	t.WithFields(Fields{
-		"src_string": srcstring,
-		"sub_string": substring,
-	}).MustTrue(strings.Contains(srcstring, substring), args...)
+	value := strings.Contains(srcstring, substring)
+	if !value {
+		t.DispatchEvent("FAIL")
+		t.printEntireStack()
+		t.WithFields(Fields(t.fields)).
+			AddFields(log.Fields{
+				"src_string": srcstring,
+				"sub_string": substring,
+				"error_from": "MustContain validation failure",
+			}).Fatal(args...)
+	}
+
+	// if !t.useLogPkg {
+	// 	require.True(t.origin, value)
+	// }
 }
 
 // Parallel is modified Parallel
