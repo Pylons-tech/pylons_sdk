@@ -91,11 +91,9 @@ func ListExecutionsViaCLI(account string, t *testing.T) ([]types.Execution, erro
 	}
 	var listExecutionsResp queriers.ExecResponse
 	err = GetAminoCdc().UnmarshalJSON(output, &listExecutionsResp)
-	if err != nil {
-		t.WithFields(testing.Fields{
-			"error": err,
-		}).Fatal("error unmarshaling list executions")
-	}
+	t.WithFields(testing.Fields{
+		"list_executions_output": string(output),
+	}).MustNil(err, "error unmarshaling list executions")
 	return listExecutionsResp.Executions, err
 }
 
@@ -144,6 +142,9 @@ func GetTxError(txhash string, t *testing.T) ([]byte, error) {
 		return []byte{}, err
 	}
 
+	// TODO this is not correct in some cases
+	// Errors can happen with internal error or something other
+	// We need to check log is in JSON format or it's not json parsable to check if there's an issue
 	if strings.Contains(tx.RawLog, "invalid request") {
 		return []byte(tx.RawLog), nil
 	}

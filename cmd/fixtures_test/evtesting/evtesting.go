@@ -3,12 +3,12 @@ package evtesting
 import (
 	"fmt"
 	"runtime"
+	"runtime/debug"
 	"sort"
+	"strings"
 	"testing"
 
 	log "github.com/sirupsen/logrus"
-
-	"github.com/stretchr/testify/require"
 )
 
 // sort types
@@ -151,6 +151,16 @@ func (t *T) printCallerLine() {
 	}
 }
 
+func (t *T) printEntireStack() {
+	traceTextBytes := debug.Stack()
+	traceText := string(traceTextBytes)
+	if t.useLogPkg {
+		log.Trace(traceText)
+	} else {
+		t.origin.Log(traceText)
+	}
+}
+
 // FieldColorByLogLevel returns color
 func FieldColorByLogLevel(logLevel log.Level) int {
 	const (
@@ -267,48 +277,40 @@ func (t *T) Fatalf(format string, args ...interface{}) {
 func (t *T) MustTrue(value bool, args ...interface{}) {
 	if !value {
 		t.DispatchEvent("FAIL")
+		t.printEntireStack()
+		t.WithFields(Fields(t.fields)).
+			AddFields(log.Fields{
+				"error_from": "MustTrue validation failure",
+			}).Fatal(args...)
 	}
-	if t.useLogPkg {
-		if !value {
-			t.printCallerLine()
-			t.WithFields(Fields(t.fields)).
-				AddFields(log.Fields{
-					"error_from": "MustTrue validation failure",
-				}).Fatal(args...)
-		}
-	} else {
-		if !value {
-			t.WithFields(Fields(t.fields)).
-				AddFields(log.Fields{
-					"error_from": "MustTrue validation failure",
-				}).Fatal(args...)
-		}
-		require.True(t.origin, value)
-	}
+
+	// if !t.useLogPkg {
+	// 	require.True(t.origin, value)
+	// }
 }
 
-// MustNil validate if value is nil
+// MustNil validate if error is nil
 func (t *T) MustNil(err error, args ...interface{}) {
 	if err != nil {
 		t.DispatchEvent("FAIL")
-		if t.useLogPkg {
-			t.printCallerLine()
-			t.WithFields(Fields(t.fields)).
-				AddFields(log.Fields{
-					"error":      err,
-					"error_from": "MustNil validation failure",
-				}).Fatal(args...)
-		} else {
-			if err != nil {
-				t.WithFields(Fields(t.fields)).
-					AddFields(log.Fields{
-						"error":      err,
-						"error_from": "MustNil validation failure",
-					}).Fatal(args...)
-			}
-			require.True(t.origin, err == nil)
-		}
+		t.printEntireStack()
+		t.WithFields(Fields(t.fields)).
+			AddFields(log.Fields{
+				"error":      err,
+				"error_from": "MustNil validation failure",
+			}).Fatal(args...)
 	}
+	// if !t.useLogPkg {
+	// 	require.True(t.origin, err == nil)
+	// }
+}
+
+// MustContain check srcstring contains substring
+func (t *T) MustContain(srcstring, substring string, args ...interface{}) {
+	t.WithFields(Fields{
+		"src_string": srcstring,
+		"sub_string": substring,
+	}).MustTrue(strings.Contains(srcstring, substring), args...)
 }
 
 // Parallel is modified Parallel

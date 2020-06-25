@@ -125,13 +125,10 @@ func RunPylonsCli(args []string, stdinInput string) ([]byte, string, error) {
 func GetAccountAddr(account string, t *testing.T) string {
 	addrBytes, logstr, err := RunPylonsCli([]string{"keys", "show", account, "-a"}, "")
 	addr := strings.Trim(string(addrBytes), "\n ")
-	if t != nil && err != nil {
-		t.WithFields(testing.Fields{
-			"account": account,
-			"error":   err,
-			"log":     logstr,
-		}).Fatal("error getting account address")
-	}
+	t.WithFields(testing.Fields{
+		"account": account,
+		"log":     logstr,
+	}).MustNil(err, "error getting account address")
 	return addr
 }
 
@@ -139,18 +136,17 @@ func GetAccountAddr(account string, t *testing.T) string {
 func GetAccountInfoFromAddr(addr string, t *testing.T) auth.BaseAccount {
 	var accInfo auth.BaseAccount
 	accBytes, logstr, err := RunPylonsCli([]string{"query", "account", addr}, "")
-	if t != nil && err != nil {
-		t.WithFields(testing.Fields{
-			"address": addr,
-			"error":   err,
-			"log":     logstr,
-		}).Fatal("error getting account info")
+	t.WithFields(testing.Fields{
+		"address": addr,
+		"log":     logstr,
+	}).MustNil(err, "error getting account info")
+	if err != nil {
 		return accInfo
 	}
 	err = GetAminoCdc().UnmarshalJSON(accBytes, &accInfo)
 	t.WithFields(testing.Fields{
 		"acc_bytes": string(accBytes),
-	}).MustNil(err, "something went wrong decoding raw json")
+	}).MustNil(err, "error decoding raw json")
 	// t.WithFields(testing.Fields{
 	// 	"account_info": accInfo,
 	// }).Debug("debug log")
