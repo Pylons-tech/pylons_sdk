@@ -9,8 +9,7 @@
     "paramsRef": "./cookbooks/invalid_cookbook.json",
     "output": {
       "txResult": {
-        "broadcastError": "the description should have more than 20 characters",
-        "status": "Success"
+        "broadcastError": "the description should have more than 20 characters"
       },
       "property": [
         {
