@@ -207,8 +207,6 @@ func FiatItemMsgFromRef(ref string, t *testing.T) msgs.MsgFiatItem {
 		}).Fatal("error reading using GetAminoCdc itemType", itemType, err)
 	}
 
-	t.Fatal(itemType)
-
 	return msgs.NewMsgFiatItem(
 		itemType.CookbookID,
 		itemType.Doubles,
