@@ -283,10 +283,6 @@ func (t *T) MustTrue(value bool, args ...interface{}) {
 				"error_from": "MustTrue validation failure",
 			}).Fatal(args...)
 	}
-
-	// if !t.useLogPkg {
-	// 	require.True(t.origin, value)
-	// }
 }
 
 // MustNil validate if error is nil
@@ -300,9 +296,6 @@ func (t *T) MustNil(err error, args ...interface{}) {
 				"error_from": "MustNil validation failure",
 			}).Fatal(args...)
 	}
-	// if !t.useLogPkg {
-	// 	require.True(t.origin, err == nil)
-	// }
 }
 
 // MustContain check srcstring contains substring
@@ -318,10 +311,6 @@ func (t *T) MustContain(srcstring, substring string, args ...interface{}) {
 				"error_from": "MustContain validation failure",
 			}).Fatal(args...)
 	}
-
-	// if !t.useLogPkg {
-	// 	require.True(t.origin, value)
-	// }
 }
 
 // Parallel is modified Parallel

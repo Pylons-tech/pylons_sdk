@@ -2,8 +2,8 @@ package inttest
 
 import (
 	"encoding/hex"
+	"encoding/json"
 	"errors"
-	"strings"
 
 	testing "github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test/evtesting"
 
@@ -130,6 +130,12 @@ func WaitAndGetTxError(txhash string, maxWaitBlock int64, t *testing.T) ([]byte,
 	return txErrorResBytes, nil
 }
 
+// IsJSON checks if bytes is in json
+func IsJSON(str string) bool {
+	var js json.RawMessage
+	return json.Unmarshal([]byte(str), &js) == nil
+}
+
 // GetTxError is a function to get transaction error from txhash
 func GetTxError(txhash string, t *testing.T) ([]byte, error) {
 	output, _, err := RunPylonsCli([]string{"query", "tx", txhash}, "")
@@ -142,10 +148,7 @@ func GetTxError(txhash string, t *testing.T) ([]byte, error) {
 		return []byte{}, err
 	}
 
-	// TODO this is not correct in some cases
-	// Errors can happen with internal error or something other
-	// We need to check log is in JSON format or it's not json parsable to check if there's an issue
-	if strings.Contains(tx.RawLog, "invalid request") {
+	if !IsJSON(tx.RawLog) {
 		return []byte(tx.RawLog), nil
 	}
 	return []byte{}, nil
