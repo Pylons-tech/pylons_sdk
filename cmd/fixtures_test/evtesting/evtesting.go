@@ -74,6 +74,21 @@ func (t *T) WithFields(fields Fields) *T {
 	}
 }
 
+// Run is modified Run
+func (t *T) Run(name string, f func(t *T)) bool {
+	return t.origin.Run(name, func(subt *testing.T) {
+		newT := T{
+			origin:     subt,
+			fields:     t.fields,
+			useLogPkg:  t.useLogPkg,
+			logLevel:   t.logLevel,
+			sortType:   t.sortType,
+			sortFields: t.sortFields,
+		}
+		f(&newT)
+	})
+}
+
 // AddFields is to add additional data to existing fields
 func (t *T) AddFields(fields log.Fields) *T {
 	for k, v := range fields {
@@ -87,19 +102,6 @@ func (t *T) SetFieldsOrder(sortType int, sortFields []string) *T {
 	t.sortType = sortType
 	t.sortFields = sortFields
 	return t
-}
-
-// Run is modified Run
-func (t *T) Run(name string, f func(t *T)) bool {
-	return t.origin.Run(name, func(subt *testing.T) {
-		newT := T{
-			origin:    subt,
-			fields:    t.fields,
-			useLogPkg: t.useLogPkg,
-			logLevel:  t.logLevel,
-		}
-		f(&newT)
-	})
 }
 
 // DispatchEvent process events that are related to the event e.g. failure in one test case make others to fail without continuing
@@ -245,6 +247,20 @@ func (t *T) Error(args ...interface{}) {
 	}
 }
 
+// Panic is a modified Panic
+func (t *T) Panic(args ...interface{}) {
+	requiredLevel := log.PanicLevel
+	t.DispatchEvent("FAIL")
+	t.printCallerLine()
+	if t.useLogPkg {
+		log.WithFields(t.fields).Panic(args...)
+	} else {
+		text := fmt.Sprintf("%s msg=%s", t.FormatFields(requiredLevel), fmt.Sprintln(args...))
+		logOutput := fmt.Sprintf("\x1b[%dm%s\x1b[0m ", FieldColorByLogLevel(requiredLevel), text)
+		t.origin.Fatal(logOutput)
+	}
+}
+
 // Fatal is a modified Fatal
 func (t *T) Fatal(args ...interface{}) {
 	requiredLevel := log.FatalLevel
@@ -255,7 +271,7 @@ func (t *T) Fatal(args ...interface{}) {
 	} else {
 		text := fmt.Sprintf("%s msg=%s", t.FormatFields(requiredLevel), fmt.Sprintln(args...))
 		logOutput := fmt.Sprintf("\x1b[%dm%s\x1b[0m ", FieldColorByLogLevel(requiredLevel), text)
-		t.origin.Log(logOutput)
+		t.origin.Fatal(logOutput)
 	}
 }
 
@@ -267,9 +283,9 @@ func (t *T) Fatalf(format string, args ...interface{}) {
 	if t.useLogPkg {
 		log.WithFields(t.fields).Fatalf(format, args...)
 	} else {
-		text := fmt.Sprintf("%s msg=%s", t.FormatFields(requiredLevel), fmt.Sprintln(args...))
+		text := fmt.Sprintf("%s msg=%s", t.FormatFields(requiredLevel), fmt.Sprintf(format, args...))
 		logOutput := fmt.Sprintf("\x1b[%dm%s\x1b[0m ", FieldColorByLogLevel(requiredLevel), text)
-		t.origin.Log(logOutput)
+		t.origin.Fatal(logOutput)
 	}
 }
 
