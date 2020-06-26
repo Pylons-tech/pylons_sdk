@@ -287,7 +287,7 @@ func UpdateItemStringMsgFromRef(ref string, t *testing.T) msgs.MsgUpdateItemStri
 	t.WithFields(testing.Fields{
 		"sTypeMsg":  inttest.AminoCodecFormatter(sTypeMsg),
 		"new_bytes": string(newByteValue),
-	}).Fatal(err, "error reading using GetAminoCdc")
+	}).MustNil(err, "error reading using GetAminoCdc")
 	return sTypeMsg
 }
 
