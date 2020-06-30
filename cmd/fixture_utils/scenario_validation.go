@@ -3,7 +3,7 @@ package fixturetest
 import (
 	"sync"
 
-	testing "github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test/evtesting"
+	testing "github.com/Pylons-tech/pylons_sdk/cmd/evtesting"
 )
 
 // Algorithm link geeksforgeeks.org/detect-cycle-in-a-graph/

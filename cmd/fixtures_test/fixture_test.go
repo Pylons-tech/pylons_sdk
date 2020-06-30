@@ -5,7 +5,8 @@ import (
 	"strings"
 	"testing"
 
-	inttest "github.com/Pylons-tech/pylons_sdk/cmd/test"
+	inttestSDK "github.com/Pylons-tech/pylons_sdk/cmd/test_utils"
+	fixturetestSDK "github.com/Pylons-tech/pylons_sdk/cmd/fixture_utils"
 )
 
 var runSerialMode = false
@@ -24,22 +25,22 @@ func init() {
 
 func TestFixturesViaCLI(t *testing.T) {
 	flag.Parse()
-	FixtureTestOpts.IsParallel = !runSerialMode
-	FixtureTestOpts.CreateNewCookbook = !useKnownCookbook
+	fixturetestSDK.FixtureTestOpts.IsParallel = !runSerialMode
+	fixturetestSDK.FixtureTestOpts.CreateNewCookbook = !useKnownCookbook
 	if useRest {
-		inttest.CLIOpts.RestEndpoint = "http://localhost:1317"
+		inttestSDK.CLIOpts.RestEndpoint = "http://localhost:1317"
 	}
-	inttest.CLIOpts.MaxBroadcast = 50
-	RegisterDefaultActionRunners()
+	inttestSDK.CLIOpts.MaxBroadcast = 50
+	fixturetestSDK.RegisterDefaultActionRunners()
 	// Register custom action runners
-	// RegisterActionRunner("custom_action", CustomActionRunner)
+	// fixturetestSDK.RegisterActionRunner("custom_action", CustomActionRunner)
 	scenarioFileNames := []string{}
 	if len(scenarios) > 0 {
 		scenarioFileNames = strings.Split(scenarios, ",")
 	}
-	FixtureTestOpts.AccountNames = []string{}
+	fixturetestSDK.FixtureTestOpts.AccountNames = []string{}
 	if len(accounts) > 0 {
-		FixtureTestOpts.AccountNames = strings.Split(accounts, ",")
+		fixturetestSDK.FixtureTestOpts.AccountNames = strings.Split(accounts, ",")
 	}
-	RunTestScenarios("scenarios", scenarioFileNames, t)
+	fixturetestSDK.RunTestScenarios("scenarios", scenarioFileNames, t)
 }

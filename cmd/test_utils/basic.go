@@ -15,7 +15,7 @@ import (
 	"time"
 
 	"github.com/Pylons-tech/pylons_sdk/app"
-	testing "github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test/evtesting"
+	testing "github.com/Pylons-tech/pylons_sdk/cmd/evtesting"
 	"github.com/Pylons-tech/pylons_sdk/x/pylons/msgs"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"

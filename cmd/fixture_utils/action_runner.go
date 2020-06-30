@@ -1,7 +1,7 @@
 package fixturetest
 
 import (
-	testing "github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test/evtesting"
+	testing "github.com/Pylons-tech/pylons_sdk/cmd/evtesting"
 )
 
 // ActFunc describes the type of function used for action running test

@@ -14,7 +14,7 @@ import (
 	"sync"
 	"time"
 
-	testing "github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test/evtesting"
+	testing "github.com/Pylons-tech/pylons_sdk/cmd/evtesting"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
