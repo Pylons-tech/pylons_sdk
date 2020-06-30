@@ -1,0 +1,29 @@
+{
+    "CoinInputs":[],
+    "ItemInputRefs": [
+        "./recipes/spear/item_input/spear.json"
+    ],
+    "Entries":{
+        "CoinOutputs":[],
+        "ItemOutputs":[
+            {
+                "ModifyItem": {
+                    "ItemInputRef": 0,
+                    "ModifyParamsRef": "./recipes/spear/upgrader/spear.json"
+                }
+            }
+        ]
+    },
+    "Outputs": [
+        {
+            "ResultEntries": ["0"],
+            "Weight": "1"
+        }
+    ],
+    "ExtraInfo":"",
+    "Sender":"account2",
+    "Name": "Delayed Spear Upgrade Recipe",
+    "CookbookID": "spearcookbook-1589853709",
+    "Description": "this recipe is delayed upgrader, used to upgrade spear which can update all versions of spear.",
+    "BlockInterval":"2"
+}
