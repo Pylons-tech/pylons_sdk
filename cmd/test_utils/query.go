@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 
-	testing "github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test/evtesting"
+	testing "github.com/Pylons-tech/pylons_sdk/cmd/evtesting"
 
 	"github.com/Pylons-tech/pylons_sdk/x/pylons/queriers"
 	"github.com/Pylons-tech/pylons_sdk/x/pylons/types"

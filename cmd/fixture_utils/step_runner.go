@@ -3,9 +3,9 @@ package fixturetest
 import (
 	"encoding/json"
 
-	testing "github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test/evtesting"
+	testing "github.com/Pylons-tech/pylons_sdk/cmd/evtesting"
 
-	inttest "github.com/Pylons-tech/pylons_sdk/cmd/test"
+	inttest "github.com/Pylons-tech/pylons_sdk/cmd/test_utils"
 	"github.com/Pylons-tech/pylons_sdk/x/pylons/msgs"
 
 	"github.com/Pylons-tech/pylons_sdk/x/pylons/handlers"

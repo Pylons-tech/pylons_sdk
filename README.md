@@ -33,8 +33,8 @@ import (
 	"strings"
 	"testing"
 
-	inttestSDK "github.com/Pylons-tech/pylons_sdk/cmd/test"
-	fixturetestSDK "github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test"
+	inttestSDK "github.com/Pylons-tech/pylons_sdk/cmd/test_utils"
+	fixturetestSDK "github.com/Pylons-tech/pylons_sdk/cmd/fixture_utils"
 )
 
 var runSerialMode = false

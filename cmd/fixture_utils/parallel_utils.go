@@ -1,8 +1,8 @@
 package fixturetest
 
 import (
-	testing "github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test/evtesting"
-	inttest "github.com/Pylons-tech/pylons_sdk/cmd/test"
+	testing "github.com/Pylons-tech/pylons_sdk/cmd/evtesting"
+	inttest "github.com/Pylons-tech/pylons_sdk/cmd/test_utils"
 )
 
 // Status is a type to manage work queue status

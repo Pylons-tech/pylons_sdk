@@ -10,8 +10,8 @@ import (
 
 	originT "testing"
 
-	testing "github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test/evtesting"
-	inttest "github.com/Pylons-tech/pylons_sdk/cmd/test"
+	testing "github.com/Pylons-tech/pylons_sdk/cmd/evtesting"
+	inttest "github.com/Pylons-tech/pylons_sdk/cmd/test_utils"
 	"github.com/Pylons-tech/pylons_sdk/x/pylons/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
