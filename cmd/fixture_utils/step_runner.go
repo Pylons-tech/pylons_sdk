@@ -233,7 +233,7 @@ func SendItemsMsgFromRef(ref string, t *testing.T) msgs.MsgSendItems {
 	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
 	newByteValue = UpdateReceiverKeyToAddress(newByteValue, t)
 
-	ItemIDs := GetItemIDsFromNames(newByteValue, false, t)
+	ItemIDs := GetItemIDsFromNames(newByteValue, false, false, t)
 
 	var siType struct {
 		Sender   sdk.AccAddress
@@ -280,7 +280,7 @@ func UpdateItemStringMsgFromRef(ref string, t *testing.T) msgs.MsgUpdateItemStri
 	// translate sender from account name to account address
 	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
 	// translate item name to item ID
-	newByteValue = UpdateItemIDFromName(newByteValue, false, t)
+	newByteValue = UpdateItemIDFromName(newByteValue, false, false, t)
 
 	var sTypeMsg msgs.MsgUpdateItemString
 	err := json.Unmarshal(newByteValue, &sTypeMsg)
@@ -420,7 +420,7 @@ func ExecuteRecipeMsgFromRef(ref string, t *testing.T) msgs.MsgExecuteRecipe {
 	// translate recipe name to recipe id
 	newByteValue = UpdateRecipeName(newByteValue, t)
 	// translate itemNames to itemIDs
-	ItemIDs := GetItemIDsFromNames(newByteValue, false, t)
+	ItemIDs := GetItemIDsFromNames(newByteValue, false, false, t)
 
 	var execType struct {
 		RecipeID string
@@ -548,7 +548,7 @@ func FulfillTradeMsgFromRef(ref string, t *testing.T) msgs.MsgFulfillTrade {
 	// translate extra info to trade id
 	newByteValue = UpdateTradeExtraInfoToID(newByteValue, t)
 	// translate itemNames to itemIDs
-	ItemIDs := GetItemIDsFromNames(newByteValue, false, t)
+	ItemIDs := GetItemIDsFromNames(newByteValue, false, false, t)
 
 	var trdType struct {
 		TradeID string

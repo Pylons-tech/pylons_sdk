@@ -8,7 +8,7 @@
     # - id: go-cyclo
     #   args: [-over=15]
     - id: validate-toml
-    - id: no-go-testing
+    # - id: no-go-testing
     # - id: gometalinter
     - id: golangci-lint
     # - id: go-critic

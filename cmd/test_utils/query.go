@@ -6,7 +6,6 @@ import (
 	"errors"
 
 	testing "github.com/Pylons-tech/pylons_sdk/cmd/evtesting"
-
 	"github.com/Pylons-tech/pylons_sdk/x/pylons/queriers"
 	"github.com/Pylons-tech/pylons_sdk/x/pylons/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -120,6 +119,10 @@ func WaitAndGetTxError(txhash string, maxWaitBlock int64, t *testing.T) ([]byte,
 	txErrorResBytes, err := GetTxError(txhash, t)
 	if err != nil { // maybe transaction is not contained in block
 		if maxWaitBlock == 0 {
+			t.WithFields(testing.Fields{
+				"output": string(txErrorResBytes),
+				"error":  err,
+			}).Error("didn't get result waiting for maximum wait block")
 			return txErrorResBytes, errors.New("didn't get result waiting for maximum wait block")
 		}
 		if err = WaitForNextBlock(); err != nil {
@@ -167,6 +170,10 @@ func GetHumanReadableErrorFromTxHash(txhash string, t *testing.T) string {
 func GetTxData(txhash string, t *testing.T) ([]byte, error) {
 	output, _, err := RunPylonsCli([]string{"query", "tx", txhash}, "")
 	if err != nil {
+		t.WithFields(testing.Fields{
+			"output": string(output),
+			"error":  err,
+		}).Error("didn't get result waiting for maximum wait block")
 		return output, err
 	}
 	var tx sdk.TxResponse
@@ -186,6 +193,9 @@ func WaitAndGetTxData(txhash string, maxWaitBlock int64, t *testing.T) ([]byte, 
 	txHandleResBytes, err := GetTxData(txhash, t)
 	if err != nil { // maybe transaction is not contained in block
 		if maxWaitBlock == 0 {
+			t.WithFields(testing.Fields{
+				"action": "func_end",
+			}).Error("didn't get result waiting for maximum wait block")
 			return txHandleResBytes, errors.New("didn't get result waiting for maximum wait block")
 		}
 		if err = WaitForNextBlock(); err != nil {
@@ -237,13 +247,19 @@ func FindExecutionByRecipeID(execs []types.Execution, rcpID string) (types.Execu
 }
 
 // FindItemFromArrayByName is a function to get item array by name
-func FindItemFromArrayByName(items []types.Item, name string, includeLockedByRcp bool) (types.Item, bool) {
+func FindItemFromArrayByName(
+	items []types.Item, name string,
+	includeLockedByRecipe bool,
+	includeLockedByTrade bool,
+) (types.Item, bool) {
 	for _, item := range items {
 		itemName, _ := item.FindString("Name")
-		if !includeLockedByRcp && len(item.OwnerRecipeID) != 0 {
+		if !includeLockedByRecipe && len(item.OwnerRecipeID) != 0 {
 			continue
 		}
-
+		if !includeLockedByTrade && len(item.OwnerTradeID) != 0 {
+			continue
+		}
 		if itemName == name {
 			return item, true
 		}
@@ -287,12 +303,12 @@ func GetRecipeIDFromName(rcpName string) (string, bool, error) {
 }
 
 // GetItemIDFromName is a function to get item id from name
-func GetItemIDFromName(itemName string, includeLockedByRcp bool) (string, bool, error) {
+func GetItemIDFromName(itemName string, includeLockedByRecipe bool, includeLockedByTrade bool) (string, bool, error) {
 	itemList, err := ListItemsViaCLI("")
 	if err != nil {
 		return "", false, err
 	}
-	rcp, exist := FindItemFromArrayByName(itemList, itemName, includeLockedByRcp)
+	rcp, exist := FindItemFromArrayByName(itemList, itemName, includeLockedByRecipe, includeLockedByTrade)
 	return rcp.ID, exist, nil
 }
 

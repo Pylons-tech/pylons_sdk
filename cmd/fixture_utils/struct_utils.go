@@ -182,22 +182,24 @@ func UpdateExecID(bytes []byte, t *testing.T) []byte {
 }
 
 // UpdateItemIDFromName is a function to set item id from item name
-func UpdateItemIDFromName(bytes []byte, includeLockedByRcp bool, t *testing.T) []byte {
+func UpdateItemIDFromName(bytes []byte, includeLockedByRecipe, includeLockedByTrade bool, t *testing.T) []byte {
 	raw := UnmarshalIntoEmptyInterface(bytes, t)
 
 	itemName, ok := raw["ItemName"].(string)
 
 	t.MustTrue(ok, "item name does not exist in json")
-	itemID, exist, err := inttest.GetItemIDFromName(itemName, includeLockedByRcp)
+	itemID, exist, err := inttest.GetItemIDFromName(itemName, includeLockedByRecipe, includeLockedByTrade)
 	if !exist {
 		t.WithFields(testing.Fields{
-			"item_name":      itemName,
-			"include_locked": includeLockedByRcp,
+			"item_name":                itemName,
+			"include_locked_by_recipe": includeLockedByRecipe,
+			"include_locked_by_trade":  includeLockedByTrade,
 		}).Debug("no item fit params")
 	}
 	t.WithFields(testing.Fields{
-		"item_name":      itemName,
-		"include_locked": includeLockedByRcp,
+		"item_name":                itemName,
+		"include_locked_by_recipe": includeLockedByRecipe,
+		"include_locked_by_trade":  includeLockedByTrade,
 	}).MustNil(err, "error getting item id from name")
 	raw["ItemID"] = itemID
 	newBytes, err := json.Marshal(raw)
@@ -208,7 +210,7 @@ func UpdateItemIDFromName(bytes []byte, includeLockedByRcp bool, t *testing.T) [
 }
 
 // GetItemIDsFromNames is a function to set item ids from names for recipe execution
-func GetItemIDsFromNames(bytes []byte, includeLockedByRcp bool, t *testing.T) []string {
+func GetItemIDsFromNames(bytes []byte, includeLockedByRecipe, includeLockedByTrade bool, t *testing.T) []string {
 	var itemNamesResp struct {
 		ItemNames []string
 	}
@@ -219,16 +221,18 @@ func GetItemIDsFromNames(bytes []byte, includeLockedByRcp bool, t *testing.T) []
 	ItemIDs := []string{}
 
 	for _, itemName := range itemNamesResp.ItemNames {
-		itemID, exist, err := inttest.GetItemIDFromName(itemName, includeLockedByRcp)
+		itemID, exist, err := inttest.GetItemIDFromName(itemName, includeLockedByRecipe, includeLockedByTrade)
 		if !exist {
 			t.WithFields(testing.Fields{
-				"name":           itemName,
-				"include_locked": includeLockedByRcp,
+				"item_name":                itemName,
+				"include_locked_by_recipe": includeLockedByRecipe,
+				"include_locked_by_trade":  includeLockedByTrade,
 			}).Debug("no item fit params")
 		}
 		t.WithFields(testing.Fields{
-			"name":           itemName,
-			"include_locked": includeLockedByRcp,
+			"item_name":                itemName,
+			"include_locked_by_recipe": includeLockedByRecipe,
+			"include_locked_by_trade":  includeLockedByTrade,
 		}).MustNil(err, "error getting item id from name")
 		ItemIDs = append(ItemIDs, itemID)
 	}
@@ -299,7 +303,7 @@ func GetItemOutputsFromBytes(bytes []byte, sender string, t *testing.T) types.It
 
 	for _, iN := range itemOutputNamesReader.ItemOutputNames {
 		var io types.Item
-		iID, ok, err := inttest.GetItemIDFromName(iN, false)
+		iID, ok, err := inttest.GetItemIDFromName(iN, false, false)
 		t.MustTrue(ok, "item id with specific name does not exist")
 		t.WithFields(testing.Fields{
 			"item_name": iN,
