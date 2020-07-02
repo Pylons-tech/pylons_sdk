@@ -11,7 +11,6 @@ import (
 	"strings"
 
 	testing "github.com/Pylons-tech/pylons_sdk/cmd/evtesting"
-
 	inttest "github.com/Pylons-tech/pylons_sdk/cmd/test_utils"
 	"github.com/Pylons-tech/pylons_sdk/x/pylons/types"
 )
@@ -370,6 +369,7 @@ func GetEntriesFromBytes(bytes []byte, t *testing.T) types.EntriesList {
 		pio.ModifyItem.Doubles = ModifyParams.Doubles
 		pio.ModifyItem.Longs = ModifyParams.Longs
 		pio.ModifyItem.Strings = ModifyParams.Strings
+		pio.ModifyItem.AdditionalItemSendFee = ModifyParams.AdditionalItemSendFee
 		// This is hot fix for signature verification failed issue of item output Doubles: [] instead of Doubles: nil
 		if pio.ModifyItem.Doubles != nil && len(pio.ModifyItem.Doubles) == 0 {
 			pio.ModifyItem.Doubles = nil
