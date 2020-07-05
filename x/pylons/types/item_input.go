@@ -7,7 +7,7 @@ type ItemInput struct {
 	Doubles               DoubleInputParamList
 	Longs                 LongInputParamList
 	Strings               StringInputParamList
-	AdditionalItemSendFee int64
+	AdditionalItemSendFee FeeInputParam
 }
 
 // ItemInputList is a list of ItemInputs for convinience

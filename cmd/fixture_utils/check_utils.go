@@ -175,7 +175,7 @@ func CheckItemWithAdditionalItemSendFee(item types.Item, additionalItemSendFee s
 		if err != nil {
 			return false
 		}
-		return int64(n) == item.AdditionalTransferFee
+		return int64(n) == item.AdditionalItemSendFee
 	}
 
 	return true
