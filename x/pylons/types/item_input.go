@@ -4,9 +4,10 @@ import "errors"
 
 // ItemInput is a wrapper struct for Item for recipes
 type ItemInput struct {
-	Doubles DoubleInputParamList
-	Longs   LongInputParamList
-	Strings StringInputParamList
+	Doubles               DoubleInputParamList
+	Longs                 LongInputParamList
+	Strings               StringInputParamList
+	AdditionalItemSendFee FeeInputParam
 }
 
 // ItemInputList is a list of ItemInputs for convinience

@@ -43,12 +43,13 @@ type FixtureStep struct {
 			Cookbooks      []string `json:"cookbooks"`
 			Recipes        []string `json:"recipes"`
 			Items          []struct {
-				StringKeys   []string                     `json:"stringKeys"`
-				StringValues map[string]string            `json:"stringValues"`
-				DblKeys      []string                     `json:"dblKeys"`
-				DblValues    map[string]types.FloatString `json:"dblValues"`
-				LongKeys     []string                     `json:"longKeys"`
-				LongValues   map[string]int               `json:"longValues"`
+				StringKeys            []string                     `json:"stringKeys"`
+				StringValues          map[string]string            `json:"stringValues"`
+				DblKeys               []string                     `json:"dblKeys"`
+				DblValues             map[string]types.FloatString `json:"dblValues"`
+				LongKeys              []string                     `json:"longKeys"`
+				LongValues            map[string]int               `json:"longValues"`
+				AdditionalItemSendFee string                       `json:"additionalItemSendFee"`
 			} `json:"items"`
 			Coins []struct {
 				Coin   string `json:"denom"`
@@ -166,6 +167,20 @@ func CheckItemWithLongValues(item types.Item, longValues map[string]int) bool {
 	return true
 }
 
+// CheckItemWithAdditionalItemSendFee checks if additional item send fee is correct
+func CheckItemWithAdditionalItemSendFee(item types.Item, additionalItemSendFee string, t *testing.T) bool {
+
+	if len(additionalItemSendFee) > 0 {
+		n, err := strconv.Atoi(additionalItemSendFee)
+		if err != nil {
+			return false
+		}
+		return int64(n) == item.AdditionalItemSendFee
+	}
+
+	return true
+}
+
 // CheckErrorOnTxFromTxHash validate if there's an error on transaction
 func CheckErrorOnTxFromTxHash(txhash string, t *testing.T) {
 	hmrErrMsg := inttest.GetHumanReadableErrorFromTxHash(txhash, t)
@@ -263,13 +278,15 @@ func PropertyExistCheck(step FixtureStep, t *testing.T) {
 						"error": err,
 					}).Fatal("error listing items")
 				}
+
 				for _, item := range items {
 					if CheckItemWithStringKeys(item, itemCheck.StringKeys) &&
 						CheckItemWithStringValues(item, itemCheck.StringValues) &&
 						CheckItemWithDblKeys(item, itemCheck.DblKeys) &&
 						CheckItemWithDblValues(item, itemCheck.DblValues) &&
 						CheckItemWithLongKeys(item, itemCheck.LongKeys) &&
-						CheckItemWithLongValues(item, itemCheck.LongValues) {
+						CheckItemWithLongValues(item, itemCheck.LongValues) &&
+						CheckItemWithAdditionalItemSendFee(item, itemCheck.AdditionalItemSendFee, t) {
 						fitItemExist = true
 					}
 				}
