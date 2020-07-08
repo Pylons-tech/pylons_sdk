@@ -43,13 +43,13 @@ type FixtureStep struct {
 			Cookbooks      []string `json:"cookbooks"`
 			Recipes        []string `json:"recipes"`
 			Items          []struct {
-				StringKeys            []string                     `json:"stringKeys"`
-				StringValues          map[string]string            `json:"stringValues"`
-				DblKeys               []string                     `json:"dblKeys"`
-				DblValues             map[string]types.FloatString `json:"dblValues"`
-				LongKeys              []string                     `json:"longKeys"`
-				LongValues            map[string]int               `json:"longValues"`
-				AdditionalItemSendFee string                       `json:"additionalItemSendFee"`
+				StringKeys   []string                     `json:"stringKeys"`
+				StringValues map[string]string            `json:"stringValues"`
+				DblKeys      []string                     `json:"dblKeys"`
+				DblValues    map[string]types.FloatString `json:"dblValues"`
+				LongKeys     []string                     `json:"longKeys"`
+				LongValues   map[string]int               `json:"longValues"`
+				TransferFee  string                       `json:"transferFee"`
 			} `json:"items"`
 			Coins []struct {
 				Coin   string `json:"denom"`
@@ -167,15 +167,15 @@ func CheckItemWithLongValues(item types.Item, longValues map[string]int) bool {
 	return true
 }
 
-// CheckItemWithAdditionalItemSendFee checks if additional item send fee is correct
-func CheckItemWithAdditionalItemSendFee(item types.Item, additionalItemSendFee string, t *testing.T) bool {
+// CheckItemWithTransferFee checks if additional item send fee is correct
+func CheckItemWithTransferFee(item types.Item, transferFee string, t *testing.T) bool {
 
-	if len(additionalItemSendFee) > 0 {
-		n, err := strconv.Atoi(additionalItemSendFee)
+	if len(transferFee) > 0 {
+		n, err := strconv.Atoi(transferFee)
 		if err != nil {
 			return false
 		}
-		return int64(n) == item.AdditionalItemSendFee
+		return int64(n) == item.TransferFee
 	}
 
 	return true
@@ -286,7 +286,7 @@ func PropertyExistCheck(step FixtureStep, t *testing.T) {
 						CheckItemWithDblValues(item, itemCheck.DblValues) &&
 						CheckItemWithLongKeys(item, itemCheck.LongKeys) &&
 						CheckItemWithLongValues(item, itemCheck.LongValues) &&
-						CheckItemWithAdditionalItemSendFee(item, itemCheck.AdditionalItemSendFee, t) {
+						CheckItemWithTransferFee(item, itemCheck.TransferFee, t) {
 						fitItemExist = true
 					}
 				}

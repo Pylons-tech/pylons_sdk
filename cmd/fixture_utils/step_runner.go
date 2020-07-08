@@ -201,7 +201,7 @@ func FiatItemMsgFromRef(ref string, t *testing.T) msgs.MsgFiatItem {
 		itemType.Longs,
 		itemType.Strings,
 		itemType.Sender,
-		itemType.AdditionalItemSendFee,
+		itemType.TransferFee,
 	)
 }
 
