@@ -2,6 +2,14 @@ package handlers
 
 import (
 	"github.com/Pylons-tech/pylons_sdk/x/pylons/types"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/hd"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/go-bip39"
+	"github.com/tendermint/tendermint/crypto/secp256k1"
+)
+
+const (
+	mnemonicEntropySize = 256
 )
 
 // PopularRecipeType is a type for popular recipes
@@ -87,4 +95,32 @@ func GetParamsForPopularRecipe(hfrt PopularRecipeType) (types.CoinInputList, typ
 			types.GenOneOutput(1),
 			0
 	}
+}
+
+// GenAccount is a function to generate an account
+func GenAccount() (secp256k1.PrivKeySecp256k1, sdk.AccAddress, error) {
+	entropySeed, err := bip39.NewEntropy(mnemonicEntropySize)
+	if err != nil {
+		return secp256k1.PrivKeySecp256k1{}, nil, err
+	}
+	mnemonic, err := bip39.NewMnemonic(entropySeed)
+	if err != nil {
+		return secp256k1.PrivKeySecp256k1{}, nil, err
+	}
+
+	// Generate a Bip32 HD wallet for the mnemonic and a user supplied password
+	seed, err := bip39.NewSeedWithErrorChecking(mnemonic, "")
+	if err != nil {
+		return secp256k1.PrivKeySecp256k1{}, nil, err
+	}
+
+	masterPriv, ch := hd.ComputeMastersFromSeed(seed)
+	derivedPriv, err := hd.DerivePrivateKeyForPath(masterPriv, ch, "44'/118'/0'/0/0")
+	if err != nil {
+		return secp256k1.PrivKeySecp256k1{}, nil, err
+	}
+
+	priv := secp256k1.PrivKeySecp256k1(derivedPriv)
+	cosmosAddr := sdk.AccAddress(priv.PubKey().Address().Bytes())
+	return priv, cosmosAddr, nil
 }

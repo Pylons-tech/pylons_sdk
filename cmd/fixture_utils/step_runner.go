@@ -78,6 +78,18 @@ func WaitForNextBlockWithErrorCheck(t *testing.T) {
 	}
 }
 
+// RunCreateAccount is a function to create account
+func RunCreateAccount(step FixtureStep, t *testing.T) {
+	if step.ParamsRef != "" {
+		caKey := CreateAccountKeyFromRef(step.ParamsRef, t)
+		result, err := inttest.CreateChainAccount(caKey)
+		if err != nil {
+
+			return
+		}
+	}
+}
+
 // RunMultiMsgTx is a function to send multiple messages in a transaction
 // This support only 1 sender multi transaction for now
 // TODO we need to support multi-message multi sender transaction

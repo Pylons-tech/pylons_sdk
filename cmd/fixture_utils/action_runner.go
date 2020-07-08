@@ -32,6 +32,7 @@ func RunActionRunner(action string, step FixtureStep, t *testing.T) {
 
 // RegisterDefaultActionRunners register default test functions
 func RegisterDefaultActionRunners() {
+	RegisterActionRunner("create_account", RunCreateAccount)
 	RegisterActionRunner("fiat_item", RunFiatItem)
 	RegisterActionRunner("update_item_string", RunUpdateItemString)
 	RegisterActionRunner("send_items", RunSendItems)
