@@ -1,0 +1,11 @@
+{
+  "ID": "CA-v0.0.0-1579053457",
+  "Name": "CA Checker Cookbook",
+  "Description": "This is cookbook to test create cookbook using new account by create_account command.",
+  "Developer": "Pylons Team",
+  "Level": "0",
+  "Sender": "account3",
+  "SupportEmail": "stalepresh121@outlook.com",
+  "Version": "1.0.0",
+  "CostPerBlock": "50"
+}

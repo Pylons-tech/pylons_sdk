@@ -52,9 +52,8 @@ func ValidateTempAccountName(e string) error {
 	return errors.New("Invalid account name")
 }
 
-// GetAccountAddressFromTempName is a function to get account address from temp name
-func GetAccountAddressFromTempName(tempName string, t *testing.T) string {
-
+// GetAccountKeyFromTempName is a function to get account key from temp name
+func GetAccountKeyFromTempName(tempName string, t *testing.T) string {
 	err := ValidateTempAccountName(tempName)
 	t.MustNil(err, fmt.Sprintf("%s is an invalid account name", tempName))
 
@@ -66,7 +65,13 @@ func GetAccountAddressFromTempName(tempName string, t *testing.T) string {
 
 	t.MustTrue(accountNameIndex < len(FixtureTestOpts.AccountNames), fmt.Sprintf("%s doesn't match to the accounts args. the account index is out of the account args length", tempName))
 
-	return inttest.GetAccountAddr(FixtureTestOpts.AccountNames[accountNameIndex], t)
+	return FixtureTestOpts.AccountNames[accountNameIndex]
+}
+
+// GetAccountAddressFromTempName is a function to get account address from temp name
+func GetAccountAddressFromTempName(tempName string, t *testing.T) string {
+	accountKey := GetAccountKeyFromTempName(tempName, t)
+	return inttest.GetAccountAddr(accountKey, t)
 }
 
 // UpdateSenderKeyToAddress is a function to update sender key to sender's address

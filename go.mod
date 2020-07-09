@@ -4,6 +4,7 @@ go 1.13
 
 require (
 	github.com/cosmos/cosmos-sdk v0.38.4
+	github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d
 	github.com/golang/mock v1.4.3 // indirect
 	github.com/google/uuid v1.1.1
 	github.com/gorilla/mux v1.7.4

@@ -90,6 +90,9 @@ func KeyringBackendSetup(args []string) []string {
 		if args[1] == "sign" {
 			return newArgs
 		}
+		if args[1] == "pylons" && args[2] == "create-account" {
+			return newArgs
+		}
 		return args
 	default:
 		return args

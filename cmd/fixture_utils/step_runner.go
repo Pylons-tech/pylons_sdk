@@ -74,7 +74,69 @@ func WaitForNextBlockWithErrorCheck(t *testing.T) {
 	if err != nil {
 		t.WithFields(testing.Fields{
 			"error": err,
-		}).Fatal("error waiting for check execution")
+		}).Fatal("error waiting for next block")
+	}
+}
+
+// WaitForBlockIntervalWithErrorCheck wait blocks and check the error result
+func WaitForBlockIntervalWithErrorCheck(interval int64, t *testing.T) {
+	err := inttest.WaitForBlockInterval(interval)
+	if err != nil {
+		t.WithFields(testing.Fields{
+			"error": err,
+		}).Fatal("error waiting for blocks")
+	}
+}
+
+// RunCreateAccount is a function to create account
+func RunCreateAccount(step FixtureStep, t *testing.T) {
+	if step.ParamsRef != "" {
+		caKey := GetAccountKeyFromTempName(step.ParamsRef, t)
+		localKeyResult, err := inttest.AddNewLocalKey(caKey)
+		t.WithFields(testing.Fields{
+			"key":              caKey,
+			"local_key_result": localKeyResult,
+		}).MustNil(err, "error creating local Key")
+		result, logstr, err := inttest.CreateChainAccount(caKey)
+		t.WithFields(testing.Fields{
+			"result": result,
+			"logstr": logstr,
+		}).MustNil(err, "error creating account on chain")
+		WaitForBlockIntervalWithErrorCheck(2, t)
+		inttest.GetAccountInfoFromAddr(localKeyResult["address"], t)
+	}
+}
+
+// GetPylonsMsgFromRef is a function to get GetPylons message from reference
+func GetPylonsMsgFromRef(ref string, t *testing.T) msgs.MsgGetPylons {
+	gpAddr := GetAccountAddressFromTempName(ref, t)
+	sdkAddr, err := sdk.AccAddressFromBech32(gpAddr)
+	t.WithFields(testing.Fields{
+		"temp_name": ref,
+	}).MustNil(err, "error converting key to address")
+	return msgs.NewMsgGetPylons(
+		types.NewPylon(55000),
+		sdkAddr,
+	)
+}
+
+// RunGetPylons is a function to run GetPylos message
+func RunGetPylons(step FixtureStep, t *testing.T) {
+	if step.ParamsRef != "" {
+		gpMsg := GetPylonsMsgFromRef(step.ParamsRef, t)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, gpMsg, gpMsg.Requester.String(), true)
+		if err != nil {
+			TxBroadcastErrorCheck(err, txhash, step, t)
+			return
+		}
+
+		WaitForNextBlockWithErrorCheck(t)
+
+		txHandleResBytes := GetTxHandleResult(txhash, t)
+		resp := handlers.GetPylonsResponse{}
+		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
 	}
 }
 
