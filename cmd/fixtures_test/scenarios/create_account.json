@@ -1,0 +1,56 @@
+[
+  {
+    "ID": "CREATE_ACCOUNT3",
+    "runAfter": {
+      "precondition": [],
+      "blockWait": 0
+    },
+    "action": "create_account",
+    "paramsRef": "account3"
+  },
+  {
+    "ID": "GET_PYLONS_ACCOUNT3",
+    "runAfter": {
+      "precondition": ["CREATE_ACCOUNT3"],
+      "blockWait": 0
+    },
+    "action": "get_pylons",
+    "paramsRef": "account3",
+    "output": {
+      "txResult": {
+        "status": "Success"
+      },
+      "property": [
+        {
+          "owner": "account3",
+          "coins": [
+            {
+              "denom": "pylon",
+              "amount": 55000
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "ID": "CREATE_CA_COOKBOOK",
+    "runAfter": {
+      "precondition": ["GET_PYLONS_ACCOUNT3"],
+      "blockWait": 0
+    },
+    "action": "create_cookbook",
+    "paramsRef": "./cookbooks/create_account.json",
+    "output": {
+      "txResult": {
+        "status": "Success"
+      },
+      "property": [
+        {
+          "owner": "account3",
+          "cookbooks": ["CA Checker Cookbook"]
+        }
+      ]
+    }
+  }
+]

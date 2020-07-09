@@ -21,11 +21,11 @@ func AddNewLocalKey(key string) (map[string]string, error) {
 }
 
 // CreateChainAccount is a function to create account on chain
-func CreateChainAccount(key string) (string, error) {
+func CreateChainAccount(key string) (string, string, error) {
 	if len(key) == 0 {
-		return "", errors.New("key is empty")
+		return "", "", errors.New("key is empty")
 	}
-	params := []string{"tx", "pylons", "create-account", "add", "--from", key}
-	output, _, err := RunPylonsCli(params, "")
-	return string(output), err
+	params := []string{"tx", "pylons", "create-account", "--from", key}
+	output, logstr, err := RunPylonsCli(params, "y\n")
+	return string(output), logstr, err
 }
