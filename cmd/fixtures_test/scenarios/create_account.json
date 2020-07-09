@@ -6,7 +6,12 @@
       "blockWait": 0
     },
     "action": "create_account",
-    "paramsRef": "account3"
+    "paramsRef": "account3",
+    "output": {
+      "txResult": {
+        "status": "Success"
+      }
+    }
   },
   {
     "ID": "GET_PYLONS_ACCOUNT3",

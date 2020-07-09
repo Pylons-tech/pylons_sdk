@@ -74,7 +74,17 @@ func WaitForNextBlockWithErrorCheck(t *testing.T) {
 	if err != nil {
 		t.WithFields(testing.Fields{
 			"error": err,
-		}).Fatal("error waiting for check execution")
+		}).Fatal("error waiting for next block")
+	}
+}
+
+// WaitForBlockIntervalWithErrorCheck wait blocks and check the error result
+func WaitForBlockIntervalWithErrorCheck(interval int64, t *testing.T) {
+	err := inttest.WaitForBlockInterval(interval)
+	if err != nil {
+		t.WithFields(testing.Fields{
+			"error": err,
+		}).Fatal("error waiting for blocks")
 	}
 }
 
@@ -87,14 +97,12 @@ func RunCreateAccount(step FixtureStep, t *testing.T) {
 			"key":              caKey,
 			"local_key_result": localKeyResult,
 		}).MustNil(err, "error creating local Key")
-		t.Log("localKeyResult, err :=", localKeyResult, err)
 		result, logstr, err := inttest.CreateChainAccount(caKey)
 		t.WithFields(testing.Fields{
 			"result": result,
 			"logstr": logstr,
 		}).MustNil(err, "error creating account on chain")
-		WaitForNextBlockWithErrorCheck(t)
-		WaitForNextBlockWithErrorCheck(t)
+		WaitForBlockIntervalWithErrorCheck(2, t)
 		inttest.GetAccountInfoFromAddr(localKeyResult["address"], t)
 	}
 }
@@ -124,11 +132,11 @@ func RunGetPylons(step FixtureStep, t *testing.T) {
 
 		WaitForNextBlockWithErrorCheck(t)
 
-		// txHandleResBytes := GetTxHandleResult(txhash, t)
-		// resp := handlers.GetPylonsResponse{}
-		// err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		txHandleResBytes := GetTxHandleResult(txhash, t)
+		resp := handlers.GetPylonsResponse{}
+		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
-		// TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
+		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
 	}
 }
 
