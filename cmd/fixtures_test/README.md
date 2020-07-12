@@ -98,17 +98,22 @@ make fixture_tests ARGS="-userest"
 - use-known-cookbook
 ignore create_cookbook message but just do update rest of them
 ```
-make fixture_tests ARGS="-use-known-cookbook"
+make fixture_tests ARGS="-use-known-cookbook --accounts=michael,eugen,ahmed"
 ```
 - specific scenarios test
 If not specify this param, it tests all scenario files. If specify only do specific tests.
 ```
-make fixture_tests ARGS="--scenarios=multi_msg_tx,double_empty"
+make fixture_tests ARGS="--scenarios=multi_msg_tx,double_empty --accounts=michael,eugen,ahmed"
 ```
 - set account names to be used for the fixture tests.
 The account names will replace all the placeholder account names in the fixture test files.
 ```
-make fixture_tests ARGS="--accounts=michael,eugen"
+make fixture_tests ARGS="--accounts=michael,eugen,ahmed"
+```
+- verify-only
+Verify-only flag disable all the transactions but do only verification stuff.
+```
+make fixture_tests ARGS="-verify-only --accounts=michael,eugen,ahmed"
 ```
 
 ## To make fixture test scenarios clean
