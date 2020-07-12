@@ -63,12 +63,14 @@ type FixtureStep struct {
 type TestOptions struct {
 	IsParallel        bool
 	CreateNewCookbook bool
+	VerifyOnly        bool
 	AccountNames      []string
 }
 
 // FixtureTestOpts is a variable to have fixture test options
 var FixtureTestOpts = TestOptions{
 	IsParallel: true,
+	VerifyOnly: false,
 }
 
 // CheckItemWithStringKeys checks if string keys are all available

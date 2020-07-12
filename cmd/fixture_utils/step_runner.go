@@ -90,6 +90,9 @@ func WaitForBlockIntervalWithErrorCheck(interval int64, t *testing.T) {
 
 // RunCreateAccount is a function to create account
 func RunCreateAccount(step FixtureStep, t *testing.T) {
+	if FixtureTestOpts.VerifyOnly {
+		return
+	}
 	if step.ParamsRef != "" {
 		caKey := GetAccountKeyFromTempName(step.ParamsRef, t)
 		localKeyResult, err := inttest.AddNewLocalKey(caKey)
@@ -122,6 +125,9 @@ func GetPylonsMsgFromRef(ref string, t *testing.T) msgs.MsgGetPylons {
 
 // RunGetPylons is a function to run GetPylos message
 func RunGetPylons(step FixtureStep, t *testing.T) {
+	if FixtureTestOpts.VerifyOnly {
+		return
+	}
 	if step.ParamsRef != "" {
 		gpMsg := GetPylonsMsgFromRef(step.ParamsRef, t)
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, gpMsg, gpMsg.Requester.String(), true)
@@ -144,6 +150,9 @@ func RunGetPylons(step FixtureStep, t *testing.T) {
 // This support only 1 sender multi transaction for now
 // TODO we need to support multi-message multi sender transaction
 func RunMultiMsgTx(step FixtureStep, t *testing.T) {
+	if FixtureTestOpts.VerifyOnly {
+		return
+	}
 	if len(step.MsgRefs) != 0 {
 		var msgs []sdk.Msg
 		var sender sdk.AccAddress
@@ -225,6 +234,9 @@ func CheckExecutionMsgFromRef(ref string, t *testing.T) msgs.MsgCheckExecution {
 // RunCheckExecution is a function to execute check execution
 func RunCheckExecution(step FixtureStep, t *testing.T) {
 
+	if FixtureTestOpts.VerifyOnly {
+		return
+	}
 	if step.ParamsRef != "" {
 		chkExecMsg := CheckExecutionMsgFromRef(step.ParamsRef, t)
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, chkExecMsg, chkExecMsg.Sender.String(), true)
@@ -270,6 +282,9 @@ func FiatItemMsgFromRef(ref string, t *testing.T) msgs.MsgFiatItem {
 // RunFiatItem is a function to execute fiat item
 func RunFiatItem(step FixtureStep, t *testing.T) {
 
+	if FixtureTestOpts.VerifyOnly {
+		return
+	}
 	if step.ParamsRef != "" {
 		itmMsg := FiatItemMsgFromRef(step.ParamsRef, t)
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, itmMsg, itmMsg.Sender.String(), true)
@@ -315,6 +330,9 @@ func SendItemsMsgFromRef(ref string, t *testing.T) msgs.MsgSendItems {
 // RunSendItems is a function to send items to another user
 func RunSendItems(step FixtureStep, t *testing.T) {
 
+	if FixtureTestOpts.VerifyOnly {
+		return
+	}
 	if step.ParamsRef != "" {
 		siMsg := SendItemsMsgFromRef(step.ParamsRef, t)
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, siMsg, siMsg.Sender.String(), true)
@@ -356,6 +374,9 @@ func UpdateItemStringMsgFromRef(ref string, t *testing.T) msgs.MsgUpdateItemStri
 // RunUpdateItemString is a function to update item's string value
 func RunUpdateItemString(step FixtureStep, t *testing.T) {
 
+	if FixtureTestOpts.VerifyOnly {
+		return
+	}
 	if step.ParamsRef != "" {
 		sTypeMsg := UpdateItemStringMsgFromRef(step.ParamsRef, t)
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, sTypeMsg, sTypeMsg.Sender.String(), true)
@@ -399,7 +420,7 @@ func CreateCookbookMsgFromRef(ref string, t *testing.T) msgs.MsgCreateCookbook {
 
 // RunCreateCookbook is a function to create cookbook
 func RunCreateCookbook(step FixtureStep, t *testing.T) {
-	if !FixtureTestOpts.CreateNewCookbook {
+	if !FixtureTestOpts.CreateNewCookbook || FixtureTestOpts.VerifyOnly {
 		return
 	}
 	if step.ParamsRef != "" {
@@ -456,6 +477,9 @@ func CreateRecipeMsgFromRef(ref string, t *testing.T) msgs.MsgCreateRecipe {
 
 // RunCreateRecipe is a function to create recipe
 func RunCreateRecipe(step FixtureStep, t *testing.T) {
+	if FixtureTestOpts.VerifyOnly {
+		return
+	}
 	if step.ParamsRef != "" {
 		rcpMsg := CreateRecipeMsgFromRef(step.ParamsRef, t)
 
@@ -504,6 +528,9 @@ func RunExecuteRecipe(step FixtureStep, t *testing.T) {
 	// TODO should check item ID is returned
 	// TODO when items are generated, rather than returning whole should return only ID [if multiple, array of item IDs]
 
+	if FixtureTestOpts.VerifyOnly {
+		return
+	}
 	if step.ParamsRef != "" {
 		execMsg := ExecuteRecipeMsgFromRef(step.ParamsRef, t)
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, execMsg, execMsg.Sender.String(), true)
@@ -582,6 +609,9 @@ func CreateTradeMsgFromRef(ref string, t *testing.T) msgs.MsgCreateTrade {
 
 // RunCreateTrade is a function to create trade
 func RunCreateTrade(step FixtureStep, t *testing.T) {
+	if FixtureTestOpts.VerifyOnly {
+		return
+	}
 	if step.ParamsRef != "" {
 		createTrd := CreateTradeMsgFromRef(step.ParamsRef, t)
 		t.WithFields(testing.Fields{
@@ -630,6 +660,9 @@ func FulfillTradeMsgFromRef(ref string, t *testing.T) msgs.MsgFulfillTrade {
 // RunFulfillTrade is a function to fulfill trade
 func RunFulfillTrade(step FixtureStep, t *testing.T) {
 
+	if FixtureTestOpts.VerifyOnly {
+		return
+	}
 	if step.ParamsRef != "" {
 		ffTrdMsg := FulfillTradeMsgFromRef(step.ParamsRef, t)
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, ffTrdMsg, ffTrdMsg.Sender.String(), true)
@@ -676,6 +709,9 @@ func DisableTradeMsgFromRef(ref string, t *testing.T) msgs.MsgDisableTrade {
 // RunDisableTrade is a function to disable trade
 func RunDisableTrade(step FixtureStep, t *testing.T) {
 
+	if FixtureTestOpts.VerifyOnly {
+		return
+	}
 	if step.ParamsRef != "" {
 		dsTrdMsg := DisableTradeMsgFromRef(step.ParamsRef, t)
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, dsTrdMsg, dsTrdMsg.Sender.String(), true)
