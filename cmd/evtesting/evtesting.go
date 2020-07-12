@@ -165,6 +165,7 @@ func (t *T) printEntireStack() {
 
 // FieldColorByLogLevel returns color
 func FieldColorByLogLevel(logLevel log.Level) int {
+	// https://misc.flogisoft.com/bash/tip_colors_and_formatting
 	const (
 		red    = 31
 		orange = 202
