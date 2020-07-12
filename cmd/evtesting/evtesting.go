@@ -167,6 +167,7 @@ func (t *T) printEntireStack() {
 func FieldColorByLogLevel(logLevel log.Level) int {
 	const (
 		red    = 31
+		orange = 202
 		yellow = 33
 		blue   = 36
 		gray   = 37
@@ -175,9 +176,9 @@ func FieldColorByLogLevel(logLevel log.Level) int {
 	switch logLevel {
 	case log.DebugLevel, log.TraceLevel:
 		levelColor = gray
-	case log.WarnLevel:
+	case log.WarnLevel, log.ErrorLevel:
 		levelColor = yellow
-	case log.ErrorLevel, log.FatalLevel, log.PanicLevel:
+	case log.FatalLevel, log.PanicLevel:
 		levelColor = red
 	default:
 		levelColor = blue
