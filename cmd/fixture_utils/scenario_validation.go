@@ -103,6 +103,7 @@ func (g *DependencyGraph) IsCyclic() bool {
 // CheckSteps checks cylic dependency of steps
 func CheckSteps(steps []FixtureStep, t *testing.T) {
 	g.VMapMutex.Lock()
+	defer g.VMapMutex.Unlock()
 	for _, step := range steps {
 		if len(step.ID) == 0 {
 			t.Fatal("please add ID field for all steps")
@@ -122,7 +123,6 @@ func CheckSteps(steps []FixtureStep, t *testing.T) {
 			}
 		}
 	}
-	g.VMapMutex.Unlock()
 	if g.IsCyclic() {
 		t.Fatal("cyclic dependency is available")
 	}
