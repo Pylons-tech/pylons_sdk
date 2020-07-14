@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"regexp"
 	"strings"
 	"sync"
 	"time"
@@ -290,4 +291,16 @@ func Exists(slice []string, val string) bool {
 		}
 	}
 	return false
+}
+
+// GetTxHashFromLog returns txhash from long list of transaction log
+func GetTxHashFromLog(result string) string {
+	// use regexp to find txhash from cli command response
+	re := regexp.MustCompile(`"txhash":.*"(.*)"`)
+	caTxHashSearch := re.FindSubmatch([]byte(result))
+	if len(caTxHashSearch) <= 1 {
+		return ""
+	}
+	caTxHash := string(caTxHashSearch[1])
+	return caTxHash
 }

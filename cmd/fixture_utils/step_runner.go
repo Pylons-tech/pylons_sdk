@@ -78,16 +78,6 @@ func WaitForNextBlockWithErrorCheck(t *testing.T) {
 	}
 }
 
-// WaitForBlockIntervalWithErrorCheck wait blocks and check the error result
-func WaitForBlockIntervalWithErrorCheck(interval int64, t *testing.T) {
-	err := inttest.WaitForBlockInterval(interval)
-	if err != nil {
-		t.WithFields(testing.Fields{
-			"error": err,
-		}).Fatal("error waiting for blocks")
-	}
-}
-
 // RunCreateAccount is a function to create account
 func RunCreateAccount(step FixtureStep, t *testing.T) {
 	if FixtureTestOpts.VerifyOnly {
@@ -105,7 +95,19 @@ func RunCreateAccount(step FixtureStep, t *testing.T) {
 			"result": result,
 			"logstr": logstr,
 		}).MustNil(err, "error creating account on chain")
-		WaitForBlockIntervalWithErrorCheck(2, t)
+
+		caTxHash := inttest.GetTxHashFromLog(result)
+		t.MustTrue(caTxHash != "", "error fetching txhash from result")
+		t.WithFields(testing.Fields{
+			"txhash": caTxHash,
+		}).Info("waiting for create account transaction")
+		txResponseBytes, err := inttest.WaitAndGetTxData(caTxHash, inttest.GetMaxWaitBlock(), t)
+		if err != nil {
+			t.WithFields(testing.Fields{
+				"result": string(txResponseBytes),
+				"error":  err,
+			}).Fatal("error waiting for create account transaction")
+		}
 		inttest.GetAccountInfoFromAddr(localKeyResult["address"], t)
 	}
 }
