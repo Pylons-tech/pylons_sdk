@@ -279,7 +279,7 @@ func JSONFormatter(param interface{}) string {
 	if err == nil {
 		return string(output)
 	}
-	return fmt.Sprintf("%+v", param)
+	return fmt.Sprintf("%+v;jsonMarshalErr=%s", param, err.Error())
 }
 
 // Exists check if element exist in an array

@@ -260,7 +260,9 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 		if err != nil {
 			return "error unmarshaling nonce map", err
 		}
-		nonce = nonceMap[signer]
+		if existNonce, ok := nonceMap[signer]; ok {
+			nonce = existNonce
+		}
 	}
 	t.Trace("tx_with_nonce.step.D")
 
@@ -314,10 +316,14 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 	t.Trace("tx_with_nonce.step.I")
 
 	txhash, err := broadcastTxFile(signedTxFile, GetMaxBroadcastRetry(), t)
+	t.WithFields(testing.Fields{
+		"sequence":       strconv.FormatUint(nonce, 10),
+		"account-number": strconv.FormatUint(accInfo.GetAccountNumber(), 10),
+		"max-retry":      GetMaxBroadcastRetry(),
+		"tx_msgs":        AminoCodecFormatter(msgs),
+		"error":          err,
+	}).Debug("transaction broadcast debug")
 	if err != nil {
-		t.WithFields(testing.Fields{
-			"error": err,
-		}).Error("transaction broadcast failure")
 		return "error broadcasting tx file", err
 	}
 	// increase nonce file

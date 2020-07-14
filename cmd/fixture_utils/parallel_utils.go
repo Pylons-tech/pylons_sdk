@@ -59,14 +59,12 @@ func GoodToGoForStep(file string, idx int, step FixtureStep, t *testing.T) bool 
 func UpdateWorkQueueStatus(file string, idx int, fixtureSteps []FixtureStep, targetStatus Status, t *testing.T) {
 	step := fixtureSteps[idx]
 	queID := GetQueueID(file, idx, step.ID)
-	if queID == -1 {
-		t.WithFields(testing.Fields{
-			"stepID":      step.ID,
-			"idx":         idx,
-			"file":        file,
-			"work_queues": inttest.JSONFormatter(workQueues),
-		}).Fatal("No WorkQueue found from specified param")
-	}
+	t.WithFields(testing.Fields{
+		"stepID":      step.ID,
+		"idx":         idx,
+		"file":        file,
+		"work_queues": inttest.JSONFormatter(workQueues),
+	}).MustTrue(queID != -1, "No WorkQueue found from specified param")
 	switch targetStatus {
 	case InProgress:
 		if GoodToGoForStep(file, idx, step, t) { // status can move forward only when previous condtions are met

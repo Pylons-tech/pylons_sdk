@@ -351,19 +351,20 @@ func ProcessSingleFixtureQueueItem(file string, idx int, fixtureSteps []FixtureS
 
 // RunSingleFixtureTest add a work queue into fixture test runner and execute work queues
 func RunSingleFixtureTest(file string, t *testing.T) {
+	var fixtureSteps []FixtureStep
+	byteValue := ReadFile(file, t)
+
+	err := json.Unmarshal([]byte(byteValue), &fixtureSteps)
+	t.WithFields(testing.Fields{
+		"raw_json": string(byteValue),
+	}).MustNil(err, "error decoding fixture steps")
+
+	CheckSteps(fixtureSteps, t)
+
 	t.Run(file, func(t *testing.T) {
 		if FixtureTestOpts.IsParallel {
 			t.Parallel()
 		}
-		var fixtureSteps []FixtureStep
-		byteValue := ReadFile(file, t)
-
-		err := json.Unmarshal([]byte(byteValue), &fixtureSteps)
-		t.WithFields(testing.Fields{
-			"raw_json": string(byteValue),
-		}).MustNil(err, "error decoding fixture steps")
-
-		CheckSteps(fixtureSteps, t)
 
 		for idx, step := range fixtureSteps {
 			workQueues = append(workQueues, QueueItem{
