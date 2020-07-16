@@ -169,11 +169,11 @@ func GetHumanReadableErrorFromTxHash(txhash string, t *testing.T) string {
 // GetTxData is a function to get transaction result data by txhash
 func GetTxData(txhash string, t *testing.T) ([]byte, error) {
 	output, _, err := RunPylonsCli([]string{"query", "tx", txhash}, "")
+	t.WithFields(testing.Fields{
+		"output": string(output),
+		"error":  err,
+	}).Debug("query for tx")
 	if err != nil {
-		t.WithFields(testing.Fields{
-			"output": string(output),
-			"error":  err,
-		}).Error("didn't get result waiting for maximum wait block")
 		return output, err
 	}
 	var tx sdk.TxResponse

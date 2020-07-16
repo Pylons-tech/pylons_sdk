@@ -12,8 +12,9 @@ func AddNewLocalKey(key string) (map[string]string, error) {
 		return result, errors.New("key is empty")
 	}
 	params := []string{"keys", "add", key}
-	output, _, err := RunPylonsCli(params, "")
+	output, logstr, err := RunPylonsCli(params, "")
 	if err != nil {
+		result["logstr"] = logstr
 		return result, err
 	}
 	err = json.Unmarshal(output, &result)
