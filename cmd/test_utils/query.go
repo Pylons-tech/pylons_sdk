@@ -83,9 +83,7 @@ func ListExecutionsViaCLI(account string, t *testing.T) ([]types.Execution, erro
 	}
 	output, _, err := RunPylonsCli(queryParams, "")
 	if err != nil {
-		t.WithFields(testing.Fields{
-			"error": err,
-		}).Fatal("error running list_executions cli command")
+		t.MustNil(err, "error running list_executions cli command")
 		return []types.Execution{}, err
 	}
 	var listExecutionsResp queriers.ExecResponse
@@ -159,7 +157,7 @@ func GetTxError(txhash string, t *testing.T) ([]byte, error) {
 
 // GetHumanReadableErrorFromTxHash is a function to get human readable error from txhash
 func GetHumanReadableErrorFromTxHash(txhash string, t *testing.T) string {
-	txErrorBytes, err := WaitAndGetTxError(txhash, 3, t)
+	txErrorBytes, err := WaitAndGetTxError(txhash, GetMaxWaitBlock(), t)
 	t.WithFields(testing.Fields{
 		"tx_error_bytes": string(txErrorBytes),
 	}).MustNil(err, "error while waiting for a transaction")
@@ -169,11 +167,11 @@ func GetHumanReadableErrorFromTxHash(txhash string, t *testing.T) string {
 // GetTxData is a function to get transaction result data by txhash
 func GetTxData(txhash string, t *testing.T) ([]byte, error) {
 	output, _, err := RunPylonsCli([]string{"query", "tx", txhash}, "")
-	t.WithFields(testing.Fields{
-		"output": string(output),
-		"error":  err,
-	}).Debug("query for tx")
 	if err != nil {
+		t.WithFields(testing.Fields{
+			"output": string(output),
+			"error":  err,
+		}).Debug("query for tx") // do debug as in this step, transaction could be in mempool
 		return output, err
 	}
 	var tx sdk.TxResponse

@@ -130,16 +130,12 @@ func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) (string, e
 	postBody, err := json.Marshal(postBodyJSON)
 
 	if err != nil {
-		t.WithFields(testing.Fields{
-			"error": err,
-		}).Fatal("fatal log")
+		t.MustNil(err, "fatal log")
 		return "", err
 	}
 	resp, err := http.Post(CLIOpts.RestEndpoint+"/txs", "application/json", bytes.NewBuffer(postBody))
 	if err != nil {
-		t.WithFields(testing.Fields{
-			"error": err,
-		}).Fatal("fatal log")
+		t.MustNil(err, "fatal log")
 		return "", err
 	}
 
@@ -175,8 +171,7 @@ func TestTxWithMsg(t *testing.T, msgValue sdk.Msg, signer string) string {
 	if err != nil {
 		t.WithFields(testing.Fields{
 			"tx_model_json": string(output),
-			"error":         err,
-		}).Fatal("error writing raw transaction")
+		}).MustNil(err, "error writing raw transaction")
 		return ""
 	}
 
@@ -189,16 +184,13 @@ func TestTxWithMsg(t *testing.T, msgValue sdk.Msg, signer string) string {
 	if err != nil {
 		t.WithFields(testing.Fields{
 			"signed_tx_json": string(output),
-			"error":          err,
-		}).Fatal("error signing transaction")
+		}).MustNil(err, "error signing transaction")
 		return ""
 	}
 
 	err = ioutil.WriteFile(signedTxFile, output, 0644)
 	if err != nil {
-		t.WithFields(testing.Fields{
-			"error": err,
-		}).Fatal("error writing signed transaction")
+		t.MustNil(err, "error writing signed transaction")
 		return ""
 	}
 
@@ -283,8 +275,7 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 	if err != nil {
 		t.WithFields(testing.Fields{
 			"tx_model_json": string(output),
-			"error":         err,
-		}).Fatal("error writing raw transaction")
+		}).MustNil(err, "error writing raw transaction")
 		return "error writing raw transaction", err
 	}
 

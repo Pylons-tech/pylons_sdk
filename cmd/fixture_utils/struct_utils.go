@@ -20,11 +20,7 @@ var execIDs = make(map[string]string)
 // ReadFile is a function to read file
 func ReadFile(fileURL string, t *testing.T) []byte {
 	jsonFile, err := os.Open(fileURL)
-	if err != nil {
-		t.WithFields(testing.Fields{
-			"error": err,
-		}).Fatal("fatal log")
-	}
+	t.MustNil(err, "fatal log reading file")
 
 	defer jsonFile.Close()
 

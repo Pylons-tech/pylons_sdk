@@ -186,12 +186,10 @@ func CheckItemWithTransferFee(item types.Item, transferFee string, t *testing.T)
 // CheckErrorOnTxFromTxHash validate if there's an error on transaction
 func CheckErrorOnTxFromTxHash(txhash string, t *testing.T) {
 	hmrErrMsg := inttest.GetHumanReadableErrorFromTxHash(txhash, t)
-	if len(hmrErrMsg) > 0 {
-		t.WithFields(testing.Fields{
-			"txhash":   txhash,
-			"tx_error": hmrErrMsg,
-		}).Fatal("tx_error exist")
-	}
+	t.WithFields(testing.Fields{
+		"txhash":   txhash,
+		"tx_error": hmrErrMsg,
+	}).MustTrue(len(hmrErrMsg) == 0, "tx_error exist")
 }
 
 // PropertyExistCheck function check if an account has required property that needs to be available
@@ -207,11 +205,7 @@ func PropertyExistCheck(step FixtureStep, t *testing.T) {
 		if len(pCheck.Cookbooks) > 0 {
 			for _, cbName := range pCheck.Cookbooks {
 				_, exist, err := inttest.GetCookbookIDFromName(cbName, pOwnerAddr)
-				if err != nil {
-					t.WithFields(testing.Fields{
-						"error": err,
-					}).Fatal("error checking cookbook exist")
-				}
+				t.MustNil(err, "error checking cookbook existance")
 				if !shouldNotExist {
 					if exist {
 						t.WithFields(testing.Fields{
@@ -238,11 +232,7 @@ func PropertyExistCheck(step FixtureStep, t *testing.T) {
 		if len(pCheck.Recipes) > 0 {
 			for _, rcpName := range pCheck.Recipes {
 				guid, err := inttest.GetRecipeGUIDFromName(rcpName, pOwnerAddr)
-				if err != nil {
-					t.WithFields(testing.Fields{
-						"error": err,
-					}).Fatal("error checking if recipe already exist")
-				}
+				t.MustNil(err, "error checking if recipe already exist")
 
 				if !shouldNotExist {
 					if len(guid) > 0 {
@@ -275,11 +265,7 @@ func PropertyExistCheck(step FixtureStep, t *testing.T) {
 				// 	"item_spec": itemCheck,
 				// }).Info("checking item")
 				items, err := inttest.ListItemsViaCLI(pOwnerAddr)
-				if err != nil {
-					t.WithFields(testing.Fields{
-						"error": err,
-					}).Fatal("error listing items")
-				}
+				t.MustNil(err, "error listing items")
 
 				for _, item := range items {
 					if CheckItemWithStringKeys(item, itemCheck.StringKeys) &&
@@ -339,9 +325,7 @@ func ProcessSingleFixtureQueueItem(file string, idx int, fixtureSteps []FixtureS
 		}
 		if step.RunAfter.BlockWait > 0 {
 			err := inttest.WaitForBlockInterval(step.RunAfter.BlockWait)
-			if err != nil {
-				t.Fatal(err)
-			}
+			t.MustNil(err, "error waiting for block interval")
 		}
 		RunActionRunner(step.Action, step, t)
 		PropertyExistCheck(step, t)

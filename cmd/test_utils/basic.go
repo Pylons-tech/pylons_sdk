@@ -61,9 +61,7 @@ func GetMaxBroadcastRetry() int {
 func ReadFile(fileURL string, t *testing.T) []byte {
 	jsonFile, err := os.Open(fileURL)
 	if err != nil {
-		t.WithFields(testing.Fields{
-			"error": err,
-		}).Fatal("error reading file")
+		t.MustNil(err, "error reading file")
 		return []byte{}
 	}
 

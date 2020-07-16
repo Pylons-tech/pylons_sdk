@@ -22,11 +22,9 @@ func GetActionRunner(action string) ActFunc {
 // RunActionRunner execute registered action runner function
 func RunActionRunner(action string, step FixtureStep, t *testing.T) {
 	fn := GetActionRunner(action)
-	if fn == nil {
-		t.WithFields(testing.Fields{
-			"action": step.Action,
-		}).Fatal("step with unrecognizable action found")
-	}
+	t.WithFields(testing.Fields{
+		"action": step.Action,
+	}).MustTrue(fn != nil, "step with unrecognizable action found")
 	fn(step, t)
 }
 

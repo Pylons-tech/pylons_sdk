@@ -39,14 +39,12 @@ func GetQueueID(file string, idx int, stepID string) int {
 func GoodToGoForStep(file string, idx int, step FixtureStep, t *testing.T) bool {
 	for _, condition := range step.RunAfter.PreCondition {
 		queID := GetQueueID(file, idx, condition)
-		if queID == -1 {
-			t.WithFields(testing.Fields{
-				"stepID":      step.ID,
-				"idx":         idx,
-				"file":        file,
-				"work_queues": inttest.JSONFormatter(workQueues),
-			}).Fatal("No WorkQueue found from specified param")
-		}
+		t.WithFields(testing.Fields{
+			"stepID":      step.ID,
+			"idx":         idx,
+			"file":        file,
+			"work_queues": inttest.JSONFormatter(workQueues),
+		}).MustTrue(queID != -1, "No WorkQueue found from specified param")
 		work := workQueues[queID]
 		if work.status != Done {
 			return false

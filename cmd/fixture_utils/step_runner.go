@@ -58,12 +58,10 @@ func TxResultDecodingErrorCheck(err error, txhash string, t *testing.T) {
 // GetTxHandleResult check error on tx by hash and return handle result
 func GetTxHandleResult(txhash string, t *testing.T) []byte {
 	txHandleResBytes, err := inttest.WaitAndGetTxData(txhash, inttest.GetMaxWaitBlock(), t)
-	if err != nil {
-		t.WithFields(testing.Fields{
-			"tx_result_bytes": string(txHandleResBytes),
-			"error":           err,
-		}).Fatal("error getting tx result bytes")
-	}
+	t.WithFields(testing.Fields{
+		"tx_result_bytes": string(txHandleResBytes),
+		"error":           err,
+	}).MustNil(err, "error getting tx result bytes")
 	CheckErrorOnTxFromTxHash(txhash, t)
 	return txHandleResBytes
 }
@@ -71,11 +69,7 @@ func GetTxHandleResult(txhash string, t *testing.T) []byte {
 // WaitForNextBlockWithErrorCheck wait 1 block and check the error result
 func WaitForNextBlockWithErrorCheck(t *testing.T) {
 	err := inttest.WaitForNextBlock()
-	if err != nil {
-		t.WithFields(testing.Fields{
-			"error": err,
-		}).Fatal("error waiting for next block")
-	}
+	t.MustNil(err, "error waiting for next block")
 }
 
 // RunCreateAccount is a function to create account
@@ -102,12 +96,9 @@ func RunCreateAccount(step FixtureStep, t *testing.T) {
 			"txhash": caTxHash,
 		}).Info("waiting for create account transaction")
 		txResponseBytes, err := inttest.WaitAndGetTxData(caTxHash, inttest.GetMaxWaitBlock(), t)
-		if err != nil {
-			t.WithFields(testing.Fields{
-				"result": string(txResponseBytes),
-				"error":  err,
-			}).Fatal("error waiting for create account transaction")
-		}
+		t.WithFields(testing.Fields{
+			"result": string(txResponseBytes),
+		}).MustNil(err, "error waiting for create account transaction")
 		inttest.GetAccountInfoFromAddr(localKeyResult["address"], t)
 	}
 }
