@@ -1,8 +1,47 @@
 [
     {
+        "ID": "CREATE_MM_ACCOUNT1",
+        "runAfter": {
+          "precondition": [],
+          "blockWait": 0
+        },
+        "action": "create_account",
+        "paramsRef": "mm_account1",
+        "output": {
+          "txResult": {
+            "status": "Success"
+          }
+        }
+    },
+    {
+        "ID": "GET_PYLONS_MM_ACCOUNT1",
+        "runAfter": {
+            "precondition": ["CREATE_MM_ACCOUNT1"],
+            "blockWait": 0
+        },
+        "action": "get_pylons",
+        "paramsRef": "mm_account1",
+        "output": {
+            "txResult": {
+                "status": "Success"
+            },
+            "property": [
+                {
+                    "owner": "mm_account1",
+                    "coins": [
+                        {
+                        "denom": "pylon",
+                        "amount": 55000
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    {
         "ID": "MULTI_MSG_TX",
         "runAfter": {
-            "precondition": [],
+            "precondition": ["CREATE_MM_ACCOUNT1", "GET_PYLONS_MM_ACCOUNT1"],
             "blockWait": 0
         },
         "action": "multi_msg_tx",
@@ -22,7 +61,7 @@
             },
             "property": [
                 {
-                    "owner": "account2",
+                    "owner": "mm_account1",
                     "cookbooks": ["Multi Message Cookbook 1", "Multi Message Cookbook 2"]
                 }
             ]

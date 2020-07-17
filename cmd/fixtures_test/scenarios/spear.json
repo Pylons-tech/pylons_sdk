@@ -1,8 +1,49 @@
 [
     {
+      "ID": "CREATE_SP_ACCOUNT1",
+      "runAfter": {
+        "precondition": [],
+        "blockWait": 0
+      },
+      "action": "create_account",
+      "paramsRef": "sp_account1",
+      "output": {
+        "txResult": {
+          "status": "Success"
+        }
+      }
+    },
+    {
+      "ID": "GET_PYLONS_SP_ACCOUNT1",
+      "runAfter": {
+        "precondition": [
+          "CREATE_SP_ACCOUNT1"
+        ],
+        "blockWait": 0
+      },
+      "action": "get_pylons",
+      "paramsRef": "sp_account1",
+      "output": {
+        "txResult": {
+          "status": "Success"
+        },
+        "property": [
+          {
+            "owner": "sp_account1",
+            "coins": [
+              {
+                "denom": "pylon",
+                "amount": 55000
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
         "ID": "CREATE_SPEAR_COOKBOOK",
         "runAfter": {
-            "precondition": [],
+            "precondition": ["CREATE_SP_ACCOUNT1", "GET_PYLONS_SP_ACCOUNT1"],
             "blockWait": 0
         },
         "action": "create_cookbook",
@@ -13,32 +54,8 @@
             },
             "property": [
                 {
-                    "owner": "account2",
+                    "owner": "sp_account1",
                     "cookbooks": ["spearcookbook"]
-                }
-            ]
-        }
-    },
-    {
-        "ID": "CREATE_SPEAR_LV1",        
-        "runAfter": {
-            "precondition": ["CREATE_SPEAR_COOKBOOK"],
-            "blockWait": 0
-        },
-        "action": "fiat_item",
-        "paramsRef": "./items/spear/spear_lv1.json",
-        "output": {
-            "txResult": {
-                "status": "Success"
-            },
-            "property": [
-                {
-                    "owner": "account1",
-                    "items": [
-                        {
-                            "stringValues": { "Name": "Spear" }
-                        }
-                    ]
                 }
             ]
         }
@@ -57,8 +74,71 @@
             },
             "property": [
                 {
-                    "owner": "account2",
+                    "owner": "sp_account1",
                     "recipes": ["Delayed Spear Upgrade Recipe"]
+                }
+            ]
+        }
+    },
+    {
+      "ID": "CREATE_SP_ACCOUNT2",
+      "runAfter": {
+        "precondition": [],
+        "blockWait": 0
+      },
+      "action": "create_account",
+      "paramsRef": "sp_account2",
+      "output": {
+        "txResult": {
+          "status": "Success"
+        }
+      }
+    },
+    {
+      "ID": "GET_PYLONS_SP_ACCOUNT2",
+      "runAfter": {
+        "precondition": ["CREATE_SP_ACCOUNT2"],
+        "blockWait": 0
+      },
+      "action": "get_pylons",
+      "paramsRef": "sp_account2",
+      "output": {
+        "txResult": {
+          "status": "Success"
+        },
+        "property": [
+          {
+            "owner": "sp_account2",
+            "coins": [
+              {
+                "denom": "pylon",
+                "amount": 55000
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+        "ID": "CREATE_SPEAR_LV1",        
+        "runAfter": {
+            "precondition": ["CREATE_SPEAR_COOKBOOK", "CREATE_SP_ACCOUNT2"],
+            "blockWait": 0
+        },
+        "action": "fiat_item",
+        "paramsRef": "./items/spear/spear_lv1.json",
+        "output": {
+            "txResult": {
+                "status": "Success"
+            },
+            "property": [
+                {
+                    "owner": "sp_account2",
+                    "items": [
+                        {
+                            "stringValues": { "Name": "Spear" }
+                        }
+                    ]
                 }
             ]
         }
@@ -66,7 +146,7 @@
     {
         "ID": "EXECUTE_DELAYED_SPEAR_UPDATE_RECIPE",
         "runAfter": {
-            "precondition": ["CREATE_DELAYED_SPEAR_UPDATE_RECIPE", "CREATE_SPEAR_LV1"],
+            "precondition": ["CREATE_SP_ACCOUNT2", "CREATE_DELAYED_SPEAR_UPDATE_RECIPE", "CREATE_SPEAR_LV1"],
             "blockWait": 0
         },
         "action": "execute_recipe",
@@ -82,7 +162,7 @@
     {
         "ID": "CHECK_EXECUTION_DELAYED_SPEAR_UPDATE_RECIPE",
         "runAfter": {
-            "precondition": ["EXECUTE_DELAYED_SPEAR_UPDATE_RECIPE"],
+            "precondition": ["GET_PYLONS_SP_ACCOUNT2", "EXECUTE_DELAYED_SPEAR_UPDATE_RECIPE"],
             "blockWait": 0
         },
         "action": "check_execution",
@@ -93,7 +173,7 @@
             },
             "property": [
                 {
-                    "owner": "account1",
+                    "owner": "sp_account2",
                     "items": [
                         {
                             "stringValues": { "Name": "Spear",  "LastName": "Upgraded Spear" },

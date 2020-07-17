@@ -5,7 +5,7 @@
         "./recipes/double_empty/item_input/double_empty_type1.json"
     ],
     "ExtraInfo":"",
-    "Sender":"account2",
+    "Sender":"de_account1",
     "Name": "DE's double empty input type1 test recipe",
     "CookbookID": "DE-v0.0.0-1579053457",
     "Description": "this recipe is used to test double empty input type1.",

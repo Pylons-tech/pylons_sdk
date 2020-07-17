@@ -12,7 +12,7 @@
         }
     ],
     "ExtraInfo":"",
-    "Sender":"account2",
+    "Sender":"de_account1",
     "Name": "DE's no output type2 test recipe",
     "CookbookID": "DE-v0.0.0-1579053457",
     "Description": "this recipe is used to test no output type2.",
