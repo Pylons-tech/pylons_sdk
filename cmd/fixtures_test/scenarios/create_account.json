@@ -1,12 +1,12 @@
 [
   {
-    "ID": "CREATE_ACCOUNT3",
+    "ID": "CREATE_CA_ACCOUNT1",
     "runAfter": {
       "precondition": [],
       "blockWait": 0
     },
     "action": "create_account",
-    "paramsRef": "account3",
+    "paramsRef": "ca_account1",
     "output": {
       "txResult": {
         "status": "Success"
@@ -14,20 +14,20 @@
     }
   },
   {
-    "ID": "GET_PYLONS_ACCOUNT3",
+    "ID": "GET_PYLONS_CA_ACCOUNT1",
     "runAfter": {
-      "precondition": ["CREATE_ACCOUNT3"],
+      "precondition": ["CREATE_CA_ACCOUNT1"],
       "blockWait": 0
     },
     "action": "get_pylons",
-    "paramsRef": "account3",
+    "paramsRef": "ca_account1",
     "output": {
       "txResult": {
         "status": "Success"
       },
       "property": [
         {
-          "owner": "account3",
+          "owner": "ca_account1",
           "coins": [
             {
               "denom": "pylon",
@@ -41,7 +41,7 @@
   {
     "ID": "CREATE_CA_COOKBOOK",
     "runAfter": {
-      "precondition": ["GET_PYLONS_ACCOUNT3"],
+      "precondition": ["GET_PYLONS_CA_ACCOUNT1"],
       "blockWait": 0
     },
     "action": "create_cookbook",
@@ -52,7 +52,7 @@
       },
       "property": [
         {
-          "owner": "account3",
+          "owner": "ca_account1",
           "cookbooks": ["CA Checker Cookbook"]
         }
       ]

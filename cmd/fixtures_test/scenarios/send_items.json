@@ -1,97 +1,215 @@
 [
-  {
+    {
+      "ID": "CREATE_SI_ACCOUNT1",
+      "runAfter": {
+        "precondition": [],
+        "blockWait": 0
+      },
+      "action": "create_account",
+      "paramsRef": "si_account1",
+      "output": {
+        "txResult": {
+          "status": "Success"
+        }
+      }
+    },
+    {
+      "ID": "GET_PYLONS_SI_ACCOUNT1",
+      "runAfter": {
+        "precondition": [
+          "CREATE_SI_ACCOUNT1"
+        ],
+        "blockWait": 0
+      },
+      "action": "get_pylons",
+      "paramsRef": "si_account1",
+      "output": {
+        "txResult": {
+          "status": "Success"
+        },
+        "property": [
+          {
+            "owner": "si_account1",
+            "coins": [
+              {
+                "denom": "pylon",
+                "amount": 55000
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
       "ID": "CREATE_SEND_ITEM_TEST_COOKBOOK",
       "runAfter": {
-          "precondition": [],
-          "blockWait": 0
+        "precondition": ["CREATE_SI_ACCOUNT1", "GET_PYLONS_SI_ACCOUNT1"],
+        "blockWait": 0
       },
       "action": "create_cookbook",
       "paramsRef": "./cookbooks/send_items.json",
       "output": {
-          "txResult": {
-              "status": "Success"
-          },
-          "property": [
-              {
-                  "owner": "account2",
-                  "cookbooks": ["Send Items Test Cookbook"]
-              }
-          ]
+        "txResult": {
+          "status": "Success"
+        },
+        "property": [
+          {
+            "owner": "si_account1",
+            "cookbooks": [
+              "Send Items Test Cookbook"
+            ]
+          }
+        ]
       }
-  },
-  {
-      "ID": "CREATE_ITEM1",        
+    },
+    {
+      "ID": "CREATE_SI_ACCOUNT2",
       "runAfter": {
-          "precondition": ["CREATE_SEND_ITEM_TEST_COOKBOOK"],
-          "blockWait": 0
+        "precondition": [],
+        "blockWait": 0
+      },
+      "action": "create_account",
+      "paramsRef": "si_account2",
+      "output": {
+        "txResult": {
+          "status": "Success"
+        }
+      }
+    },
+    {
+      "ID": "GET_PYLONS_SI_ACCOUNT2",
+      "runAfter": {
+        "precondition": [
+          "CREATE_SI_ACCOUNT2"
+        ],
+        "blockWait": 0
+      },
+      "action": "get_pylons",
+      "paramsRef": "si_account2",
+      "output": {
+        "txResult": {
+          "status": "Success"
+        },
+        "property": [
+          {
+            "owner": "si_account2",
+            "coins": [
+              {
+                "denom": "pylon",
+                "amount": 55000
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "ID": "CREATE_ITEM1",
+      "runAfter": {
+        "precondition": [
+          "CREATE_SEND_ITEM_TEST_COOKBOOK",
+          "CREATE_SI_ACCOUNT2",
+          "GET_PYLONS_SI_ACCOUNT2"
+        ],
+        "blockWait": 0
       },
       "action": "fiat_item",
       "paramsRef": "./items/send_items/item1.json",
       "output": {
-          "txResult": {
-              "status": "Success"
-          },
-          "property": [
+        "txResult": {
+          "status": "Success"
+        },
+        "property": [
+          {
+            "owner": "si_account2",
+            "items": [
               {
-                  "owner": "account1",
-                  "items": [
-                      {
-                          "stringValues": { "Name": "send_items_item1" }
-                      }
-                  ]
+                "stringValues": {
+                  "Name": "send_items_item1"
+                }
               }
-          ]
+            ]
+          }
+        ]
       }
-  },
-  {
+    },
+    {
       "ID": "CREATE_ITEM2",
       "runAfter": {
-          "precondition": ["CREATE_SEND_ITEM_TEST_COOKBOOK"],
-          "blockWait": 0
+        "precondition": [
+          "CREATE_SEND_ITEM_TEST_COOKBOOK",
+          "CREATE_SI_ACCOUNT2",
+          "GET_PYLONS_SI_ACCOUNT2"
+        ],
+        "blockWait": 0
       },
       "action": "fiat_item",
       "paramsRef": "./items/send_items/item2.json",
       "output": {
-          "txResult": {
-              "status": "Success"
-          },
-          "property": [
+        "txResult": {
+          "status": "Success"
+        },
+        "property": [
+          {
+            "owner": "si_account2",
+            "items": [
               {
-                  "owner": "account1",
-                  "items": [
-                      {
-                          "stringValues": { "Name": "send_items_item2" }
-                      }
-                  ]
+                "stringValues": {
+                  "Name": "send_items_item2"
+                }
               }
-          ]
+            ]
+          }
+        ]
       }
-  },
-  {
-      "ID": "SEND_SWORD",        
+    },
+    {
+      "ID": "CREATE_SI_ACCOUNT3",
       "runAfter": {
-          "precondition": ["CREATE_ITEM1", "CREATE_ITEM2"],
-          "blockWait": 0
+        "precondition": [],
+        "blockWait": 0
+      },
+      "action": "create_account",
+      "paramsRef": "si_account3",
+      "output": {
+        "txResult": {
+          "status": "Success"
+        }
+      }
+    },
+    {
+      "ID": "SEND_SWORD",
+      "runAfter": {
+        "precondition": [
+          "CREATE_SI_ACCOUNT3",
+          "CREATE_ITEM1",
+          "CREATE_ITEM2"
+        ],
+        "blockWait": 0
       },
       "action": "send_items",
       "paramsRef": "./send_items/send_items.json",
       "output": {
-          "txResult": {
-              "status": "Success"
-          },
-          "property": [
+        "txResult": {
+          "status": "Success"
+        },
+        "property": [
+          {
+            "owner": "si_account3",
+            "items": [
               {
-                  "owner": "account2",
-                  "items": [
-                      {
-                          "stringValues": { "Name": "send_items_item1" }
-                      },
-                      {
-                          "stringValues": { "Name": "send_items_item2" }
-                      }
-                  ]
+                "stringValues": {
+                  "Name": "send_items_item1"
+                }
+              },
+              {
+                "stringValues": {
+                  "Name": "send_items_item2"
+                }
               }
-          ]
+            ]
+          }
+        ]
       }
-  }
-]
+    }
+  ]

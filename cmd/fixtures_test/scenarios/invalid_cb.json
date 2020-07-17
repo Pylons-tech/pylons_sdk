@@ -1,8 +1,47 @@
 [
   {
-    "ID": "CREATE_INVALID_COOKBOOK",
+    "ID": "CREATE_IN_ACCOUNT1",
     "runAfter": {
       "precondition": [],
+      "blockWait": 0
+    },
+    "action": "create_account",
+    "paramsRef": "in_account1",
+    "output": {
+      "txResult": {
+        "status": "Success"
+      }
+    }
+  },
+  {
+      "ID": "GET_PYLONS_IN_ACCOUNT1",
+      "runAfter": {
+        "precondition": ["CREATE_IN_ACCOUNT1"],
+        "blockWait": 0
+      },
+      "action": "get_pylons",
+      "paramsRef": "in_account1",
+      "output": {
+        "txResult": {
+          "status": "Success"
+        },
+        "property": [
+          {
+            "owner": "in_account1",
+            "coins": [
+              {
+                "denom": "pylon",
+                "amount": 55000
+              }
+            ]
+          }
+        ]
+      }
+  },
+  {
+    "ID": "CREATE_INVALID_COOKBOOK",
+    "runAfter": {
+      "precondition": ["CREATE_IN_ACCOUNT1", "GET_PYLONS_IN_ACCOUNT1"],
       "blockWait": 0
     },
     "action": "create_cookbook",
@@ -13,7 +52,7 @@
       },
       "property": [
         {
-          "owner": "account2",
+          "owner": "in_account1",
           "shouldNotExist": true,
           "cookbooks": [
             "Invalid cookbook"
