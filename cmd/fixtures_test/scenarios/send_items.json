@@ -6,7 +6,7 @@
           "blockWait": 0
       },
       "action": "create_cookbook",
-      "paramsRef": "./cookbooks/send_items_test.json",
+      "paramsRef": "./cookbooks/send_items.json",
       "output": {
           "txResult": {
               "status": "Success"
@@ -14,7 +14,7 @@
           "property": [
               {
                   "owner": "account2",
-                  "cookbooks": ["send_items_test"]
+                  "cookbooks": ["Send Items Test Cookbook"]
               }
           ]
       }
@@ -26,7 +26,7 @@
           "blockWait": 0
       },
       "action": "fiat_item",
-      "paramsRef": "./items/send_items_test/item1.json",
+      "paramsRef": "./items/send_items/item1.json",
       "output": {
           "txResult": {
               "status": "Success"
@@ -36,7 +36,7 @@
                   "owner": "account1",
                   "items": [
                       {
-                          "stringValues": { "Name": "send_items_test_item1" }
+                          "stringValues": { "Name": "send_items_item1" }
                       }
                   ]
               }
@@ -50,7 +50,7 @@
           "blockWait": 0
       },
       "action": "fiat_item",
-      "paramsRef": "./items/send_items_test/item2.json",
+      "paramsRef": "./items/send_items/item2.json",
       "output": {
           "txResult": {
               "status": "Success"
@@ -60,7 +60,7 @@
                   "owner": "account1",
                   "items": [
                       {
-                          "stringValues": { "Name": "send_items_test_item2" }
+                          "stringValues": { "Name": "send_items_item2" }
                       }
                   ]
               }
@@ -74,7 +74,7 @@
           "blockWait": 0
       },
       "action": "send_items",
-      "paramsRef": "./send_items_test/send_items.json",
+      "paramsRef": "./send_items/send_items.json",
       "output": {
           "txResult": {
               "status": "Success"
@@ -84,10 +84,10 @@
                   "owner": "account2",
                   "items": [
                       {
-                          "stringValues": { "Name": "send_items_test_item1" }
+                          "stringValues": { "Name": "send_items_item1" }
                       },
                       {
-                          "stringValues": { "Name": "send_items_test_item2" }
+                          "stringValues": { "Name": "send_items_item2" }
                       }
                   ]
               }

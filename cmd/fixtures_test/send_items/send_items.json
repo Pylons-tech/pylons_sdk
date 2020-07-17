@@ -1,0 +1,5 @@
+{
+  "ItemNames": ["send_items_item1", "send_items_item2"],
+  "Sender": "account1",
+  "Receiver": "account2"
+}

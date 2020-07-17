@@ -2,19 +2,18 @@ package fixturetest
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
-	"regexp"
-	"strconv"
-	"strings"
+	"sync"
+	"time"
 
 	testing "github.com/Pylons-tech/pylons_sdk/cmd/evtesting"
 	inttest "github.com/Pylons-tech/pylons_sdk/cmd/test_utils"
 	"github.com/Pylons-tech/pylons_sdk/x/pylons/types"
 )
 
+var runtimeKeyGenMux sync.Mutex
 var execIDs = make(map[string]string)
 
 // ReadFile is a function to read file
@@ -38,30 +37,24 @@ func UnmarshalIntoEmptyInterface(bytes []byte, t *testing.T) map[string]interfac
 	return raw
 }
 
-// ValidateTempAccountName is a function to validate temp account name
-func ValidateTempAccountName(e string) error {
-	exp := regexp.MustCompile(`^account[0-9]+$`)
-	if exp.MatchString(string(e)) {
-		return nil
+// RegisterDefaultAccountKeys register the accounts configured on FixtureTestOpts.AccountNames
+func RegisterDefaultAccountKeys() {
+	for idx, key := range FixtureTestOpts.AccountNames {
+		runtimeAccountKeys[fmt.Sprintf("account%d", idx+1)] = key
 	}
-
-	return errors.New("Invalid account name")
 }
 
 // GetAccountKeyFromTempName is a function to get account key from temp name
 func GetAccountKeyFromTempName(tempName string, t *testing.T) string {
-	err := ValidateTempAccountName(tempName)
-	t.MustNil(err, fmt.Sprintf("%s is an invalid account name", tempName))
-
-	accountNameIndex, err := strconv.Atoi(strings.TrimPrefix(tempName, "account"))
-	t.MustNil(err, fmt.Sprintf("%s is an invalid account name", tempName))
-	t.MustTrue(accountNameIndex > 0, fmt.Sprintf("%s doesn't match to the accounts args. temp account names start from account1", tempName))
-	// temp names start from account1, so it's subtracted to match to the index
-	accountNameIndex--
-
-	t.MustTrue(accountNameIndex < len(FixtureTestOpts.AccountNames), fmt.Sprintf("%s doesn't match to the accounts args. the account index is out of the account args length", tempName))
-
-	return FixtureTestOpts.AccountNames[accountNameIndex]
+	t.MustTrue(len(tempName) > 0, "account key should not be an empty string")
+	key, ok := runtimeAccountKeys[tempName]
+	if !ok {
+		runtimeKeyGenMux.Lock()
+		defer runtimeKeyGenMux.Unlock()
+		key = fmt.Sprintf("FixtureRuntime_%s_%d", tempName, time.Now().Unix())
+		runtimeAccountKeys[tempName] = key
+	}
+	return key
 }
 
 // GetAccountAddressFromTempName is a function to get account address from temp name

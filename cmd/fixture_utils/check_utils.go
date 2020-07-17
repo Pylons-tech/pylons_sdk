@@ -67,6 +67,8 @@ type TestOptions struct {
 	AccountNames      []string
 }
 
+var runtimeAccountKeys = make(map[string]string)
+
 // FixtureTestOpts is a variable to have fixture test options
 var FixtureTestOpts = TestOptions{
 	IsParallel: true,
@@ -368,6 +370,9 @@ func RunSingleFixtureTest(file string, t *testing.T) {
 // RunTestScenarios execute all scenarios
 func RunTestScenarios(scenarioDir string, scenarioFileNames []string, t *originT.T) {
 	newT := testing.NewT(t)
+
+	// Register default accounts configured into runtime key mapping
+	RegisterDefaultAccountKeys()
 
 	var files []string
 
