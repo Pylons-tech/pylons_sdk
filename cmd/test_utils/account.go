@@ -15,6 +15,7 @@ func AddNewLocalKey(key string) (map[string]string, error) {
 	output, logstr, err := RunPylonsCli(params, "")
 	if err != nil {
 		result["logstr"] = logstr
+		result["output"] = string(output)
 		return result, err
 	}
 	err = json.Unmarshal(output, &result)
