@@ -57,6 +57,24 @@ func ListCookbookViaCLI(account string) ([]types.Cookbook, error) {
 	return listCBResp.Cookbooks, err
 }
 
+// ListLockedCoinsViaCLI is a function to list cookbooks via cli
+func ListLockedCoinsViaCLI(account string) (types.LockedCoin, error) {
+	queryParams := []string{"query", "pylons", "list_locked_coins"}
+	if len(account) != 0 {
+		queryParams = append(queryParams, "--account", account)
+	}
+	output, _, err := RunPylonsCli(queryParams, "")
+	if err != nil {
+		return types.LockedCoin{}, err
+	}
+	lcResp := types.LockedCoin{}
+	err = GetAminoCdc().UnmarshalJSON(output, &lcResp)
+	if err != nil {
+		return types.LockedCoin{}, err
+	}
+	return lcResp, err
+}
+
 // ListRecipesViaCLI is a function to list recipes via cli
 func ListRecipesViaCLI(account string) ([]types.Recipe, error) {
 	queryParams := []string{"query", "pylons", "list_recipe"}
