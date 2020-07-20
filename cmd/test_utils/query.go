@@ -57,7 +57,7 @@ func ListCookbookViaCLI(account string) ([]types.Cookbook, error) {
 	return listCBResp.Cookbooks, err
 }
 
-// ListLockedCoinsViaCLI is a function to list cookbooks via cli
+// ListLockedCoinsViaCLI is a function to list locked coins via cli
 func ListLockedCoinsViaCLI(account string) (types.LockedCoin, error) {
 	queryParams := []string{"query", "pylons", "list_locked_coins"}
 	if len(account) != 0 {
