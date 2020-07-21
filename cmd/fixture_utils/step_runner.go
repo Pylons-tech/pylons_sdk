@@ -139,6 +139,17 @@ func RunGetPylons(step FixtureStep, t *testing.T) {
 	}
 }
 
+// RunMockAccount = RunCreateAccount + RunGetPylons
+func RunMockAccount(step FixtureStep, t *testing.T) {
+	if FixtureTestOpts.VerifyOnly {
+		return
+	}
+	if step.ParamsRef != "" {
+		RunCreateAccount(step, t)
+		RunGetPylons(step, t)
+	}
+}
+
 // RunMultiMsgTx is a function to send multiple messages in a transaction
 // This support only 1 sender multi transaction for now
 // TODO we need to support multi-message multi sender transaction

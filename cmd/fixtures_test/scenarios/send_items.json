@@ -1,27 +1,11 @@
 [
     {
-      "ID": "CREATE_SI_ACCOUNT1",
+      "ID": "MOCK_ACCOUNT_SI_ACCOUNT1",
       "runAfter": {
         "precondition": [],
         "blockWait": 0
       },
-      "action": "create_account",
-      "paramsRef": "si_account1",
-      "output": {
-        "txResult": {
-          "status": "Success"
-        }
-      }
-    },
-    {
-      "ID": "GET_PYLONS_SI_ACCOUNT1",
-      "runAfter": {
-        "precondition": [
-          "CREATE_SI_ACCOUNT1"
-        ],
-        "blockWait": 0
-      },
-      "action": "get_pylons",
+      "action": "mock_account",
       "paramsRef": "si_account1",
       "output": {
         "txResult": {
@@ -43,7 +27,7 @@
     {
       "ID": "CREATE_SEND_ITEM_TEST_COOKBOOK",
       "runAfter": {
-        "precondition": ["CREATE_SI_ACCOUNT1", "GET_PYLONS_SI_ACCOUNT1"],
+        "precondition": ["MOCK_ACCOUNT_SI_ACCOUNT1"],
         "blockWait": 0
       },
       "action": "create_cookbook",
@@ -63,28 +47,12 @@
       }
     },
     {
-      "ID": "CREATE_SI_ACCOUNT2",
+      "ID": "MOCK_ACCOUNT_SI_ACCOUNT2",
       "runAfter": {
         "precondition": [],
         "blockWait": 0
       },
-      "action": "create_account",
-      "paramsRef": "si_account2",
-      "output": {
-        "txResult": {
-          "status": "Success"
-        }
-      }
-    },
-    {
-      "ID": "GET_PYLONS_SI_ACCOUNT2",
-      "runAfter": {
-        "precondition": [
-          "CREATE_SI_ACCOUNT2"
-        ],
-        "blockWait": 0
-      },
-      "action": "get_pylons",
+      "action": "mock_account",
       "paramsRef": "si_account2",
       "output": {
         "txResult": {
@@ -106,11 +74,7 @@
     {
       "ID": "CREATE_ITEM1",
       "runAfter": {
-        "precondition": [
-          "CREATE_SEND_ITEM_TEST_COOKBOOK",
-          "CREATE_SI_ACCOUNT2",
-          "GET_PYLONS_SI_ACCOUNT2"
-        ],
+        "precondition": ["CREATE_SEND_ITEM_TEST_COOKBOOK","MOCK_ACCOUNT_SI_ACCOUNT2"],
         "blockWait": 0
       },
       "action": "fiat_item",
@@ -136,11 +100,7 @@
     {
       "ID": "CREATE_ITEM2",
       "runAfter": {
-        "precondition": [
-          "CREATE_SEND_ITEM_TEST_COOKBOOK",
-          "CREATE_SI_ACCOUNT2",
-          "GET_PYLONS_SI_ACCOUNT2"
-        ],
+        "precondition": ["CREATE_SEND_ITEM_TEST_COOKBOOK","MOCK_ACCOUNT_SI_ACCOUNT2"],
         "blockWait": 0
       },
       "action": "fiat_item",

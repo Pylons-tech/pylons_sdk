@@ -1,27 +1,11 @@
 [
     {
-      "ID": "CREATE_SP_ACCOUNT1",
+      "ID": "MOCK_ACCOUNT_SP_ACCOUNT1",
       "runAfter": {
         "precondition": [],
         "blockWait": 0
       },
-      "action": "create_account",
-      "paramsRef": "sp_account1",
-      "output": {
-        "txResult": {
-          "status": "Success"
-        }
-      }
-    },
-    {
-      "ID": "GET_PYLONS_SP_ACCOUNT1",
-      "runAfter": {
-        "precondition": [
-          "CREATE_SP_ACCOUNT1"
-        ],
-        "blockWait": 0
-      },
-      "action": "get_pylons",
+      "action": "mock_account",
       "paramsRef": "sp_account1",
       "output": {
         "txResult": {
@@ -43,7 +27,7 @@
     {
         "ID": "CREATE_SPEAR_COOKBOOK",
         "runAfter": {
-            "precondition": ["CREATE_SP_ACCOUNT1", "GET_PYLONS_SP_ACCOUNT1"],
+            "precondition": ["MOCK_ACCOUNT_SP_ACCOUNT1"],
             "blockWait": 0
         },
         "action": "create_cookbook",
@@ -81,26 +65,12 @@
         }
     },
     {
-      "ID": "CREATE_SP_ACCOUNT2",
+      "ID": "MOCK_ACCOUNT_SP_ACCOUNT2",
       "runAfter": {
         "precondition": [],
         "blockWait": 0
       },
-      "action": "create_account",
-      "paramsRef": "sp_account2",
-      "output": {
-        "txResult": {
-          "status": "Success"
-        }
-      }
-    },
-    {
-      "ID": "GET_PYLONS_SP_ACCOUNT2",
-      "runAfter": {
-        "precondition": ["CREATE_SP_ACCOUNT2"],
-        "blockWait": 0
-      },
-      "action": "get_pylons",
+      "action": "mock_account",
       "paramsRef": "sp_account2",
       "output": {
         "txResult": {
@@ -122,7 +92,7 @@
     {
         "ID": "CREATE_SPEAR_LV1",        
         "runAfter": {
-            "precondition": ["CREATE_SPEAR_COOKBOOK", "CREATE_SP_ACCOUNT2"],
+            "precondition": ["CREATE_SPEAR_COOKBOOK", "MOCK_ACCOUNT_SP_ACCOUNT2"],
             "blockWait": 0
         },
         "action": "fiat_item",
@@ -146,7 +116,7 @@
     {
         "ID": "EXECUTE_DELAYED_SPEAR_UPDATE_RECIPE",
         "runAfter": {
-            "precondition": ["CREATE_SP_ACCOUNT2", "CREATE_DELAYED_SPEAR_UPDATE_RECIPE", "CREATE_SPEAR_LV1"],
+            "precondition": ["CREATE_DELAYED_SPEAR_UPDATE_RECIPE", "CREATE_SPEAR_LV1"],
             "blockWait": 0
         },
         "action": "execute_recipe",
@@ -162,7 +132,7 @@
     {
         "ID": "CHECK_EXECUTION_DELAYED_SPEAR_UPDATE_RECIPE",
         "runAfter": {
-            "precondition": ["GET_PYLONS_SP_ACCOUNT2", "EXECUTE_DELAYED_SPEAR_UPDATE_RECIPE"],
+            "precondition": ["MOCK_ACCOUNT_SP_ACCOUNT2", "EXECUTE_DELAYED_SPEAR_UPDATE_RECIPE"],
             "blockWait": 0
         },
         "action": "check_execution",

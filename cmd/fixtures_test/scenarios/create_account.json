@@ -1,25 +1,11 @@
 [
   {
-    "ID": "CREATE_CA_ACCOUNT1",
+    "ID": "MOCK_ACCOUNT_CA_ACCOUNT1",
     "runAfter": {
       "precondition": [],
       "blockWait": 0
     },
-    "action": "create_account",
-    "paramsRef": "ca_account1",
-    "output": {
-      "txResult": {
-        "status": "Success"
-      }
-    }
-  },
-  {
-    "ID": "GET_PYLONS_CA_ACCOUNT1",
-    "runAfter": {
-      "precondition": ["CREATE_CA_ACCOUNT1"],
-      "blockWait": 0
-    },
-    "action": "get_pylons",
+    "action": "mock_account",
     "paramsRef": "ca_account1",
     "output": {
       "txResult": {
@@ -41,7 +27,7 @@
   {
     "ID": "CREATE_CA_COOKBOOK",
     "runAfter": {
-      "precondition": ["GET_PYLONS_CA_ACCOUNT1"],
+      "precondition": ["MOCK_ACCOUNT_CA_ACCOUNT1"],
       "blockWait": 0
     },
     "action": "create_cookbook",
