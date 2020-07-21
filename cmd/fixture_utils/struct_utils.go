@@ -63,6 +63,15 @@ func GetAccountAddressFromTempName(tempName string, t *testing.T) string {
 	return inttest.GetAccountAddr(accountKey, t)
 }
 
+// GetSenderKeyFromRef is a function to get create cookbook message from reference
+func GetSenderKeyFromRef(ref string, t *testing.T) string {
+	bytes := ReadFile(ref, t)
+	raw := UnmarshalIntoEmptyInterface(bytes, t)
+	sender, ok := raw["Sender"].(string)
+	t.MustTrue(ok, "sender field is empty")
+	return sender
+}
+
 // UpdateSenderKeyToAddress is a function to update sender key to sender's address
 func UpdateSenderKeyToAddress(bytes []byte, t *testing.T) []byte {
 	raw := UnmarshalIntoEmptyInterface(bytes, t)

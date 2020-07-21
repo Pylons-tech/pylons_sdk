@@ -1,25 +1,11 @@
 [
     {
-        "ID": "CREATE_MM_ACCOUNT1",
+        "ID": "MOCK_ACCOUNT_MM_ACCOUNT1",
         "runAfter": {
-          "precondition": [],
-          "blockWait": 0
-        },
-        "action": "create_account",
-        "paramsRef": "mm_account1",
-        "output": {
-          "txResult": {
-            "status": "Success"
-          }
-        }
-    },
-    {
-        "ID": "GET_PYLONS_MM_ACCOUNT1",
-        "runAfter": {
-            "precondition": ["CREATE_MM_ACCOUNT1"],
+            "precondition": [],
             "blockWait": 0
         },
-        "action": "get_pylons",
+        "action": "mock_account",
         "paramsRef": "mm_account1",
         "output": {
             "txResult": {
@@ -41,7 +27,7 @@
     {
         "ID": "MULTI_MSG_TX",
         "runAfter": {
-            "precondition": ["CREATE_MM_ACCOUNT1", "GET_PYLONS_MM_ACCOUNT1"],
+            "precondition": ["MOCK_ACCOUNT_MM_ACCOUNT1"],
             "blockWait": 0
         },
         "action": "multi_msg_tx",

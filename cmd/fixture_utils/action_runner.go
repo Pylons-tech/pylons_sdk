@@ -32,10 +32,12 @@ func RunActionRunner(action string, step FixtureStep, t *testing.T) {
 func RegisterDefaultActionRunners() {
 	RegisterActionRunner("create_account", RunCreateAccount)
 	RegisterActionRunner("get_pylons", RunGetPylons)
+	RegisterActionRunner("mock_account", RunMockAccount) // create account + get pylons
 	RegisterActionRunner("fiat_item", RunFiatItem)
 	RegisterActionRunner("update_item_string", RunUpdateItemString)
 	RegisterActionRunner("send_items", RunSendItems)
 	RegisterActionRunner("create_cookbook", RunCreateCookbook)
+	RegisterActionRunner("mock_cookbook", RunMockCookbook) // mock_account + create_cookbook
 	RegisterActionRunner("create_recipe", RunCreateRecipe)
 	RegisterActionRunner("execute_recipe", RunExecuteRecipe)
 	RegisterActionRunner("check_execution", RunCheckExecution)
