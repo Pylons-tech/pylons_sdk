@@ -446,6 +446,18 @@ func RunCreateCookbook(step FixtureStep, t *testing.T) {
 	}
 }
 
+// RunMockCookbook = RunMockAccount + RunCreateCookbook
+func RunMockCookbook(step FixtureStep, t *testing.T) {
+	if !FixtureTestOpts.CreateNewCookbook || FixtureTestOpts.VerifyOnly {
+		return
+	}
+	if step.ParamsRef != "" {
+		sender := GetSenderKeyFromRef(step.ParamsRef, t)
+		RunMockAccount(FixtureStep{ParamsRef: sender}, t)
+		RunCreateCookbook(step, t)
+	}
+}
+
 // CreateRecipeMsgFromRef is a function to get create cookbook message from reference
 func CreateRecipeMsgFromRef(ref string, t *testing.T) msgs.MsgCreateRecipe {
 	byteValue := ReadFile(ref, t)

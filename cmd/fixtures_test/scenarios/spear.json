@@ -1,36 +1,11 @@
 [
     {
-      "ID": "MOCK_ACCOUNT_SP_ACCOUNT1",
-      "runAfter": {
-        "precondition": [],
-        "blockWait": 0
-      },
-      "action": "mock_account",
-      "paramsRef": "sp_account1",
-      "output": {
-        "txResult": {
-          "status": "Success"
-        },
-        "property": [
-          {
-            "owner": "sp_account1",
-            "coins": [
-              {
-                "denom": "pylon",
-                "amount": 55000
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
         "ID": "CREATE_SPEAR_COOKBOOK",
         "runAfter": {
-            "precondition": ["MOCK_ACCOUNT_SP_ACCOUNT1"],
+            "precondition": [],
             "blockWait": 0
         },
-        "action": "create_cookbook",
+        "action": "mock_cookbook",
         "paramsRef": "./cookbooks/spear.json",
         "output": {
             "txResult": {

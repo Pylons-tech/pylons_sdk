@@ -63,7 +63,7 @@ func GenTxWithMsg(messages []sdk.Msg) (auth.StdTx, error) {
 	if err != nil {
 		return auth.StdTx{}, err
 	}
-	stdSignMsg.Fee.Gas = 400000
+	stdSignMsg.Fee.Gas = 10000000
 
 	return auth.NewStdTx(stdSignMsg.Msgs, stdSignMsg.Fee, nil, stdSignMsg.Memo), nil
 }

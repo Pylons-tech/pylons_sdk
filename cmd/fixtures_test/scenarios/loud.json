@@ -20,13 +20,22 @@
         }
     },
     {
-        "ID": "GET_COPPER_SWORD_LV1",        
+        "ID": "FIAT_LOUD_ITEMS",
         "runAfter": {
             "precondition": ["CREATE_LOUD_COOKBOOK"],
             "blockWait": 0
         },
-        "action": "fiat_item",
-        "paramsRef": "./items/copper_sword_lv1.json",
+        "action": "multi_msg_tx",
+        "msgRefs": [
+            {
+                "action": "fiat_item",
+                "paramsRef": "./items/wooden_sword_lv1.json"
+            },
+            {
+                "action": "fiat_item",
+                "paramsRef": "./items/copper_sword_lv1.json"
+            }
+        ],
         "output": {
             "txResult": {
                 "status": "Success"
@@ -36,41 +45,10 @@
                     "owner": "account2",
                     "items": [
                         {
-                            "stringKeys": [],
-                            "stringValues": { "Name": "Copper sword" },
-                            "dblKeys": [],
-                            "dblValues": {},
-                            "longKeys": [],
-                            "longValues": {}
-                        }
-                    ]
-                }
-            ]
-        }
-    },
-    {
-        "ID": "GET_WOODEN_SWORD_LV1",        
-        "runAfter": {
-            "precondition": ["CREATE_LOUD_COOKBOOK"],
-            "blockWait": 0
-        },
-        "action": "fiat_item",
-        "paramsRef": "./items/wooden_sword_lv1.json",
-        "output": {
-            "txResult": {
-                "status": "Success"
-            },
-            "property": [
-                {
-                    "owner": "account2",
-                    "items": [
+                            "stringValues": { "Name": "Wooden sword" }
+                        },
                         {
-                            "stringKeys": [],
-                            "stringValues": { "Name": "Wooden sword" },
-                            "dblKeys": [],
-                            "dblValues": {},
-                            "longKeys": [],
-                            "longValues": {}
+                            "stringValues": { "Name": "Copper sword" }
                         }
                     ]
                 }
@@ -78,13 +56,86 @@
         }
     },
     {
-        "ID": "CREATE_GET_CHARACTER_RECIPE",
+        "ID": "CREATE_LOUD_RECIPES",
         "runAfter": {
             "precondition": ["CREATE_LOUD_COOKBOOK"],
             "blockWait": 0
         },
-        "action": "create_recipe",
-        "paramsRef": "./recipes/loud/get_character.json",
+        "action": "multi_msg_tx",
+        "msgRefs": [
+            {
+                "action": "create_recipe",
+                "paramsRef": "./recipes/loud/get_character.json"
+            },
+            {
+                "action": "create_recipe",
+                "paramsRef": "./recipes/loud/buy_gold_with_pylons.json"
+            },
+            {
+                "action": "create_recipe",
+                "paramsRef": "./recipes/loud/dev_get_test_items.json"
+            },
+            {
+                "action": "create_recipe",
+                "paramsRef": "./recipes/loud/buy_copper_sword_lv1.json"
+            },
+            {
+                "action": "create_recipe",
+                "paramsRef": "./recipes/loud/buy_wooden_sword_lv1.json"
+            },
+            {
+                "action": "create_recipe",
+                "paramsRef": "./recipes/loud/make_bronze_sword_lv1.json"
+            },
+            {
+                "action": "create_recipe",
+                "paramsRef": "./recipes/loud/make_iron_sword_lv1.json"
+            },
+            {
+                "action": "create_recipe",
+                "paramsRef": "./recipes/loud/make_silver_sword_lv1.json"
+            },
+            {
+                "action": "create_recipe",
+                "paramsRef": "./recipes/loud/hunt_rabbits_with_a_sword.json"
+            },
+            {
+                "action": "create_recipe",
+                "paramsRef": "./recipes/loud/hunt_rabbits_with_no_weapon.json"
+            },
+            {
+                "action": "create_recipe",
+                "paramsRef": "./recipes/loud/fight_giant_with_iron_sword.json"
+            },
+            {
+                "action": "create_recipe",
+                "paramsRef": "./recipes/loud/fight_goblin_with_sword.json"
+            },
+            {
+                "action": "create_recipe",
+                "paramsRef": "./recipes/loud/fight_troll_with_sword.json"
+            },
+            {
+                "action": "create_recipe",
+                "paramsRef": "./recipes/loud/fight_wolf_with_sword.json"
+            },
+            {
+                "action": "create_recipe",
+                "paramsRef": "./recipes/loud/health_restore_lv1.json"
+            },
+            {
+                "action": "create_recipe",
+                "paramsRef": "./recipes/loud/sell_a_sword.json"
+            },
+            {
+                "action": "create_recipe",
+                "paramsRef": "./recipes/loud/upgrade_copper_sword_lv1_to_lv2.json"
+            },
+            {
+                "action": "create_recipe",
+                "paramsRef": "./recipes/loud/upgrade_wooden_sword_lv1_to_lv2.json"
+            }
+        ],
         "output": {
             "txResult": {
                 "status": "Success"
@@ -92,19 +143,55 @@
             "property": [
                 {
                     "owner": "account2",
-                    "recipes": ["LOUD's Get Character recipe"]
+                    "recipes": [
+                        "LOUD's Get Character recipe", 
+                        "LOUD's buy gold with pylons recipe", 
+                        "LOUD's Dev Get Test Items recipe",
+                        "LOUD's Copper sword lv1 buy recipe",
+                        "LOUD's Wooden sword lv1 buy recipe",
+                        "LOUD's Bronze sword lv1 make recipe",
+                        "LOUD's Iron sword lv1 make recipe",
+                        "LOUD's Silver sword lv1 make recipe",
+                        "LOUD's hunt rabbits with a sword recipe",
+                        "LOUD's hunt rabbits without sword recipe",
+                        "LOUD's fight with giant with a sword recipe",
+                        "LOUD's fight with goblin with a sword recipe",
+                        "LOUD's fight with troll with a sword recipe",
+                        "LOUD's fight with wolf with a sword recipe",
+                        "LOUD's health restore recipe",
+                        "LOUD's sword sell recipe",
+                        "LOUD's Copper sword lv1 to lv2 upgrade recipe",
+                        "LOUD's Wooden sword lv1 to lv2 upgrade recipe"
+                    ]
                 }
             ]
         }
     },
     {
-        "ID": "CREATE_BUY_GOLD_WITH_PYLONS_RECIPE",
+        "ID": "CREATE_LOUD_TRADES",
         "runAfter": {
-            "precondition": ["CREATE_LOUD_COOKBOOK"],
+            "precondition": ["CREATE_LOUD_COOKBOOK", "FIAT_LOUD_ITEMS"],
             "blockWait": 0
         },
-        "action": "create_recipe",
-        "paramsRef": "./recipes/loud/buy_gold_with_pylons.json",
+        "action": "multi_msg_tx",
+        "msgRefs": [
+            {
+                "action": "create_trade",
+                "paramsRef": "./trades/trade_pylon_loud.json"
+            },
+            {
+                "action": "create_trade",
+                "paramsRef": "./trades/trade_loud_pylon.json"
+            },
+            {
+                "action": "create_trade",
+                "paramsRef": "./trades/trade_pylon_sword.json"
+            },
+            {
+                "action": "create_trade",
+                "paramsRef": "./trades/trade_sword_pylon.json"
+            }
+        ],
         "output": {
             "txResult": {
                 "status": "Success"
@@ -112,407 +199,12 @@
             "property": [
                 {
                     "owner": "account2",
-                    "recipes": ["LOUD's buy gold with pylons recipe"]
-                }
-            ]
-        }
-    },
-    {
-        "ID": "CREATE_DEV_GET_TEST_ITEMS_RECIPE",
-        "runAfter": {
-            "precondition": ["CREATE_LOUD_COOKBOOK"],
-            "blockWait": 0
-        },
-        "action": "create_recipe",
-        "paramsRef": "./recipes/loud/dev_get_test_items.json",
-        "output": {
-            "txResult": {
-                "status": "Success"
-            },
-            "property": [
-                {
-                    "owner": "account2",
-                    "recipes": ["LOUD's Dev Get Test Items recipe"]
-                }
-            ]
-        }
-    },
-    {
-        "ID": "CREATE_BUY_COPPER_SWORD_LV1_RECIPE",
-        "runAfter": {
-            "precondition": ["CREATE_LOUD_COOKBOOK"],
-            "blockWait": 0
-        },
-        "action": "create_recipe",
-        "paramsRef": "./recipes/loud/buy_copper_sword_lv1.json",
-        "output": {
-            "txResult": {
-                "status": "Success"
-            },
-            "property": [
-                {
-                    "owner": "account2",
-                    "recipes": ["LOUD's Copper sword lv1 buy recipe"]
-                }
-            ]
-        }
-    },
-    {
-        "ID": "CREATE_BUY_WOODEN_SWORD_LV1_RECIPE",
-        "runAfter": {
-            "precondition": ["CREATE_LOUD_COOKBOOK"],
-            "blockWait": 0
-        },
-        "action": "create_recipe",
-        "paramsRef": "./recipes/loud/buy_wooden_sword_lv1.json",
-        "output": {
-            "txResult": {
-                "status": "Success"
-            },
-            "property": [
-                {
-                    "owner": "account2",
-                    "recipes": ["LOUD's Wooden sword lv1 buy recipe"]
-                }
-            ]
-        }
-    },
-    {
-        "ID": "CREATE_MAKE_BRONZE_SWORD_LV1_RECIPE",
-        "runAfter": {
-            "precondition": ["CREATE_LOUD_COOKBOOK"],
-            "blockWait": 0
-        },
-        "action": "create_recipe",
-        "paramsRef": "./recipes/loud/make_bronze_sword_lv1.json",
-        "output": {
-            "txResult": {
-                "status": "Success"
-            },
-            "property": [
-                {
-                    "owner": "account2",
-                    "recipes": ["LOUD's Bronze sword lv1 make recipe"]
-                }
-            ]
-        }
-    },
-    {
-        "ID": "CREATE_MAKE_IRON_SWORD_LV1_RECIPE",
-        "runAfter": {
-            "precondition": ["CREATE_LOUD_COOKBOOK"],
-            "blockWait": 0
-        },
-        "action": "create_recipe",
-        "paramsRef": "./recipes/loud/make_iron_sword_lv1.json",
-        "output": {
-            "txResult": {
-                "status": "Success"
-            },
-            "property": [
-                {
-                    "owner": "account2",
-                    "recipes": ["LOUD's Iron sword lv1 make recipe"]
-                }
-            ]
-        }
-    },
-    {
-        "ID": "CREATE_MAKE_SILVER_SWORD_LV1_RECIPE",
-        "runAfter": {
-            "precondition": ["CREATE_LOUD_COOKBOOK"],
-            "blockWait": 0
-        },
-        "action": "create_recipe",
-        "paramsRef": "./recipes/loud/make_silver_sword_lv1.json",
-        "output": {
-            "txResult": {
-                "status": "Success"
-            },
-            "property": [
-                {
-                    "owner": "account2",
-                    "recipes": ["LOUD's Silver sword lv1 make recipe"]
-                }
-            ]
-        }
-    },
-    {
-        "ID": "CREATE_HUNT_RABBITS_WITH_A_SWORD_RECIPE",
-        "runAfter": {
-            "precondition": ["CREATE_LOUD_COOKBOOK"],
-            "blockWait": 0
-        },
-        "action": "create_recipe",
-        "paramsRef": "./recipes/loud/hunt_rabbits_with_a_sword.json",
-        "output": {
-            "txResult": {
-                "status": "Success"
-            },
-            "property": [
-                {
-                    "owner": "account2",
-                    "recipes": ["LOUD's hunt rabbits with a sword recipe"]
-                }
-            ]
-        }
-    },
-    {
-        "ID": "CREATE_HUNT_RABBITS_WITH_NO_WEAPON_RECIPE",
-        "runAfter": {
-            "precondition": ["CREATE_LOUD_COOKBOOK"],
-            "blockWait": 0
-        },
-        "action": "create_recipe",
-        "paramsRef": "./recipes/loud/hunt_rabbits_with_no_weapon.json",
-        "output": {
-            "txResult": {
-                "status": "Success"
-            },
-            "property": [
-                {
-                    "owner": "account2",
-                    "recipes": ["LOUD's hunt rabbits without sword recipe"]
-                }
-            ]
-        }
-    },
-    {
-        "ID": "CREATE_FIGHT_GIANT_WITH_IRON_SWORD_RECIPE",
-        "runAfter": {
-            "precondition": ["CREATE_LOUD_COOKBOOK"],
-            "blockWait": 0
-        },
-        "action": "create_recipe",
-        "paramsRef": "./recipes/loud/fight_giant_with_iron_sword.json",
-        "output": {
-            "txResult": {
-                "status": "Success"
-            },
-            "property": [
-                {
-                    "owner": "account2",
-                    "recipes": ["LOUD's fight with giant with a sword recipe"]
-                }
-            ]
-        }
-    },
-    {
-        "ID": "CREATE_FIGHT_GOBLIN_WITH_SWORD_RECIPE",
-        "runAfter": {
-            "precondition": ["CREATE_LOUD_COOKBOOK"],
-            "blockWait": 0
-        },
-        "action": "create_recipe",
-        "paramsRef": "./recipes/loud/fight_goblin_with_sword.json",
-        "output": {
-            "txResult": {
-                "status": "Success"
-            },
-            "property": [
-                {
-                    "owner": "account2",
-                    "recipes": ["LOUD's fight with goblin with a sword recipe"]
-                }
-            ]
-        }
-    },
-    {
-        "ID": "CREATE_FIGHT_TROLL_WITH_SWORD_RECIPE",
-        "runAfter": {
-            "precondition": ["CREATE_LOUD_COOKBOOK"],
-            "blockWait": 0
-        },
-        "action": "create_recipe",
-        "paramsRef": "./recipes/loud/fight_troll_with_sword.json",
-        "output": {
-            "txResult": {
-                "status": "Success"
-            },
-            "property": [
-                {
-                    "owner": "account2",
-                    "recipes": ["LOUD's fight with troll with a sword recipe"]
-                }
-            ]
-        }
-    },
-    {
-        "ID": "CREATE_FIGHT_WOLF_WITH_SWORD_RECIPE",
-        "runAfter": {
-            "precondition": ["CREATE_LOUD_COOKBOOK"],
-            "blockWait": 0
-        },
-        "action": "create_recipe",
-        "paramsRef": "./recipes/loud/fight_wolf_with_sword.json",
-        "output": {
-            "txResult": {
-                "status": "Success"
-            },
-            "property": [
-                {
-                    "owner": "account2",
-                    "recipes": ["LOUD's fight with wolf with a sword recipe"]
-                }
-            ]
-        }
-    },
-    {
-        "ID": "CREATE_RESTORE_HEALTH_RECIPE",
-        "runAfter": {
-            "precondition": ["CREATE_LOUD_COOKBOOK"],
-            "blockWait": 0
-        },
-        "action": "create_recipe",
-        "paramsRef": "./recipes/loud/health_restore_lv1.json",
-        "output": {
-            "txResult": {
-                "status": "Success"
-            },
-            "property": [
-                {
-                    "owner": "account2",
-                    "recipes": ["LOUD's health restore recipe"]
-                }
-            ]
-        }
-    },
-    {
-        "ID": "CREATE_SELL_A_SWORD_RECIPE",
-        "runAfter": {
-            "precondition": ["CREATE_LOUD_COOKBOOK"],
-            "blockWait": 0
-        },
-        "action": "create_recipe",
-        "paramsRef": "./recipes/loud/sell_a_sword.json",
-        "output": {
-            "txResult": {
-                "status": "Success"
-            },
-            "property": [
-                {
-                    "owner": "account2",
-                    "recipes": ["LOUD's sword sell recipe"]
-                }
-            ]
-        }
-    },
-    {
-        "ID": "CREATE_UPGRADE_COPPER_SWORD_LV1_TO_LV2_RECIPE",
-        "runAfter": {
-            "precondition": ["CREATE_LOUD_COOKBOOK"],
-            "blockWait": 0
-        },
-        "action": "create_recipe",
-        "paramsRef": "./recipes/loud/upgrade_copper_sword_lv1_to_lv2.json",
-        "output": {
-            "txResult": {
-                "status": "Success"
-            },
-            "property": [
-                {
-                    "owner": "account2",
-                    "recipes": ["LOUD's Copper sword lv1 to lv2 upgrade recipe"]
-                }
-            ]
-        }
-    },
-    {
-        "ID": "CREATE_UPGRADE_WOODEN_SWORD_LV1_TO_LV2_RECIPE",
-        "runAfter": {
-            "precondition": ["CREATE_LOUD_COOKBOOK"],
-            "blockWait": 0
-        },
-        "action": "create_recipe",
-        "paramsRef": "./recipes/loud/upgrade_wooden_sword_lv1_to_lv2.json",
-        "output": {
-            "txResult": {
-                "status": "Success"
-            },
-            "property": [
-                {
-                    "owner": "account2",
-                    "recipes": ["LOUD's Wooden sword lv1 to lv2 upgrade recipe"]
-                }
-            ]
-        }
-    },
-    {
-        "ID": "CREATE_PYLON_LOUD_TRADE",        
-        "runAfter": {
-            "precondition": ["CREATE_LOUD_COOKBOOK"],
-            "blockWait": 0
-        },
-        "action": "create_trade",
-        "paramsRef": "./trades/trade_pylon_loud.json",
-        "output": {
-            "txResult": {
-                "status": "Success"
-            },
-            "property": [
-                {
-                    "owner": "account2",
-                    "trades": ["pylon to loud trading created by loud game"]
-                }
-            ]
-        }
-    },
-    {
-        "ID": "CREATE_LOUD_PYLON_TRADE",        
-        "runAfter": {
-            "precondition": ["CREATE_LOUD_COOKBOOK"],
-            "blockWait": 0
-        },
-        "action": "create_trade",
-        "paramsRef": "./trades/trade_loud_pylon.json",
-        "output": {
-            "txResult": {
-                "status": "Success"
-            },
-            "property": [
-                {
-                    "owner": "account2",
-                    "trades": ["loud to pylon trading created by loud game"]
-                }
-            ]
-        }
-    },
-    {
-        "ID": "CREATE_PYLON_SWORD_TRADE",        
-        "runAfter": {
-            "precondition": ["CREATE_LOUD_COOKBOOK", "GET_WOODEN_SWORD_LV1"],
-            "blockWait": 0
-        },
-        "action": "create_trade",
-        "paramsRef": "./trades/trade_pylon_sword.json",
-        "output": {
-            "txResult": {
-                "status": "Success"
-            },
-            "property": [
-                {
-                    "owner": "account2",
-                    "trades": ["pylon to sword trading created by loud game"]
-                }
-            ]
-        }
-    },
-    {
-        "ID": "CREATE_SWORD_PYLON_TRADE",        
-        "runAfter": {
-            "precondition": ["CREATE_LOUD_COOKBOOK"],
-            "blockWait": 0
-        },
-        "action": "create_trade",
-        "paramsRef": "./trades/trade_sword_pylon.json",
-        "output": {
-            "txResult": {
-                "status": "Success"
-            },
-            "property": [
-                {
-                    "owner": "account2",
-                    "trades": ["sword to pylon trading created by loud game"]
+                    "trades": [
+                        "pylon to loud trading created by loud game",
+                        "loud to pylon trading created by loud game",
+                        "pylon to sword trading created by loud game",
+                        "sword to pylon trading created by loud game"
+                    ]
                 }
             ]
         }
