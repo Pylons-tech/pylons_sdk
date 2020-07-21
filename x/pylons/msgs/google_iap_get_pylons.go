@@ -1,6 +1,7 @@
 package msgs
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 
@@ -10,21 +11,21 @@ import (
 
 // MsgGoogleIAPGetPylons defines a GetPylons message
 type MsgGoogleIAPGetPylons struct {
-	ProductID     string
-	PurchaseToken string
-	ReceiptData   string
-	Signature     string
-	Requester     sdk.AccAddress
+	ProductID         string
+	PurchaseToken     string
+	ReceiptDataBase64 string
+	Signature         string
+	Requester         sdk.AccAddress
 }
 
 // NewMsgGoogleIAPGetPylons is a function to get MsgGetPylons msg from required params
-func NewMsgGoogleIAPGetPylons(ProductID, PurchaseToken, ReceiptData, Signature string, requester sdk.AccAddress) MsgGoogleIAPGetPylons {
+func NewMsgGoogleIAPGetPylons(ProductID, PurchaseToken, ReceiptDataBase64, Signature string, requester sdk.AccAddress) MsgGoogleIAPGetPylons {
 	return MsgGoogleIAPGetPylons{
-		ProductID:     ProductID,
-		PurchaseToken: PurchaseToken,
-		ReceiptData:   ReceiptData,
-		Signature:     Signature,
-		Requester:     requester,
+		ProductID:         ProductID,
+		PurchaseToken:     PurchaseToken,
+		ReceiptDataBase64: ReceiptDataBase64,
+		Signature:         Signature,
+		Requester:         requester,
 	}
 }
 
@@ -42,7 +43,13 @@ func (msg MsgGoogleIAPGetPylons) ValidateBasic() error {
 	}
 
 	var jsonData map[string]interface{}
-	err := json.Unmarshal([]byte(msg.ReceiptData), &jsonData)
+
+	receiptData, err := base64.StdEncoding.DecodeString(msg.ReceiptDataBase64)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(receiptData, &jsonData)
 	if err != nil {
 		return err
 	}
