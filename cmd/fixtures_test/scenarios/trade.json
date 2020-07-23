@@ -1,0 +1,176 @@
+[
+    {
+        "ID": "CREATE_TRADE_COOKBOOK",
+        "runAfter": {
+            "precondition": [],
+            "blockWait": 0
+        },
+        "action": "mock_cookbook",
+        "paramsRef": "./cookbooks/trade.json",
+        "output": {
+            "txResult": {
+                "status": "Success"
+            },
+            "property": [
+                {
+                    "owner": "trade_cbowner",
+                    "cookbooks": ["tradecookbook"],
+                    "coins": [
+                      {
+                        "denom": "pylon",
+                        "amount": 45000
+                      }
+                    ]
+                }
+            ]
+        }
+    },
+    {
+        "ID": "MOCK_ACCOUNT_TRADE_ACCOUNT1",
+        "runAfter": {
+          "precondition": [],
+          "blockWait": 0
+        },
+        "action": "mock_account",
+        "paramsRef": "trade_account1",
+        "output": {
+          "txResult": {
+            "status": "Success"
+          },
+          "property": [
+            {
+              "owner": "trade_account1",
+              "coins": [
+                {
+                  "denom": "pylon",
+                  "amount": 55000
+                }
+              ]
+            }
+          ]
+        }
+    },
+    {
+        "ID": "MOCK_ACCOUNT_TRADE_ACCOUNT2",
+        "runAfter": {
+          "precondition": [],
+          "blockWait": 0
+        },
+        "action": "mock_account",
+        "paramsRef": "trade_account2",
+        "output": {
+          "txResult": {
+            "status": "Success"
+          },
+          "property": [
+            {
+              "owner": "trade_account2",
+              "coins": [
+                {
+                  "denom": "pylon",
+                  "amount": 55000
+                }
+              ]
+            }
+          ]
+        }
+    },
+    {
+        "ID": "CREATE_TRADE_ACCOUNT2_TRADING_ITEMS",
+        "runAfter": {
+            "precondition": ["CREATE_TRADE_COOKBOOK", "MOCK_ACCOUNT_TRADE_ACCOUNT2"],
+            "blockWait": 0
+        },
+        "action": "multi_msg_tx",
+        "msgRefs": [
+            {
+                "action": "fiat_item",
+                "paramsRef": "./items/trading/trading_knife_v1.json"
+            }
+        ],
+        "output": {
+            "txResult": {
+                "status": "Success"
+            },
+            "property": [
+                {
+                    "owner": "trade_account2",
+                    "items": [
+                        {
+                            "stringValues": { "Name": "Trading Knife v1" }
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    {
+        "ID": "CREATE_TRADES",
+        "runAfter": {
+            "precondition": ["CREATE_TRADE_COOKBOOK", "MOCK_ACCOUNT_TRADE_ACCOUNT1", "CREATE_TRADE_ACCOUNT2_TRADING_ITEMS"],
+            "blockWait": 0
+        },
+        "action": "multi_msg_tx",
+        "msgRefs": [
+            {
+                "action": "create_trade",
+                "paramsRef": "./trades/trade_coin_item.json"
+            }
+        ],
+        "output": {
+            "txResult": {
+                "status": "Success"
+            },
+            "property": [
+                {
+                    "owner": "trade_account2",
+                    "trades": [
+                        "coin to item trading"
+                    ]
+                }
+            ]
+        }
+    },
+    {
+        "ID": "FULFILL_COIN_ITEM_TRADE",        
+        "runAfter": {
+            "precondition": ["CREATE_TRADE_COOKBOOK", "CREATE_TRADES"],
+            "blockWait": 0
+        },
+        "action": "fulfill_trade",
+        "paramsRef": "./fulfill_trades/trade_coin_item.json",
+        "output": {
+            "txResult": {
+                "status": "Success"
+            },
+            "property": [
+                {
+                    "owner": "trade_account1",
+                    "items": [
+                        {
+                            "stringValues": { "Name": "Trading Knife v1" }
+                        }
+                    ]
+                },
+                {
+                    "owner": "trade_account2",
+                    "shouldNotExist": true,
+                    "items": [
+                        {
+                            "stringValues": { "Name": "Trading Knife v1" }
+                        }
+                    ]
+                },
+                {
+                    "owner": "trade_cbowner",
+                    "coins": [
+                        {
+                            "denom": "pylon",
+                            "amount": 45009
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+]
