@@ -1,10 +1,15 @@
 package msgs
 
 import (
+	"crypto"
+	"crypto/rsa"
+	"crypto/sha1"
+	"crypto/x509"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
 
+	"github.com/Pylons-tech/pylons_sdk/x/pylons/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -35,6 +40,37 @@ func (msg MsgGoogleIAPGetPylons) Route() string { return RouterKey }
 // Type should return the action
 func (msg MsgGoogleIAPGetPylons) Type() string { return "get_pylons" }
 
+// ValidateGoogleIAPSignature is function for testing signature on local
+func (msg MsgGoogleIAPGetPylons) ValidateGoogleIAPSignature() error {
+	playStorePubKeyBytes, err := base64.StdEncoding.DecodeString(config.Config.GoogleIAPPubKey)
+	if err != nil {
+		return fmt.Errorf("play store base64 public key decoding failure: %s", err.Error())
+	}
+	re, err := x509.ParsePKIXPublicKey(playStorePubKeyBytes)
+	if err != nil {
+		return err
+	}
+	pub := re.(*rsa.PublicKey)
+	receiptData, err := base64.StdEncoding.DecodeString(msg.ReceiptDataBase64)
+	if err != nil {
+		return err
+	}
+
+	h := sha1.New()
+	_, err = h.Write(receiptData)
+	if err != nil {
+		return err
+	}
+	digest := h.Sum(nil)
+
+	ds, err := base64.StdEncoding.DecodeString(msg.Signature)
+	if err != nil {
+		return fmt.Errorf("msg signature base64 decoding failure: %s", err.Error())
+	}
+	err = rsa.VerifyPKCS1v15(pub, crypto.SHA1, digest, ds)
+	return err
+}
+
 // ValidateBasic is a function to validate MsgGoogleIAPGetPylons msg
 func (msg MsgGoogleIAPGetPylons) ValidateBasic() error {
 
@@ -59,7 +95,7 @@ func (msg MsgGoogleIAPGetPylons) ValidateBasic() error {
 	if msg.ProductID != jsonData["productId"] {
 		return fmt.Errorf("productId does not match with receipt data")
 	}
-	return nil
+	return msg.ValidateGoogleIAPSignature()
 }
 
 // GetSignBytes encodes the message for signing

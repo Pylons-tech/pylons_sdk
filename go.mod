@@ -18,4 +18,5 @@ require (
 	go.etcd.io/bbolt v1.3.4 // indirect
 	golang.org/x/net v0.0.0-20200226121028-0de0cce0169b // indirect
 	google.golang.org/genproto v0.0.0-20200313141609-30c55424f95d // indirect
+	gopkg.in/yaml.v2 v2.2.8
 )
