@@ -146,7 +146,7 @@ github.com/Pylons-tech/pylons_sdk/x/pylons/msgs
 | 10 | Struct | MsgFiatItem         | MsgFiatItem is a msg struct to be used to fiat item                                      |
 | 11 | Struct | MsgFulfillTrade     | NewMsgFulfillTrade a constructor for FulfillTrade msg                                    |
 | 12 | Struct | MsgGetPylons        | MsgGetPylons defines a GetPylons message                                                 |
-| 13 | Struct | MsgSendPylons       | MsgSendPylons defines a SendPylons message                                               |
+| 13 | Struct | MsgSendCoins        | MsgSendCoins defines a SendCoins message                                                 |
 | 14 | Struct | MsgUpdateCookbook   | MsgUpdateCookbook defines a UpdateCookbook message                                       |
 | 15 | Struct | MsgUpdateItemString | MsgUpdateItemString defines a UpdateItemString message                                   |
 | 16 | Struct | MsgUpdateRecipe     | MsgUpdateRecipe defines a UpdateRecipe message                                           |
