@@ -1,0 +1,27 @@
+{
+    "ID": "Invalid-recipe-v0.0.0-1590029710",
+    "CoinInputs":[],    
+    "ItemInputRefs":[],
+    "Entries":{
+        "CoinOutputs":[{
+            "Coin":"loudcoin",
+            "Count": "rand_int(2)+1"
+        }]
+    },
+    "Outputs": [
+        {
+            "ResultEntries": ["0", "0"],
+            "Weight": "90"
+        },
+        {
+            "ResultEntries": [],
+            "Weight": "10"
+        }
+    ],
+    "ExtraInfo":"",
+    "Sender":"invrcp_account1",
+    "Name": "Invalid recipe",
+    "CookbookID": "LOUD-v0.0.0-1579053457",
+    "Description": "this recipe is used to hunt rabbits without sword.",
+    "BlockInterval":"0"
+}

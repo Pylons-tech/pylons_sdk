@@ -166,47 +166,5 @@
                 }
             ]
         }
-    },
-    {
-        "ID": "CREATE_LOUD_TRADES",
-        "runAfter": {
-            "precondition": ["CREATE_LOUD_COOKBOOK", "FIAT_LOUD_ITEMS"],
-            "blockWait": 0
-        },
-        "action": "multi_msg_tx",
-        "msgRefs": [
-            {
-                "action": "create_trade",
-                "paramsRef": "./trades/trade_pylon_loud.json"
-            },
-            {
-                "action": "create_trade",
-                "paramsRef": "./trades/trade_loud_pylon.json"
-            },
-            {
-                "action": "create_trade",
-                "paramsRef": "./trades/trade_pylon_sword.json"
-            },
-            {
-                "action": "create_trade",
-                "paramsRef": "./trades/trade_sword_pylon.json"
-            }
-        ],
-        "output": {
-            "txResult": {
-                "status": "Success"
-            },
-            "property": [
-                {
-                    "owner": "account2",
-                    "trades": [
-                        "pylon to loud trading created by loud game",
-                        "loud to pylon trading created by loud game",
-                        "pylon to sword trading created by loud game",
-                        "sword to pylon trading created by loud game"
-                    ]
-                }
-            ]
-        }
     }
 ]
