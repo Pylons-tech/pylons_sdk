@@ -1,0 +1,117 @@
+[
+    {
+        "ID": "MOCK_COINLOCK_COOKBOOK",
+        "runAfter": {
+            "precondition": [],
+            "blockWait": 0
+        },
+        "action": "mock_cookbook",
+        "paramsRef": "./cookbooks/coin_lock.json",
+        "output": {
+            "txResult": {
+                "status": "Success"
+            },
+            "property": [
+                {
+                    "owner": "coinlock_account1",
+                    "cookbooks": ["Coin lock cookbook"],
+                    "coins": [
+                        {
+                          "denom": "pylon",
+                          "amount": 45000
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    {
+        "ID": "CREATE_COINLOCK_RECIPES",
+        "runAfter": {
+            "precondition": ["MOCK_COINLOCK_COOKBOOK"],
+            "blockWait": 0
+        },
+        "action": "multi_msg_tx",
+        "msgRefs": [
+            {
+                "action": "create_recipe",
+                "paramsRef": "./recipes/coin_lock/lock_40k_pylons.json"
+            },
+            {
+                "action": "create_recipe",
+                "paramsRef": "./recipes/coin_lock/lock_100k_pylons.json"
+            }
+        ],
+        "output": {
+            "txResult": {
+                "status": "Success"
+            },
+            "property": [
+                {
+                    "owner": "coinlock_account1",
+                    "recipes": [
+                        "CoinLock's 40k pylons lock recipe",
+                        "CoinLock's 100k pylons lock recipe"
+                    ]
+                }
+            ]
+        }
+    },
+    {
+        "ID": "EXECUTE_40K_PYLONS_LOCK_RECIPE",
+        "runAfter": {
+            "precondition": ["CREATE_COINLOCK_RECIPES"],
+            "blockWait": 0
+        },
+        "action": "execute_recipe",
+        "paramsRef": "./recipes/coin_lock/executions/lock_40k_pylons.json",
+        "output": {
+            "txResult": {
+                "status": "Success",
+                "message": "scheduled the recipe"
+            }
+        }
+    },
+    {
+        "ID": "EXECUTE_100K_PYLONS_LOCK_RECIPE",
+        "runAfter": {
+            "precondition": ["CREATE_COINLOCK_RECIPES"],
+            "blockWait": 0
+        },
+        "action": "execute_recipe",
+        "paramsRef": "./recipes/coin_lock/executions/lock_100k_pylons.json",
+        "output": {
+            "txResult": {
+                "errLog": "invalid request: LockCoin: the sender does not have enough amount to lock"
+            }
+        }
+    },
+    {
+        "ID": "CREATE_COINLOCK_ACCOUNT2",
+        "runAfter": {
+          "precondition": [],
+          "blockWait": 0
+        },
+        "action": "create_account",
+        "paramsRef": "coinlock_account2",
+        "output": {
+          "txResult": {
+            "status": "Success"
+          }
+        }
+    },
+    {
+        "ID": "SEND_10K_PYLONS",
+        "runAfter": {
+            "precondition": ["EXECUTE_40K_PYLONS_LOCK_RECIPE", "CREATE_COINLOCK_ACCOUNT2"],
+            "blockWait": 0
+        },
+        "action": "send_coins",
+        "paramsRef": "./send_coins/coin_lock/send_10k_pylons.json",
+        "output": {
+            "txResult": {
+                "errLog": "insufficient funds: Sender does not have enough coins"
+            }
+        }
+    }
+]

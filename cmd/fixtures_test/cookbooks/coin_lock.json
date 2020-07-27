@@ -1,0 +1,11 @@
+{
+    "ID": "coinlock-1589853709",
+    "Name": "Coin lock cookbook",
+    "Description": "this has to meet character limits lol",
+    "Developer": "SketchyCo",
+    "Level": "0",
+    "Sender": "coinlock_account1",
+    "SupportEmail": "example@example.com",
+    "Version": "1.0.0",
+    "CostPerBlock": "50"
+}
