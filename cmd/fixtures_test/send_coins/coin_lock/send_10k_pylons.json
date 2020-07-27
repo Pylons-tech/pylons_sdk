@@ -1,0 +1,10 @@
+{
+    "Amount": [
+        {
+          "denom": "pylon",
+          "amount": "40000"
+        }
+    ],
+    "Sender": "coinlock_account1",
+    "Receiver": "coinlock_account2"
+}

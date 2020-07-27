@@ -116,6 +116,28 @@ func GetPylonsMsgFromRef(ref string, t *testing.T) msgs.MsgGetPylons {
 	)
 }
 
+// SendCoinsMsgFromRef is a function to SendCoins message from reference
+func SendCoinsMsgFromRef(ref string, t *testing.T) msgs.MsgSendCoins {
+	byteValue := ReadFile(ref, t)
+	// translate sender from account name to account address
+	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
+	newByteValue = UpdateReceiverKeyToAddress(newByteValue, t)
+
+	var siType struct {
+		Sender   sdk.AccAddress
+		Receiver sdk.AccAddress
+		Amount   sdk.Coins
+	}
+
+	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &siType)
+	t.WithFields(testing.Fields{
+		"siType":    inttest.AminoCodecFormatter(siType),
+		"new_bytes": string(newByteValue),
+	}).MustNil(err, "error reading using GetAminoCdc")
+
+	return msgs.NewMsgSendCoins(siType.Amount, siType.Sender, siType.Receiver)
+}
+
 // RunGetPylons is a function to run GetPylos message
 func RunGetPylons(step FixtureStep, t *testing.T) {
 	if FixtureTestOpts.VerifyOnly {
@@ -136,6 +158,36 @@ func RunGetPylons(step FixtureStep, t *testing.T) {
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
+	}
+}
+
+// RunSendCoins is a function to send coins from one address to another
+func RunSendCoins(step FixtureStep, t *testing.T) {
+	if FixtureTestOpts.VerifyOnly {
+		return
+	}
+	if step.ParamsRef != "" {
+		scMsg := SendCoinsMsgFromRef(step.ParamsRef, t)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, scMsg, scMsg.Sender.String(), true)
+		if err != nil {
+			TxBroadcastErrorCheck(err, txhash, step, t)
+			return
+		}
+
+		WaitForNextBlockWithErrorCheck(t)
+
+		if len(step.Output.TxResult.ErrorLog) > 0 {
+			hmrErrMsg := inttest.GetHumanReadableErrorFromTxHash(txhash, t)
+			t.WithFields(testing.Fields{
+				"txhash": txhash,
+			}).MustContain(hmrErrMsg, step.Output.TxResult.ErrorLog, "transaction error log is different from expected one.")
+		} else {
+			txHandleResBytes := GetTxHandleResult(txhash, t)
+			resp := handlers.GetPylonsResponse{}
+			err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+			TxResultDecodingErrorCheck(err, txhash, t)
+			TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
+		}
 	}
 }
 

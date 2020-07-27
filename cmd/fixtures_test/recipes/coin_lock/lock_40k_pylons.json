@@ -1,0 +1,13 @@
+{
+    "ID": "coinlock-40k-pylons-1589853709",
+    "CoinInputs":[{
+        "Coin": "pylon",
+        "Count": "40000"
+    }],    
+    "ExtraInfo":"",
+    "Sender":"coinlock_account1",
+    "Name": "CoinLock's 40k pylons lock recipe",
+    "CookbookID": "coinlock-1589853709",
+    "Description": "this recipe is used to lock 40k pylons within a recipe.",
+    "BlockInterval":"2"
+}
