@@ -1,5 +1,8 @@
 {
-    "CoinInputs":[],
+    "CoinInputs":[{
+        "Coin": "pylon",
+        "Count": "5000"
+    }],
     "ItemInputRefs": [
         "./recipes/spear/item_input/spear.json"
     ],
