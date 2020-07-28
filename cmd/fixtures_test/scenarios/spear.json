@@ -14,7 +14,13 @@
             "property": [
                 {
                     "owner": "sp_account1",
-                    "cookbooks": ["spearcookbook"]
+                    "cookbooks": ["spearcookbook"],
+                    "coins": [
+                      {
+                        "denom": "pylon",
+                        "amount": 45000
+                      }
+                    ]
                 }
             ]
         }
@@ -125,6 +131,16 @@
                             "dblValues": { "attack": "3.0" },
                             "longValues": { "level": 2 }
                         }
+                    ]
+                },
+                {
+                    "owner": "sp_account1",
+                    "cookbooks": ["spearcookbook"],
+                    "coins": [
+                      {
+                        "denom": "pylon",
+                        "amount": 49500
+                      }
                     ]
                 }
             ]

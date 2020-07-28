@@ -16,6 +16,12 @@
             "owner": "si_account1",
             "cookbooks": [
               "Send Items Test Cookbook"
+            ],
+            "coins": [
+              {
+                "denom": "pylon",
+                "amount": 45000
+              }
             ]
           }
         ]
@@ -115,11 +121,7 @@
     {
       "ID": "SEND_SWORD",
       "runAfter": {
-        "precondition": [
-          "CREATE_SI_ACCOUNT3",
-          "CREATE_ITEM1",
-          "CREATE_ITEM2"
-        ],
+        "precondition": ["CREATE_SI_ACCOUNT3", "CREATE_ITEM1", "CREATE_ITEM2"],
         "blockWait": 0
       },
       "action": "send_items",
@@ -143,6 +145,15 @@
                 }
               }
             ]
+          },
+          {
+              "owner": "si_account1",
+              "coins": [
+                  {
+                      "denom": "pylon",
+                      "amount": 48635
+                  }
+              ]
           }
         ]
       }
