@@ -9,12 +9,10 @@
             "Coin":"loudcoin",
             "Count": "rand_int(2)+1"
         }],
-        "ItemOutputs":[
+        "ItemModifyOutputs":[
             {
-                "ModifyItem": {
-                    "ItemInputRef": 0,
-                    "ModifyParamsRef": "./recipes/loud/upgrader/character_after_hunting_rabbits.json"
-                }
+                "ItemInputRef": 0,
+                "ModifyParamsRef": "./recipes/loud/upgrader/character_after_hunting_rabbits.json"
             }
         ]
     },

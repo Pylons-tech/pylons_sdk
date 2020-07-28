@@ -10,17 +10,13 @@
             "Coin":"loudcoin",
             "Count": "3000"
         }],
-        "ItemOutputs":[
+        "ItemModifyOutputs":[
             {
-                "ModifyItem": {
-                    "ItemInputRef": 0,
-                    "ModifyParamsRef": "./recipes/loud/upgrader/character_after_fighting_giant.json"
-                }
+                "ItemInputRef": 0,
+                "ModifyParamsRef": "./recipes/loud/upgrader/character_after_fighting_giant.json"
             },
             {
-                "ModifyItem": {
-                    "ItemInputRef": 1 
-                }
+                "ItemInputRef": 1 
             }
         ]
     },
