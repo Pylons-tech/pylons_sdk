@@ -10,18 +10,16 @@
             "Coin":"loudcoin",
             "Count": "50"
         }],
+        "ItemModifyOutputs": [
+            {
+                "ItemInputRef": 0,
+                "ModifyParamsRef": "./recipes/loud/upgrader/character_after_fighting_goblin.json"
+            },
+            {
+                "ItemInputRef": 1 
+            }
+        ],
         "ItemOutputs":[
-            {
-                "ModifyItem": {
-                    "ItemInputRef": 0,
-                    "ModifyParamsRef": "./recipes/loud/upgrader/character_after_fighting_goblin.json"
-                }
-            },
-            {
-                "ModifyItem": {
-                    "ItemInputRef": 1 
-                }
-            },
             {
                 "Ref": "./recipes/loud/item_output/goblin_ear.json"  
             }

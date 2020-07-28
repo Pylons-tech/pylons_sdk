@@ -10,17 +10,13 @@
             "Coin":"loudcoin",
             "Count": "1 + int(input1.attack / 2.0)"
         }],
-        "ItemOutputs":[
+        "ItemModifyOutputs":[
             {
-                "ModifyItem": {
-                    "ItemInputRef": 0,
-                    "ModifyParamsRef": "./recipes/loud/upgrader/character_after_hunting_rabbits.json"
-                }
+                "ItemInputRef": 0,
+                "ModifyParamsRef": "./recipes/loud/upgrader/character_after_hunting_rabbits.json"
             },
             {
-                "ModifyItem": {
-                    "ItemInputRef": 1 
-                }
+                "ItemInputRef": 1 
             }
         ]
     },

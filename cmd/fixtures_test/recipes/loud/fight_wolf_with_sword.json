@@ -10,18 +10,16 @@
             "Coin":"loudcoin",
             "Count": "150"
         }],
+        "ItemModifyOutputs": [
+            {
+                "ItemInputRef": 0,
+                "ModifyParamsRef": "./recipes/loud/upgrader/character_after_fighting_wolf.json"
+            },
+            {
+                "ItemInputRef": 1 
+            }
+        ],
         "ItemOutputs":[
-            {
-                "ModifyItem": {
-                    "ItemInputRef": 0,
-                    "ModifyParamsRef": "./recipes/loud/upgrader/character_after_fighting_wolf.json"
-                }
-            },
-            {
-                "ModifyItem": {
-                    "ItemInputRef": 1 
-                }
-            },
             {
                 "Ref": "./recipes/loud/item_output/wolf_tail.json"  
             }

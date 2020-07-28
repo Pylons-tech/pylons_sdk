@@ -10,18 +10,16 @@
             "Coin":"loudcoin",
             "Count": "10000"
         }],
+        "ItemModifyOutputs": [
+            {
+                "ItemInputRef": 0,
+                "ModifyParamsRef": "./recipes/loud/upgrader/character_after_fighting_special_dragon.json"
+            },
+            {
+                "ItemInputRef": 1 
+            }
+        ],
         "ItemOutputs":[
-            {
-                "ModifyItem": {
-                    "ItemInputRef": 0,
-                    "ModifyParamsRef": "./recipes/loud/upgrader/character_after_fighting_special_dragon.json"
-                }
-            },
-            {
-                "ModifyItem": {
-                    "ItemInputRef": 1 
-                }
-            },
             {
                 "Ref": "./recipes/loud/item_output/drop_from_acid_dragon.json"  
             }

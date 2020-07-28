@@ -323,13 +323,13 @@ func GetItemOutputsFromBytes(bytes []byte, sender string, t *testing.T) types.It
 func GetEntriesFromBytes(bytes []byte, t *testing.T) types.EntriesList {
 	var entriesReader struct {
 		Entries struct {
-			CoinOutputs []types.CoinOutput
+			CoinOutputs       []types.CoinOutput
+			ItemModifyOutputs []struct {
+				ItemInputRef    int
+				ModifyParamsRef string
+			}
 			ItemOutputs []struct {
-				Ref        string
-				ModifyItem struct {
-					ItemInputRef    *int
-					ModifyParamsRef string
-				}
+				Ref string
 			}
 		}
 	}
@@ -344,6 +344,28 @@ func GetEntriesFromBytes(bytes []byte, t *testing.T) types.EntriesList {
 		wpl = append(wpl, co)
 	}
 
+	for _, io := range entriesReader.Entries.ItemModifyOutputs {
+		var pio types.ItemModifyOutput
+		pio.ItemInputRef = io.ItemInputRef
+
+		ModifyParams := GetModifyParamsFromRef(io.ModifyParamsRef, t)
+		pio.Doubles = ModifyParams.Doubles
+		pio.Longs = ModifyParams.Longs
+		pio.Strings = ModifyParams.Strings
+		pio.TransferFee = ModifyParams.TransferFee
+		// This is hot fix for signature verification failed issue of item output Doubles: [] instead of Doubles: nil
+		if pio.Doubles != nil && len(pio.Doubles) == 0 {
+			pio.Doubles = nil
+		}
+		if pio.Longs != nil && len(pio.Longs) == 0 {
+			pio.Longs = nil
+		}
+		if pio.Strings != nil && len(pio.Strings) == 0 {
+			pio.Strings = nil
+		}
+		wpl = append(wpl, pio)
+	}
+
 	for _, io := range entriesReader.Entries.ItemOutputs {
 		var pio types.ItemOutput
 		if len(io.Ref) > 0 {
@@ -353,35 +375,15 @@ func GetEntriesFromBytes(bytes []byte, t *testing.T) types.EntriesList {
 				"item_output_bytes": string(ioBytes),
 			}).MustNil(err, "error unmarshaling into item outputs")
 		}
-		if io.ModifyItem.ItemInputRef == nil {
-			pio.ModifyItem.ItemInputRef = -1
-			// This is hot fix for signature verification failed issue of item output Doubles: [] instead of Doubles: nil
-			if pio.Doubles != nil && len(pio.Doubles) == 0 {
-				pio.Doubles = nil
-			}
-			if pio.Longs != nil && len(pio.Longs) == 0 {
-				pio.Longs = nil
-			}
-			if pio.Strings != nil && len(pio.Strings) == 0 {
-				pio.Strings = nil
-			}
-		} else {
-			pio.ModifyItem.ItemInputRef = *io.ModifyItem.ItemInputRef
-		}
-		ModifyParams := GetModifyParamsFromRef(io.ModifyItem.ModifyParamsRef, t)
-		pio.ModifyItem.Doubles = ModifyParams.Doubles
-		pio.ModifyItem.Longs = ModifyParams.Longs
-		pio.ModifyItem.Strings = ModifyParams.Strings
-		pio.ModifyItem.TransferFee = ModifyParams.TransferFee
 		// This is hot fix for signature verification failed issue of item output Doubles: [] instead of Doubles: nil
-		if pio.ModifyItem.Doubles != nil && len(pio.ModifyItem.Doubles) == 0 {
-			pio.ModifyItem.Doubles = nil
+		if pio.Doubles != nil && len(pio.Doubles) == 0 {
+			pio.Doubles = nil
 		}
-		if pio.ModifyItem.Longs != nil && len(pio.ModifyItem.Longs) == 0 {
-			pio.ModifyItem.Longs = nil
+		if pio.Longs != nil && len(pio.Longs) == 0 {
+			pio.Longs = nil
 		}
-		if pio.ModifyItem.Strings != nil && len(pio.ModifyItem.Strings) == 0 {
-			pio.ModifyItem.Strings = nil
+		if pio.Strings != nil && len(pio.Strings) == 0 {
+			pio.Strings = nil
 		}
 		wpl = append(wpl, pio)
 	}

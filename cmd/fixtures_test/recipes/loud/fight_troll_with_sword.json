@@ -10,18 +10,16 @@
             "Coin":"loudcoin",
             "Count": "300"
         }],
+        "ItemModifyOutputs": [
+            {
+                "ItemInputRef": 0,
+                "ModifyParamsRef": "./recipes/loud/upgrader/character_after_fighting_troll.json"
+            },
+            {
+                "ItemInputRef": 1 
+            }
+        ],
         "ItemOutputs":[
-            {
-                "ModifyItem": {
-                    "ItemInputRef": 0,
-                    "ModifyParamsRef": "./recipes/loud/upgrader/character_after_fighting_troll.json"
-                }
-            },
-            {
-                "ModifyItem": {
-                    "ItemInputRef": 1 
-                }
-            },
             {
                 "Ref": "./recipes/loud/item_output/troll_toes.json"  
             }
