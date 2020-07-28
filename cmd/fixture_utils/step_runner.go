@@ -27,6 +27,16 @@ func TxBroadcastErrorCheck(err error, txhash string, step FixtureStep, t *testin
 	}
 }
 
+// TxErrorLogCheck check expected error log is produced correctly
+func TxErrorLogCheck(txhash string, ErrorLog string, t *testing.T) {
+	if len(ErrorLog) > 0 {
+		hmrErrMsg := inttest.GetHumanReadableErrorFromTxHash(txhash, t)
+		t.WithFields(testing.Fields{
+			"txhash": txhash,
+		}).MustContain(hmrErrMsg, ErrorLog, "transaction error log is different from expected one.")
+	}
+}
+
 // TxResultStatusMessageCheck check result status and message
 func TxResultStatusMessageCheck(status, message, txhash string, step FixtureStep, t *testing.T) {
 	if len(step.Output.TxResult.Status) > 0 {
@@ -176,18 +186,16 @@ func RunSendCoins(step FixtureStep, t *testing.T) {
 
 		WaitForNextBlockWithErrorCheck(t)
 
+		TxErrorLogCheck(txhash, step.Output.TxResult.ErrorLog, t)
 		if len(step.Output.TxResult.ErrorLog) > 0 {
-			hmrErrMsg := inttest.GetHumanReadableErrorFromTxHash(txhash, t)
-			t.WithFields(testing.Fields{
-				"txhash": txhash,
-			}).MustContain(hmrErrMsg, step.Output.TxResult.ErrorLog, "transaction error log is different from expected one.")
-		} else {
-			txHandleResBytes := GetTxHandleResult(txhash, t)
-			resp := handlers.GetPylonsResponse{}
-			err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
-			TxResultDecodingErrorCheck(err, txhash, t)
-			TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
+			return
 		}
+
+		txHandleResBytes := GetTxHandleResult(txhash, t)
+		resp := handlers.GetPylonsResponse{}
+		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
 	}
 }
 
@@ -303,6 +311,11 @@ func RunCheckExecution(step FixtureStep, t *testing.T) {
 
 		WaitForNextBlockWithErrorCheck(t)
 
+		TxErrorLogCheck(txhash, step.Output.TxResult.ErrorLog, t)
+		if len(step.Output.TxResult.ErrorLog) > 0 {
+			return
+		}
+
 		txHandleResBytes := GetTxHandleResult(txhash, t)
 		resp := handlers.CheckExecutionResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
@@ -350,6 +363,11 @@ func RunFiatItem(step FixtureStep, t *testing.T) {
 		}
 
 		WaitForNextBlockWithErrorCheck(t)
+
+		TxErrorLogCheck(txhash, step.Output.TxResult.ErrorLog, t)
+		if len(step.Output.TxResult.ErrorLog) > 0 {
+			return
+		}
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
 		resp := handlers.FiatItemResponse{}
@@ -399,14 +417,16 @@ func RunSendItems(step FixtureStep, t *testing.T) {
 
 		WaitForNextBlockWithErrorCheck(t)
 
+		TxErrorLogCheck(txhash, step.Output.TxResult.ErrorLog, t)
 		if len(step.Output.TxResult.ErrorLog) > 0 {
-		} else {
-			txHandleResBytes := GetTxHandleResult(txhash, t)
-			resp := handlers.SendItemsResponse{}
-			err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
-			TxResultDecodingErrorCheck(err, txhash, t)
-			TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
+			return
 		}
+
+		txHandleResBytes := GetTxHandleResult(txhash, t)
+		resp := handlers.SendItemsResponse{}
+		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
 	}
 }
 
@@ -441,6 +461,12 @@ func RunUpdateItemString(step FixtureStep, t *testing.T) {
 			return
 		}
 		WaitForNextBlockWithErrorCheck(t)
+
+		TxErrorLogCheck(txhash, step.Output.TxResult.ErrorLog, t)
+		if len(step.Output.TxResult.ErrorLog) > 0 {
+			return
+		}
+
 		txHandleResBytes := GetTxHandleResult(txhash, t)
 		resp := handlers.UpdateItemStringResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
@@ -489,6 +515,11 @@ func RunCreateCookbook(step FixtureStep, t *testing.T) {
 		}
 
 		WaitForNextBlockWithErrorCheck(t)
+
+		TxErrorLogCheck(txhash, step.Output.TxResult.ErrorLog, t)
+		if len(step.Output.TxResult.ErrorLog) > 0 {
+			return
+		}
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
 		resp := handlers.CreateCookbookResponse{}
@@ -558,6 +589,12 @@ func RunCreateRecipe(step FixtureStep, t *testing.T) {
 		}
 
 		WaitForNextBlockWithErrorCheck(t)
+
+		TxErrorLogCheck(txhash, step.Output.TxResult.ErrorLog, t)
+		if len(step.Output.TxResult.ErrorLog) > 0 {
+			return
+		}
+
 		txHandleResBytes := GetTxHandleResult(txhash, t)
 		resp := handlers.CreateRecipeResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
@@ -608,42 +645,41 @@ func RunExecuteRecipe(step FixtureStep, t *testing.T) {
 		}
 
 		WaitForNextBlockWithErrorCheck(t)
+
+		TxErrorLogCheck(txhash, step.Output.TxResult.ErrorLog, t)
 		if len(step.Output.TxResult.ErrorLog) > 0 {
-			hmrErrMsg := inttest.GetHumanReadableErrorFromTxHash(txhash, t)
+			return
+		}
+
+		txHandleResBytes := GetTxHandleResult(txhash, t)
+		resp := handlers.ExecuteRecipeResponse{}
+		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
+
+		if resp.Message == "scheduled the recipe" { // delayed execution
+			var scheduleRes handlers.ExecuteRecipeScheduleOutput
+
+			err := json.Unmarshal(resp.Output, &scheduleRes)
 			t.WithFields(testing.Fields{
-				"txhash": txhash,
-			}).MustContain(hmrErrMsg, step.Output.TxResult.ErrorLog, "transaction error log is different from expected one.")
-		} else {
-			txHandleResBytes := GetTxHandleResult(txhash, t)
-			resp := handlers.ExecuteRecipeResponse{}
-			err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
-			TxResultDecodingErrorCheck(err, txhash, t)
-			TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
-
-			if resp.Message == "scheduled the recipe" { // delayed execution
-				var scheduleRes handlers.ExecuteRecipeScheduleOutput
-
-				err := json.Unmarshal(resp.Output, &scheduleRes)
+				"response_output": string(resp.Output),
+			}).MustNil(err, "error decoding raw json")
+			execIDs[step.ID] = scheduleRes.ExecID
+			for _, itemID := range execMsg.ItemIDs {
+				item, err := inttest.GetItemByGUID(itemID)
 				t.WithFields(testing.Fields{
-					"response_output": string(resp.Output),
-				}).MustNil(err, "error decoding raw json")
-				execIDs[step.ID] = scheduleRes.ExecID
-				for _, itemID := range execMsg.ItemIDs {
-					item, err := inttest.GetItemByGUID(itemID)
-					t.WithFields(testing.Fields{
-						"item_id": itemID,
-					}).MustNil(err, "error getting item from id")
-					t.MustTrue(len(item.OwnerRecipeID) != 0, "OwnerRecipeID shouldn't be set but it's set")
-				}
-
-				t.WithFields(testing.Fields{
-					"exec_id": scheduleRes.ExecID,
-				}).Debug("scheduled execution")
-			} else { // straight execution
-				t.WithFields(testing.Fields{
-					"output": string(resp.Output),
-				}).Debug("straight execution result")
+					"item_id": itemID,
+				}).MustNil(err, "error getting item from id")
+				t.MustTrue(len(item.OwnerRecipeID) != 0, "OwnerRecipeID shouldn't be set but it's set")
 			}
+
+			t.WithFields(testing.Fields{
+				"exec_id": scheduleRes.ExecID,
+			}).Debug("scheduled execution")
+		} else { // straight execution
+			t.WithFields(testing.Fields{
+				"output": string(resp.Output),
+			}).Debug("straight execution result")
 		}
 	}
 }
@@ -692,6 +728,12 @@ func RunCreateTrade(step FixtureStep, t *testing.T) {
 		}
 
 		WaitForNextBlockWithErrorCheck(t)
+
+		TxErrorLogCheck(txhash, step.Output.TxResult.ErrorLog, t)
+		if len(step.Output.TxResult.ErrorLog) > 0 {
+			return
+		}
+
 		txHandleResBytes := GetTxHandleResult(txhash, t)
 		resp := handlers.CreateTradeResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
@@ -741,14 +783,16 @@ func RunFulfillTrade(step FixtureStep, t *testing.T) {
 
 		WaitForNextBlockWithErrorCheck(t)
 
+		TxErrorLogCheck(txhash, step.Output.TxResult.ErrorLog, t)
 		if len(step.Output.TxResult.ErrorLog) > 0 {
-		} else {
-			txHandleResBytes := GetTxHandleResult(txhash, t)
-			resp := handlers.FulfillTradeResponse{}
-			err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
-			TxResultDecodingErrorCheck(err, txhash, t)
-			TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
+			return
 		}
+
+		txHandleResBytes := GetTxHandleResult(txhash, t)
+		resp := handlers.FulfillTradeResponse{}
+		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
 	}
 }
 
@@ -790,13 +834,15 @@ func RunDisableTrade(step FixtureStep, t *testing.T) {
 
 		WaitForNextBlockWithErrorCheck(t)
 
+		TxErrorLogCheck(txhash, step.Output.TxResult.ErrorLog, t)
 		if len(step.Output.TxResult.ErrorLog) > 0 {
-		} else {
-			txHandleResBytes := GetTxHandleResult(txhash, t)
-			resp := handlers.DisableTradeResponse{}
-			err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
-			TxResultDecodingErrorCheck(err, txhash, t)
-			TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
+			return
 		}
+
+		txHandleResBytes := GetTxHandleResult(txhash, t)
+		resp := handlers.DisableTradeResponse{}
+		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
 	}
 }
