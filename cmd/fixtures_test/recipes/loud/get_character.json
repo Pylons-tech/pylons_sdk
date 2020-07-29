@@ -1,4 +1,5 @@
 {
+    "NodeVersion": "0.0.1",
     "ID": "LOUD-get-character-recipe-v0.0.0-1590029710",
     "CoinInputs":[{
         "Coin": "pylon",

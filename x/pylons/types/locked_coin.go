@@ -8,8 +8,9 @@ import (
 
 // LockedCoin describes the locked coin struct
 type LockedCoin struct {
-	Sender sdk.AccAddress
-	Amount sdk.Coins
+	NodeVersion SemVer
+	Sender      sdk.AccAddress
+	Amount      sdk.Coins
 }
 
 func (lc LockedCoin) String() string {
@@ -23,8 +24,9 @@ func (lc LockedCoin) String() string {
 // NewLockedCoin return a new locked coin
 func NewLockedCoin(sender sdk.AccAddress, amount sdk.Coins) LockedCoin {
 	lc := LockedCoin{
-		Sender: sender,
-		Amount: amount,
+		NodeVersion: SemVer("0.0.1"),
+		Sender:      sender,
+		Amount:      amount,
 	}
 
 	return lc

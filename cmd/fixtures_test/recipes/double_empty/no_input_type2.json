@@ -1,4 +1,5 @@
 {
+    "NodeVersion": "0.0.1",
     "ID": "DE-no-input-empty-type2",
     "Entries":{
         "CoinOutputs":[],

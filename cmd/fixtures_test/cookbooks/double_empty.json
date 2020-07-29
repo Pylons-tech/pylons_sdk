@@ -1,4 +1,5 @@
 {
+    "NodeVersion": "0.0.1",
     "ID": "DE-v0.0.0-1579053457",
     "Name": "Double Empty Checker Cookbook",
     "Description": "This is cookbook to test double empty field for recipes.",

@@ -26,10 +26,11 @@ type StringKeyValue struct {
 
 // Item is a tradable asset
 type Item struct {
-	ID      string
-	Doubles []DoubleKeyValue
-	Longs   []LongKeyValue
-	Strings []StringKeyValue
+	NodeVersion SemVer
+	ID          string
+	Doubles     []DoubleKeyValue
+	Longs       []LongKeyValue
+	Strings     []StringKeyValue
 	// as items are unique per cookbook
 	CookbookID    string
 	Sender        sdk.AccAddress
@@ -118,11 +119,12 @@ func (it Item) SetString(key string, value string) bool {
 func NewItem(cookbookID string, doubles []DoubleKeyValue, longs []LongKeyValue, strings []StringKeyValue, sender sdk.AccAddress, blockHeight int64, transferFee int64) *Item {
 
 	item := &Item{
-		CookbookID: cookbookID,
-		Doubles:    doubles,
-		Longs:      longs,
-		Strings:    strings,
-		Sender:     sender,
+		NodeVersion: SemVer("0.0.1"),
+		CookbookID:  cookbookID,
+		Doubles:     doubles,
+		Longs:       longs,
+		Strings:     strings,
+		Sender:      sender,
 		// By default all items are tradable
 		Tradable:    true,
 		LastUpdate:  blockHeight,

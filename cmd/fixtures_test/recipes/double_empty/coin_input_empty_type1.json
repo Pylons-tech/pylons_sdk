@@ -1,4 +1,5 @@
 {
+    "NodeVersion": "0.0.1",
     "ID": "DE-coin-input-empty-type1",
     "CoinInputs":[],
     "ItemInputRefs": [],

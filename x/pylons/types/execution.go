@@ -7,6 +7,7 @@ import (
 // Execution is a recipe execution used for tracking the execution - specifically a
 // scheduled execution
 type Execution struct {
+	NodeVersion SemVer
 	ID          string
 	RecipeID    string // the recipe guid
 	CookbookID  string
@@ -29,6 +30,7 @@ func NewExecution(recipeID string, cookbookID string, ci sdk.Coins,
 	completed bool) Execution {
 
 	exec := Execution{
+		NodeVersion: SemVer("0.0.1"),
 		RecipeID:    recipeID,
 		CookbookID:  cookbookID,
 		CoinInputs:  ci,
