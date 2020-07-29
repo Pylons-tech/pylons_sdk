@@ -314,8 +314,8 @@ func GetRecipeIDFromName(rcpName string) (string, bool, error) {
 }
 
 // GetItemIDFromName is a function to get item id from name
-func GetItemIDFromName(itemName string, includeLockedByRecipe bool, includeLockedByTrade bool) (string, bool, error) {
-	itemList, err := ListItemsViaCLI("")
+func GetItemIDFromName(sender string, itemName string, includeLockedByRecipe bool, includeLockedByTrade bool) (string, bool, error) {
+	itemList, err := ListItemsViaCLI(sender)
 	if err != nil {
 		return "", false, err
 	}
