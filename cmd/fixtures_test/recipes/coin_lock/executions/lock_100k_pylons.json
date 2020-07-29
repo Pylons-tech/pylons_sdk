@@ -1,5 +1,6 @@
 {
-    "RecipeName":"CoinLock's 100k pylons lock recipe",
-    "Sender":"coinlock_account1",
-    "ItemNames":[]
+  "NodeVersion": "0.0.1",
+  "RecipeName": "CoinLock's 100k pylons lock recipe",
+  "Sender": "coinlock_account1",
+  "ItemNames": []
 }

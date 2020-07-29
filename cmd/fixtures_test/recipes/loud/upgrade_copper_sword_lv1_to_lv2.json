@@ -1,31 +1,32 @@
 {
-    "ID": "LOUD-upgrade-copper-sword-lv1-to-lv2-recipe-v0.0.0-1590029710",
-    "CoinInputs":[{
-        "Coin": "loudcoin",
-        "Count": "250"
-    }],    
-    "ItemInputRefs":[
-        "./recipes/loud/item_input/copper_sword_lv1.json"
-    ],
-    "Entries":{
-        "CoinOutputs":[],
-        "ItemModifyOutputs":[
-            {
-                "ItemInputRef": 0,
-                "ModifyParamsRef": "./recipes/loud/upgrader/level.json"
-            }
-        ]
-    },
-    "Outputs": [
-        {
-            "ResultEntries": ["0"],
-            "Weight": "1"
-        }
-    ],
-    "ExtraInfo":"",
-    "Sender":"account2",
-    "Name": "LOUD's Copper sword lv1 to lv2 upgrade recipe",
-    "CookbookID": "LOUD-v0.0.0-1579053457",
-    "Description": "this recipe is used to upgrade copper sword level.",
-    "BlockInterval":"0"
+  "NodeVersion": "0.0.1",
+  "ID": "LOUD-upgrade-copper-sword-lv1-to-lv2-recipe-v0.0.0-1590029710",
+  "CoinInputs": [
+    {
+      "Coin": "loudcoin",
+      "Count": "250"
+    }
+  ],
+  "ItemInputRefs": ["./recipes/loud/item_input/copper_sword_lv1.json"],
+  "Entries": {
+    "CoinOutputs": [],
+    "ItemModifyOutputs": [
+      {
+        "ItemInputRef": 0,
+        "ModifyParamsRef": "./recipes/loud/upgrader/level.json"
+      }
+    ]
+  },
+  "Outputs": [
+    {
+      "ResultEntries": ["0"],
+      "Weight": "1"
+    }
+  ],
+  "ExtraInfo": "",
+  "Sender": "account2",
+  "Name": "LOUD's Copper sword lv1 to lv2 upgrade recipe",
+  "CookbookID": "LOUD-v0.0.0-1579053457",
+  "Description": "this recipe is used to upgrade copper sword level.",
+  "BlockInterval": "0"
 }

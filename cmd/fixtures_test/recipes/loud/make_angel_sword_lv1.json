@@ -1,30 +1,35 @@
 {
-    "ID": "LOUD-angel-sword-lv1-make-recipe-v0.0.0-1590029710",
-    "CoinInputs":[{
-        "Coin": "loudcoin",
-        "Count": "20000"
-    }],
-    "ItemInputRefs": [
-        "./recipes/loud/item_input/drop_from_fire_dragon.json",
-        "./recipes/loud/item_input/drop_from_ice_dragon.json",
-        "./recipes/loud/item_input/drop_from_acid_dragon.json"
-    ],
-    "Entries":{
-        "CoinOutputs":[],
-        "ItemOutputs":[{
-            "Ref": "./recipes/loud/item_output/angel_sword_lv1.json"
-        }]
-    },
-    "Outputs": [
-        {
-            "ResultEntries": ["0"],
-            "Weight": "1"
-        }
-    ],
-    "ExtraInfo":"",
-    "Sender":"account2",
-    "Name": "LOUD's Angel sword lv1 make recipe",
-    "CookbookID": "LOUD-v0.0.0-1579053457",
-    "Description": "this recipe is used to make angel sword lv1.",
-    "BlockInterval":"0"
+  "NodeVersion": "0.0.1",
+  "ID": "LOUD-angel-sword-lv1-make-recipe-v0.0.0-1590029710",
+  "CoinInputs": [
+    {
+      "Coin": "loudcoin",
+      "Count": "20000"
+    }
+  ],
+  "ItemInputRefs": [
+    "./recipes/loud/item_input/drop_from_fire_dragon.json",
+    "./recipes/loud/item_input/drop_from_ice_dragon.json",
+    "./recipes/loud/item_input/drop_from_acid_dragon.json"
+  ],
+  "Entries": {
+    "CoinOutputs": [],
+    "ItemOutputs": [
+      {
+        "Ref": "./recipes/loud/item_output/angel_sword_lv1.json"
+      }
+    ]
+  },
+  "Outputs": [
+    {
+      "ResultEntries": ["0"],
+      "Weight": "1"
+    }
+  ],
+  "ExtraInfo": "",
+  "Sender": "account2",
+  "Name": "LOUD's Angel sword lv1 make recipe",
+  "CookbookID": "LOUD-v0.0.0-1579053457",
+  "Description": "this recipe is used to make angel sword lv1.",
+  "BlockInterval": "0"
 }

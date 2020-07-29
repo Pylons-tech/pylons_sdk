@@ -1,43 +1,46 @@
 {
-    "ID": "LOUD-hunt-rabbits-with-a-sword-recipe-v0.0.0-1590029710",
-    "CoinInputs":[],
-    "ItemInputRefs":[
-        "./recipes/loud/item_input/character.json",
-        "./recipes/loud/item_input/sword.json"
+  "NodeVersion": "0.0.1",
+  "ID": "LOUD-hunt-rabbits-with-a-sword-recipe-v0.0.0-1590029710",
+  "CoinInputs": [],
+  "ItemInputRefs": [
+    "./recipes/loud/item_input/character.json",
+    "./recipes/loud/item_input/sword.json"
+  ],
+  "Entries": {
+    "CoinOutputs": [
+      {
+        "Coin": "loudcoin",
+        "Count": "1 + int(input1.attack / 2.0)"
+      }
     ],
-    "Entries":{
-        "CoinOutputs":[{
-            "Coin":"loudcoin",
-            "Count": "1 + int(input1.attack / 2.0)"
-        }],
-        "ItemModifyOutputs":[
-            {
-                "ItemInputRef": 0,
-                "ModifyParamsRef": "./recipes/loud/upgrader/character_after_hunting_rabbits.json"
-            },
-            {
-                "ItemInputRef": 1 
-            }
-        ]
+    "ItemModifyOutputs": [
+      {
+        "ItemInputRef": 0,
+        "ModifyParamsRef": "./recipes/loud/upgrader/character_after_hunting_rabbits.json"
+      },
+      {
+        "ItemInputRef": 1
+      }
+    ]
+  },
+  "Outputs": [
+    {
+      "ResultEntries": ["0", "1", "2"],
+      "Weight": "90"
     },
-    "Outputs": [
-        {
-            "ResultEntries": ["0", "1", "2"],
-            "Weight": "90"
-        },
-        {
-            "ResultEntries": ["0", "1"],
-            "Weight": "5"
-        },
-        {
-            "ResultEntries": [],
-            "Weight": "5"
-        }
-    ],
-    "ExtraInfo":"",
-    "Sender":"account2",
-    "Name": "LOUD's hunt rabbits with a sword recipe",
-    "CookbookID": "LOUD-v0.0.0-1579053457",
-    "Description": "this recipe is used to hunt rabbits with a sword.",
-    "BlockInterval":"0"
+    {
+      "ResultEntries": ["0", "1"],
+      "Weight": "5"
+    },
+    {
+      "ResultEntries": [],
+      "Weight": "5"
+    }
+  ],
+  "ExtraInfo": "",
+  "Sender": "account2",
+  "Name": "LOUD's hunt rabbits with a sword recipe",
+  "CookbookID": "LOUD-v0.0.0-1579053457",
+  "Description": "this recipe is used to hunt rabbits with a sword.",
+  "BlockInterval": "0"
 }

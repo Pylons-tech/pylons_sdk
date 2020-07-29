@@ -1,35 +1,36 @@
 {
-    "ID": "LOUD-hunt-rabbits-with-no-weapon-recipe-v0.0.0-1590029710",
-    "CoinInputs":[],    
-    "ItemInputRefs":[
-        "./recipes/loud/item_input/character.json"
+  "NodeVersion": "0.0.1",
+  "ID": "LOUD-hunt-rabbits-with-no-weapon-recipe-v0.0.0-1590029710",
+  "CoinInputs": [],
+  "ItemInputRefs": ["./recipes/loud/item_input/character.json"],
+  "Entries": {
+    "CoinOutputs": [
+      {
+        "Coin": "loudcoin",
+        "Count": "rand_int(2)+1"
+      }
     ],
-    "Entries":{
-        "CoinOutputs":[{
-            "Coin":"loudcoin",
-            "Count": "rand_int(2)+1"
-        }],
-        "ItemModifyOutputs":[
-            {
-                "ItemInputRef": 0,
-                "ModifyParamsRef": "./recipes/loud/upgrader/character_after_hunting_rabbits.json"
-            }
-        ]
+    "ItemModifyOutputs": [
+      {
+        "ItemInputRef": 0,
+        "ModifyParamsRef": "./recipes/loud/upgrader/character_after_hunting_rabbits.json"
+      }
+    ]
+  },
+  "Outputs": [
+    {
+      "ResultEntries": ["0", "1"],
+      "Weight": "90"
     },
-    "Outputs": [
-        {
-            "ResultEntries": ["0", "1"],
-            "Weight": "90"
-        },
-        {
-            "ResultEntries": [],
-            "Weight": "10"
-        }
-    ],
-    "ExtraInfo":"",
-    "Sender":"account2",
-    "Name": "LOUD's hunt rabbits without sword recipe",
-    "CookbookID": "LOUD-v0.0.0-1579053457",
-    "Description": "this recipe is used to hunt rabbits without sword.",
-    "BlockInterval":"0"
+    {
+      "ResultEntries": [],
+      "Weight": "10"
+    }
+  ],
+  "ExtraInfo": "",
+  "Sender": "account2",
+  "Name": "LOUD's hunt rabbits without sword recipe",
+  "CookbookID": "LOUD-v0.0.0-1579053457",
+  "Description": "this recipe is used to hunt rabbits without sword.",
+  "BlockInterval": "0"
 }

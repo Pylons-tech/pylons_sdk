@@ -1,31 +1,32 @@
 {
-    "ID": "LOUD-health-restore-recipe-v0.0.1-1590029710",
-    "CoinInputs":[{
-        "Coin": "loudcoin",
-        "Count": "10"
-    }],    
-    "ItemInputRefs":[
-        "./recipes/loud/item_input/character.json"
-    ],
-    "Entries":{
-        "CoinOutputs":[],
-        "ItemModifyOutputs":[
-            {
-                "ItemInputRef": 0,
-                "ModifyParamsRef": "./recipes/loud/upgrader/character_restore_health.json"
-            }
-        ]
-    },
-    "Outputs": [
-        {
-            "ResultEntries": ["0"],
-            "Weight": "1"
-        }
-    ],
-    "ExtraInfo":"",
-    "Sender":"account2",
-    "Name": "LOUD's health restore recipe",
-    "CookbookID": "LOUD-v0.0.0-1579053457",
-    "Description": "this recipe is used to get enough coins to test game.",
-    "BlockInterval":"0"
+  "NodeVersion": "0.0.1",
+  "ID": "LOUD-health-restore-recipe-v0.0.1-1590029710",
+  "CoinInputs": [
+    {
+      "Coin": "loudcoin",
+      "Count": "10"
+    }
+  ],
+  "ItemInputRefs": ["./recipes/loud/item_input/character.json"],
+  "Entries": {
+    "CoinOutputs": [],
+    "ItemModifyOutputs": [
+      {
+        "ItemInputRef": 0,
+        "ModifyParamsRef": "./recipes/loud/upgrader/character_restore_health.json"
+      }
+    ]
+  },
+  "Outputs": [
+    {
+      "ResultEntries": ["0"],
+      "Weight": "1"
+    }
+  ],
+  "ExtraInfo": "",
+  "Sender": "account2",
+  "Name": "LOUD's health restore recipe",
+  "CookbookID": "LOUD-v0.0.0-1579053457",
+  "Description": "this recipe is used to get enough coins to test game.",
+  "BlockInterval": "0"
 }

@@ -1,31 +1,32 @@
 {
-    "ID": "DE-double-empty-upgrader-type2",
-    "CoinInputs":[{
-        "Coin": "loudcoin",
-        "Count": "250"
-    }],    
-    "ItemInputRefs":[
-        "./recipes/double_empty/item_input/regular.json"
-    ],
-    "Entries":{
-        "CoinOutputs":[],
-        "ItemModifyOutputs":[
-            {
-                "ItemInputRef": 0,
-                "ModifyParamsRef": "./recipes/double_empty/upgrader/double_empty_type2.json"
-            }
-        ]
-    },
-    "Outputs": [
-        {
-            "ResultEntries": ["0"],
-            "Weight": "1"
-        }
-    ],
-    "ExtraInfo":"",
-    "Sender":"de_account1",
-    "Name": "DE's double empty upgrader type2 test recipe",
-    "CookbookID": "DE-v0.0.0-1579053457",
-    "Description": "this recipe is used to test double empty upgrader type2.",
-    "BlockInterval":"0"
+  "NodeVersion": "0.0.1",
+  "ID": "DE-double-empty-upgrader-type2",
+  "CoinInputs": [
+    {
+      "Coin": "loudcoin",
+      "Count": "250"
+    }
+  ],
+  "ItemInputRefs": ["./recipes/double_empty/item_input/regular.json"],
+  "Entries": {
+    "CoinOutputs": [],
+    "ItemModifyOutputs": [
+      {
+        "ItemInputRef": 0,
+        "ModifyParamsRef": "./recipes/double_empty/upgrader/double_empty_type2.json"
+      }
+    ]
+  },
+  "Outputs": [
+    {
+      "ResultEntries": ["0"],
+      "Weight": "1"
+    }
+  ],
+  "ExtraInfo": "",
+  "Sender": "de_account1",
+  "Name": "DE's double empty upgrader type2 test recipe",
+  "CookbookID": "DE-v0.0.0-1579053457",
+  "Description": "this recipe is used to test double empty upgrader type2.",
+  "BlockInterval": "0"
 }

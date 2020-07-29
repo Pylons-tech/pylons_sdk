@@ -1,25 +1,26 @@
 {
-    "ID": "LOUD-sell-a-sword-recipe-v0.0.0-1590029710",
-    "CoinInputs":[],
-    "ItemInputRefs":[
-        "./recipes/loud/item_input/sword.json"
-    ],
-    "Entries": {
-        "CoinOutputs": [{
-            "Coin":"loudcoin",
-            "Count": "int(attack * double(rand_int(2)+20))"
-        }]
-    },
-    "Outputs": [
-        {
-            "ResultEntries": ["0"],
-            "Weight": "1"
-        }
-    ],
-    "ExtraInfo":"",
-    "Sender":"account2",
-    "Name": "LOUD's sword sell recipe",
-    "CookbookID": "LOUD-v0.0.0-1579053457",
-    "Description": "this recipe is used to sell a sword.",
-    "BlockInterval":"0"
+  "NodeVersion": "0.0.1",
+  "ID": "LOUD-sell-a-sword-recipe-v0.0.0-1590029710",
+  "CoinInputs": [],
+  "ItemInputRefs": ["./recipes/loud/item_input/sword.json"],
+  "Entries": {
+    "CoinOutputs": [
+      {
+        "Coin": "loudcoin",
+        "Count": "int(attack * double(rand_int(2)+20))"
+      }
+    ]
+  },
+  "Outputs": [
+    {
+      "ResultEntries": ["0"],
+      "Weight": "1"
+    }
+  ],
+  "ExtraInfo": "",
+  "Sender": "account2",
+  "Name": "LOUD's sword sell recipe",
+  "CookbookID": "LOUD-v0.0.0-1579053457",
+  "Description": "this recipe is used to sell a sword.",
+  "BlockInterval": "0"
 }

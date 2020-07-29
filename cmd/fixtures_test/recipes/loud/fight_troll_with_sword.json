@@ -1,52 +1,55 @@
 {
-    "ID": "LOUD-fight-troll-with-a-sword-recipe-v0.0.0-1590029710",
-    "CoinInputs":[],
-    "ItemInputRefs":[
-        "./recipes/loud/item_input/character.json",
-        "./recipes/loud/item_input/sword.json"
+  "NodeVersion": "0.0.1",
+  "ID": "LOUD-fight-troll-with-a-sword-recipe-v0.0.0-1590029710",
+  "CoinInputs": [],
+  "ItemInputRefs": [
+    "./recipes/loud/item_input/character.json",
+    "./recipes/loud/item_input/sword.json"
+  ],
+  "Entries": {
+    "CoinOutputs": [
+      {
+        "Coin": "loudcoin",
+        "Count": "300"
+      }
     ],
-    "Entries":{
-        "CoinOutputs":[{
-            "Coin":"loudcoin",
-            "Count": "300"
-        }],
-        "ItemModifyOutputs": [
-            {
-                "ItemInputRef": 0,
-                "ModifyParamsRef": "./recipes/loud/upgrader/character_after_fighting_troll.json"
-            },
-            {
-                "ItemInputRef": 1 
-            }
-        ],
-        "ItemOutputs":[
-            {
-                "Ref": "./recipes/loud/item_output/troll_toes.json"  
-            }
-        ]
+    "ItemModifyOutputs": [
+      {
+        "ItemInputRef": 0,
+        "ModifyParamsRef": "./recipes/loud/upgrader/character_after_fighting_troll.json"
+      },
+      {
+        "ItemInputRef": 1
+      }
+    ],
+    "ItemOutputs": [
+      {
+        "Ref": "./recipes/loud/item_output/troll_toes.json"
+      }
+    ]
+  },
+  "Outputs": [
+    {
+      "ResultEntries": [],
+      "Weight": "20 * 5 / int(input1.attack) - HP"
     },
-    "Outputs": [
-        {
-            "ResultEntries": [],
-            "Weight": "20 * 5 / int(input1.attack) - HP"
-        },
-        {
-            "ResultEntries": ["0", "1"],
-            "Weight": "HP / 10"
-        },
-        {
-            "ResultEntries": ["0", "1", "2"],
-            "Weight": "HP * 8 / 10"
-        },
-        {
-            "ResultEntries": ["0", "1", "2", "3"],
-            "Weight": "HP / 10"
-        }
-    ],
-    "ExtraInfo":"",
-    "Sender":"account2",
-    "Name": "LOUD's fight with troll with a sword recipe",
-    "CookbookID": "LOUD-v0.0.0-1579053457",
-    "Description": "this recipe is used to fight with troll with a sword.",
-    "BlockInterval":"0"
+    {
+      "ResultEntries": ["0", "1"],
+      "Weight": "HP / 10"
+    },
+    {
+      "ResultEntries": ["0", "1", "2"],
+      "Weight": "HP * 8 / 10"
+    },
+    {
+      "ResultEntries": ["0", "1", "2", "3"],
+      "Weight": "HP / 10"
+    }
+  ],
+  "ExtraInfo": "",
+  "Sender": "account2",
+  "Name": "LOUD's fight with troll with a sword recipe",
+  "CookbookID": "LOUD-v0.0.0-1579053457",
+  "Description": "this recipe is used to fight with troll with a sword.",
+  "BlockInterval": "0"
 }

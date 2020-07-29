@@ -1,26 +1,31 @@
 {
-    "ID": "LOUD-wooden-sword-lv1-buy-recipe-v0.0.0-1590029710",
-    "CoinInputs":[{
-        "Coin": "loudcoin",
-        "Count": "100"
-    }],
-    "ItemInputRefs": [],
-    "Entries":{
-        "CoinOutputs":[],
-        "ItemOutputs":[{
-            "Ref": "./recipes/loud/item_output/wooden_sword_lv1.json"
-        }]
-    },
-    "Outputs": [
-        {
-            "ResultEntries": ["0"],
-            "Weight": "1"
-        }
-    ],
-    "ExtraInfo":"",
-    "Sender":"account2",
-    "Name": "LOUD's Wooden sword lv1 buy recipe",
-    "CookbookID": "LOUD-v0.0.0-1579053457",
-    "Description": "this recipe is used to buy wooden sword lv1.",
-    "BlockInterval":"0"
+  "NodeVersion": "0.0.1",
+  "ID": "LOUD-wooden-sword-lv1-buy-recipe-v0.0.0-1590029710",
+  "CoinInputs": [
+    {
+      "Coin": "loudcoin",
+      "Count": "100"
+    }
+  ],
+  "ItemInputRefs": [],
+  "Entries": {
+    "CoinOutputs": [],
+    "ItemOutputs": [
+      {
+        "Ref": "./recipes/loud/item_output/wooden_sword_lv1.json"
+      }
+    ]
+  },
+  "Outputs": [
+    {
+      "ResultEntries": ["0"],
+      "Weight": "1"
+    }
+  ],
+  "ExtraInfo": "",
+  "Sender": "account2",
+  "Name": "LOUD's Wooden sword lv1 buy recipe",
+  "CookbookID": "LOUD-v0.0.0-1579053457",
+  "Description": "this recipe is used to buy wooden sword lv1.",
+  "BlockInterval": "0"
 }
