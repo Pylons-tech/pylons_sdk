@@ -12,6 +12,7 @@
         "CoinOutputs":[],
         "ItemModifyOutputs":[
             {
+                "ID": "double_empty_type1",
                 "ItemInputRef": 0,
                 "ModifyParamsRef": "./recipes/double_empty/upgrader/double_empty_type1.json"
             }
@@ -19,7 +20,7 @@
     },
     "Outputs": [
         {
-            "ResultEntries": ["0"],
+            "ResultEntries": ["double_empty_type1"],
             "Weight": "1"
         }
     ],

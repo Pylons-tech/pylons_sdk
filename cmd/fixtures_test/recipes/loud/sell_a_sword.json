@@ -7,13 +7,14 @@
     ],
     "Entries": {
         "CoinOutputs": [{
+            "ID": "coin_reward",
             "Coin":"loudcoin",
             "Count": "int(attack * double(rand_int(2)+20))"
         }]
     },
     "Outputs": [
         {
-            "ResultEntries": ["0"],
+            "ResultEntries": ["coin_reward"],
             "Weight": "1"
         }
     ],

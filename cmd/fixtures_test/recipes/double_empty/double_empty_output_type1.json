@@ -5,12 +5,13 @@
     "Entries":{
         "CoinOutputs":[],
         "ItemOutputs":[{
+            "ID": "double_empty_type1",
             "Ref": "./recipes/double_empty/item_output/double_empty_type1.json"
         }]
     },
     "Outputs": [
         {
-            "ResultEntries": ["0"],
+            "ResultEntries": ["double_empty_type1"],
             "Weight": "1"
         }
     ],

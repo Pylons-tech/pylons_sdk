@@ -10,28 +10,37 @@
         "CoinOutputs":[],
         "ItemOutputs":[
             {
+                "ID": "goblin_ear",
                 "Ref": "./recipes/loud/item_output/goblin_ear.json"
             },
             {
+                "ID": "troll_toes",
                 "Ref": "./recipes/loud/item_output/troll_toes.json"
             },
             {
+                "ID": "wolf_tail",
                 "Ref": "./recipes/loud/item_output/wolf_tail.json"
             },
             {
+                "ID": "drop_from_acid_dragon",
                 "Ref": "./recipes/loud/item_output/drop_from_acid_dragon.json"
             },
             {
+                "ID": "drop_from_fire_dragon",
                 "Ref": "./recipes/loud/item_output/drop_from_fire_dragon.json"
             },
             {
+                "ID": "drop_from_ice_dragon",
                 "Ref": "./recipes/loud/item_output/drop_from_ice_dragon.json"
             }
         ]
     },
     "Outputs": [
         {
-            "ResultEntries": ["0", "1", "2"],
+            "ResultEntries": [
+                "goblin_ear", "troll_toes", "wolf_tail",
+                "drop_from_acid_dragon", "drop_from_fire_dragon", "drop_from_ice_dragon"
+            ],
             "Weight": "1"
         }
     ],

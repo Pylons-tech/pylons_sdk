@@ -8,31 +8,24 @@
     ],
     "Entries":{
         "CoinOutputs":[{
+            "ID": "coin_reward",
             "Coin":"loudcoin",
             "Count": "10000"
         }],
         "ItemModifyOutputs": [
             {
+                "ID": "modified_character",
                 "ItemInputRef": 0,
                 "ModifyParamsRef": "./recipes/loud/upgrader/character_after_fighting_special_dragon.json"
             },
             {
+                "ID": "returned_sword",
                 "ItemInputRef": 1 
             }
         ],
         "ItemOutputs":[
             {
-                "ModifyItem": {
-                    "ItemInputRef": 0,
-                    "ModifyParamsRef": "./recipes/loud/upgrader/character_after_fighting_special_dragon.json"
-                }
-            },
-            {
-                "ModifyItem": {
-                    "ItemInputRef": 1 
-                }
-            },
-            {
+                "ID": "bonus_item",
                 "Ref": "./recipes/loud/item_output/drop_from_fire_dragon.json"  
             }
         ]
@@ -43,15 +36,15 @@
             "Weight": "300 * 30 / int(input1.attack) - HP"
         },
         {
-            "ResultEntries": ["0", "1"],
+            "ResultEntries": ["coin_reward", "modified_character"],
             "Weight": "HP / 10"
         },
         {
-            "ResultEntries": ["0", "1", "2"],
+            "ResultEntries": ["coin_reward", "modified_character", "returned_sword"],
             "Weight": "HP * 8 / 10"
         },
         {
-            "ResultEntries": ["0", "1", "2", "3"],
+            "ResultEntries": ["coin_reward", "modified_character", "returned_sword", "bonus_item"],
             "Weight": "HP / 10"
         }
     ],

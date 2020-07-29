@@ -11,12 +11,13 @@
     "Entries":{
         "CoinOutputs":[],
         "ItemOutputs":[{
+            "ID": "silver_sword",
             "Ref": "./recipes/loud/item_output/silver_sword_lv1.json"
         }]
     },
     "Outputs": [
         {
-            "ResultEntries": ["0"],
+            "ResultEntries": ["silver_sword"],
             "Weight": "1"
         }
     ],

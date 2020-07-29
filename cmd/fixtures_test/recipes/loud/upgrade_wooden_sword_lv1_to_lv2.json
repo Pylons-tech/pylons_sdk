@@ -12,6 +12,7 @@
         "CoinOutputs":[],
         "ItemModifyOutputs":[
             {
+                "ID": "upgraded_sword",
                 "ItemInputRef": 0,
                 "ModifyParamsRef": "./recipes/loud/upgrader/level.json"
             }
@@ -19,7 +20,7 @@
     },
     "Outputs": [
         {
-            "ResultEntries": ["0"],
+            "ResultEntries": ["upgraded_sword"],
             "Weight": "1"
         }
     ],

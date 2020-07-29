@@ -8,6 +8,7 @@
     "ItemInputRefs":[],
     "Entries":{
         "CoinOutputs":[ {
+            "ID": "coin_bought",
             "Coin":"loudcoin",
             "Count": "5000"
         }],
@@ -15,7 +16,7 @@
     },
     "Outputs": [
         {
-            "ResultEntries": ["0"],
+            "ResultEntries": ["coin_bought"],
             "Weight": "1"
         }
     ],

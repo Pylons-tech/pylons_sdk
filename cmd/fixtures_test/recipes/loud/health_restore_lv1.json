@@ -12,6 +12,7 @@
         "CoinOutputs":[],
         "ItemModifyOutputs":[
             {
+                "ID": "modified_character",
                 "ItemInputRef": 0,
                 "ModifyParamsRef": "./recipes/loud/upgrader/character_restore_health.json"
             }
@@ -19,7 +20,7 @@
     },
     "Outputs": [
         {
-            "ResultEntries": ["0"],
+            "ResultEntries": ["modified_character"],
             "Weight": "1"
         }
     ],

@@ -104,13 +104,14 @@ Sample Recipe JSON
         "CoinOutputs":[],
         "ItemOutputs":[
             {
+                "ID": "knife_shield_lv1",
                 "Ref": "./recipes/submarine/item_output/knife_shield_lv1.json"
             }
         ]
     },
     "Outputs": [
         {
-            "ResultEntries": ["0"],
+            "ResultEntries": ["knife_shield_lv1"],
             "Weight": "1"
         }
     ],
@@ -448,7 +449,7 @@ Sample Outputs JSON
 ```
   "Outputs": [
       {
-          "ResultEntries": ["0"],
+          "ResultEntries": ["knife_shield_v1"],
           "Weight": "1"
       }
   ],
@@ -459,6 +460,7 @@ When both CoinOutputs and ItemOutputs are available, indexing start from CoinOut
     "Entries":{
         "CoinOutputs":[
             {
+                "ID": "coin_reward",
                 "Coin":"javecoin",
                 "Count":"100"
             }
@@ -466,6 +468,7 @@ When both CoinOutputs and ItemOutputs are available, indexing start from CoinOut
         "ItemOutputs":[
             {
                 "ModifyItem": {
+                    "ID": "modified_javelin",
                     "ItemInputRef": 0,
                     "ModifyParamsRef": "./recipes/javelin/upgrader/javelin_program.json"
                 }
@@ -474,16 +477,16 @@ When both CoinOutputs and ItemOutputs are available, indexing start from CoinOut
     },
     "Outputs": [
         {
-            "ResultEntries": ["1"],
+            "ResultEntries": ["modified_javelin"],
             "Weight": "1"
         },
         {
-            "ResultEntries": ["0", "1"],
+            "ResultEntries": ["javecoin", "modified_javelin"],
             "Weight": "int(attack) * 2 + 1"
         }
     ],
 ```
-e.g. on above, ResultEntries `[0, 1]` means javecoin + javelin, `[1]` means javelin
+e.g. on above, ResultEntries `["javecoin", "modified_javelin"]` means javecoin + modified_javelin, `["modified_javelin"]` means modified_javelin
 
 ## Execution of recipes
 
