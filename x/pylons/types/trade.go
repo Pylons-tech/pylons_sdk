@@ -7,6 +7,7 @@ import (
 // Trade is a construct to perform exchange of items and coins between users. Initiated by the sender and completed by
 // the FulFiller.
 type Trade struct {
+	NodeVersion SemVer
 	ID          string             // the trade guid
 	CoinInputs  CoinInputList      // coins that the fulfiller should send to creator
 	ItemInputs  TradeItemInputList // items that the fulfiller should send to creator
@@ -32,6 +33,7 @@ func NewTrade(extraInfo string,
 	itemOutputs ItemList,
 	sender sdk.AccAddress) Trade {
 	trd := Trade{
+		NodeVersion: SemVer("0.0.1"),
 		CoinInputs:  coinInputs,
 		ItemInputs:  itemInputs,
 		CoinOutputs: coinOutputs,
