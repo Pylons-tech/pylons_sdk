@@ -1,11 +1,12 @@
 {
-    "ID": "INVRCP-v0.0.0-1579053457",
-    "Name": "Invalid recipe check cookbook",
-    "Description": "This is prototype game built to run on pylons eco system.",
-    "Developer": "Pylons Team",
-    "Level": "0",
-    "Sender": "invrcp_account1",
-    "SupportEmail": "stalepresh121@outlook.com",
-    "Version": "1.0.0",
-    "CostPerBlock": "50"
+  "NodeVersion": "0.0.1",
+  "ID": "INVRCP-v0.0.0-1579053457",
+  "Name": "Invalid recipe check cookbook",
+  "Description": "This is prototype game built to run on pylons eco system.",
+  "Developer": "Pylons Team",
+  "Level": "0",
+  "Sender": "invrcp_account1",
+  "SupportEmail": "stalepresh121@outlook.com",
+  "Version": "1.0.0",
+  "CostPerBlock": "50"
 }

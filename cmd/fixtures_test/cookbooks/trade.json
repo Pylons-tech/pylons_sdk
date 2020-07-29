@@ -1,11 +1,12 @@
 {
-    "ID": "tradecookbook-1589853709",
-    "Name": "tradecookbook",
-    "Description": "this has to meet character limits lol",
-    "Developer": "SketchyCo",
-    "Level": "0",
-    "Sender": "trade_cbowner",
-    "SupportEmail": "example@example.com",
-    "Version": "1.0.0",
-    "CostPerBlock": "50"
+  "NodeVersion": "0.0.1",
+  "ID": "tradecookbook-1589853709",
+  "Name": "tradecookbook",
+  "Description": "this has to meet character limits lol",
+  "Developer": "SketchyCo",
+  "Level": "0",
+  "Sender": "trade_cbowner",
+  "SupportEmail": "example@example.com",
+  "Version": "1.0.0",
+  "CostPerBlock": "50"
 }
