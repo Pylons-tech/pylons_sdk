@@ -384,8 +384,6 @@ func SendItemsMsgFromRef(ref string, t *testing.T) msgs.MsgSendItems {
 	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
 	newByteValue = UpdateReceiverKeyToAddress(newByteValue, t)
 
-	ItemIDs := GetItemIDsFromNames(newByteValue, false, false, t)
-
 	var siType struct {
 		Sender   sdk.AccAddress
 		Receiver sdk.AccAddress
@@ -397,6 +395,9 @@ func SendItemsMsgFromRef(ref string, t *testing.T) msgs.MsgSendItems {
 		"siType":    inttest.AminoCodecFormatter(siType),
 		"new_bytes": string(newByteValue),
 	}).MustNil(err, "error reading using GetAminoCdc")
+
+	// translate itemNames to itemIDs
+	ItemIDs := GetItemIDsFromNames(newByteValue, siType.Sender.String(), false, false, t)
 
 	return msgs.NewMsgSendItems(ItemIDs, siType.Sender, siType.Receiver)
 }
@@ -610,8 +611,6 @@ func ExecuteRecipeMsgFromRef(ref string, t *testing.T) msgs.MsgExecuteRecipe {
 	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
 	// translate recipe name to recipe id
 	newByteValue = UpdateRecipeName(newByteValue, t)
-	// translate itemNames to itemIDs
-	ItemIDs := GetItemIDsFromNames(newByteValue, false, false, t)
 
 	var execType struct {
 		RecipeID string
@@ -624,6 +623,8 @@ func ExecuteRecipeMsgFromRef(ref string, t *testing.T) msgs.MsgExecuteRecipe {
 		"execType":  inttest.AminoCodecFormatter(execType),
 		"new_bytes": string(newByteValue),
 	}).MustNil(err, "error reading using GetAminoCdc")
+	// translate itemNames to itemIDs
+	ItemIDs := GetItemIDsFromNames(newByteValue, execType.Sender.String(), false, false, t)
 
 	return msgs.NewMsgExecuteRecipe(execType.RecipeID, execType.Sender, ItemIDs)
 }
@@ -749,8 +750,6 @@ func FulfillTradeMsgFromRef(ref string, t *testing.T) msgs.MsgFulfillTrade {
 	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
 	// translate extra info to trade id
 	newByteValue = UpdateTradeExtraInfoToID(newByteValue, t)
-	// translate itemNames to itemIDs
-	ItemIDs := GetItemIDsFromNames(newByteValue, false, false, t)
 
 	var trdType struct {
 		TradeID string
@@ -763,6 +762,8 @@ func FulfillTradeMsgFromRef(ref string, t *testing.T) msgs.MsgFulfillTrade {
 		"trdType":   inttest.AminoCodecFormatter(trdType),
 		"new_bytes": string(newByteValue),
 	}).MustNil(err, "error reading using GetAminoCdc")
+	// translate itemNames to itemIDs
+	ItemIDs := GetItemIDsFromNames(newByteValue, trdType.Sender.String(), false, false, t)
 
 	return msgs.NewMsgFulfillTrade(trdType.TradeID, trdType.Sender, ItemIDs)
 }

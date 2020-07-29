@@ -188,9 +188,11 @@ func UpdateItemIDFromName(bytes []byte, includeLockedByRecipe, includeLockedByTr
 	raw := UnmarshalIntoEmptyInterface(bytes, t)
 
 	itemName, ok := raw["ItemName"].(string)
-
 	t.MustTrue(ok, "item name does not exist in json")
-	itemID, exist, err := inttest.GetItemIDFromName(itemName, includeLockedByRecipe, includeLockedByTrade)
+	sender, ok := raw["Sender"].(string)
+	t.MustTrue(ok, "sender address does not exist in json")
+
+	itemID, exist, err := inttest.GetItemIDFromName(sender, itemName, includeLockedByRecipe, includeLockedByTrade)
 	if !exist {
 		t.WithFields(testing.Fields{
 			"item_name":                itemName,
@@ -212,7 +214,7 @@ func UpdateItemIDFromName(bytes []byte, includeLockedByRecipe, includeLockedByTr
 }
 
 // GetItemIDsFromNames is a function to set item ids from names for recipe execution
-func GetItemIDsFromNames(bytes []byte, includeLockedByRecipe, includeLockedByTrade bool, t *testing.T) []string {
+func GetItemIDsFromNames(bytes []byte, sender string, includeLockedByRecipe, includeLockedByTrade bool, t *testing.T) []string {
 	var itemNamesResp struct {
 		ItemNames []string
 	}
@@ -223,7 +225,7 @@ func GetItemIDsFromNames(bytes []byte, includeLockedByRecipe, includeLockedByTra
 	ItemIDs := []string{}
 
 	for _, itemName := range itemNamesResp.ItemNames {
-		itemID, exist, err := inttest.GetItemIDFromName(itemName, includeLockedByRecipe, includeLockedByTrade)
+		itemID, exist, err := inttest.GetItemIDFromName(sender, itemName, includeLockedByRecipe, includeLockedByTrade)
 		if !exist {
 			t.WithFields(testing.Fields{
 				"item_name":                itemName,
@@ -305,7 +307,7 @@ func GetItemOutputsFromBytes(bytes []byte, sender string, t *testing.T) types.It
 
 	for _, iN := range itemOutputNamesReader.ItemOutputNames {
 		var io types.Item
-		iID, ok, err := inttest.GetItemIDFromName(iN, false, false)
+		iID, ok, err := inttest.GetItemIDFromName(sender, iN, false, false)
 		t.MustTrue(ok, "item id with specific name does not exist")
 		t.WithFields(testing.Fields{
 			"item_name": iN,
