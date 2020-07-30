@@ -20,7 +20,8 @@ This should be done inside the pylons repo. (https://github.com/Pylons-tech/pylo
 
 ```go clean -i all
 go install ./cmd/pylonsd
-go install ./cmd/pylonscli```
+go install ./cmd/pylonscli
+```
 
 Create a genesis block and some test users
 
