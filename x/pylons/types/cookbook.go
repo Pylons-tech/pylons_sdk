@@ -6,6 +6,7 @@ import (
 
 // Cookbook is a struct that contains all the metadata of a cookbook
 type Cookbook struct {
+	NodeVersion  SemVer
 	ID           string // the cookbook guid
 	Name         string
 	Description  string
@@ -25,6 +26,7 @@ type CookbookList struct {
 // NewCookbook return a new Cookbook
 func NewCookbook(sEmail Email, sender sdk.AccAddress, version SemVer, name, description, developer string, cpb int) Cookbook {
 	cb := Cookbook{
+		NodeVersion:  SemVer("0.0.1"),
 		Name:         name,
 		Description:  description,
 		Version:      version,
