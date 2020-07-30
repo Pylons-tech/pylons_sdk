@@ -1,4 +1,5 @@
 {
+    "NodeVersion": "0.0.1",
     "ID": "LOUD-silver-sword-lv1-make-recipe-v0.0.0-1590029710",
     "CoinInputs":[{
         "Coin": "loudcoin",

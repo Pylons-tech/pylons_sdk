@@ -1,4 +1,5 @@
 {
+    "NodeVersion": "0.0.1",
     "RecipeName":"CoinLock's 40k pylons lock recipe",
     "Sender":"coinlock_account1",
     "ItemNames":[]

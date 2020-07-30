@@ -1,4 +1,5 @@
 {
+    "NodeVersion": "0.0.1",
     "Doubles": [],
     "Longs": [{ "Key": "level", "Value": "1" }],
     "Strings": [{ "Key": "Name","Value": "Copper sword" }],
