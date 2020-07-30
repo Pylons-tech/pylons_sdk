@@ -1,4 +1,5 @@
 {
+    "NodeVersion": "0.0.1",
     "ID": "LOUD-v0.0.0-1579053457",
     "Name": "Legend of Undead Dragon",
     "Description": "This is prototype game built to run on pylons eco system.",
