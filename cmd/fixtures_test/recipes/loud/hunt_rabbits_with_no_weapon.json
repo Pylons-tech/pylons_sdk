@@ -21,11 +21,11 @@
     },
     "Outputs": [
         {
-            "ResultEntries": ["coin_reward", "modified_character"],
+            "EntryIDs": ["coin_reward", "modified_character"],
             "Weight": "90"
         },
         {
-            "ResultEntries": [],
+            "EntryIDs": [],
             "Weight": "10"
         }
     ],

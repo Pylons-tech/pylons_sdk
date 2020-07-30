@@ -32,19 +32,19 @@
     },
     "Outputs": [
         {
-            "ResultEntries": [],
+            "EntryIDs": [],
             "Weight": "300 * 30 / int(input1.attack) - HP"
         },
         {
-            "ResultEntries": ["coin_reward", "modified_character"],
+            "EntryIDs": ["coin_reward", "modified_character"],
             "Weight": "HP / 10"
         },
         {
-            "ResultEntries": ["coin_reward", "modified_character", "returned_sword"],
+            "EntryIDs": ["coin_reward", "modified_character", "returned_sword"],
             "Weight": "HP * 8 / 10"
         },
         {
-            "ResultEntries": ["coin_reward", "modified_character", "returned_sword", "bonus_item"],
+            "EntryIDs": ["coin_reward", "modified_character", "returned_sword", "bonus_item"],
             "Weight": "HP / 10"
         }
     ],

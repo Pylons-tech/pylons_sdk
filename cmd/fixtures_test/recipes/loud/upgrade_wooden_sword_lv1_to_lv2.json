@@ -20,7 +20,7 @@
     },
     "Outputs": [
         {
-            "ResultEntries": ["upgraded_sword"],
+            "EntryIDs": ["upgraded_sword"],
             "Weight": "1"
         }
     ],

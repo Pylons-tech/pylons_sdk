@@ -20,7 +20,7 @@
     },
     "Outputs": [
         {
-            "ResultEntries": ["modified_character"],
+            "EntryIDs": ["modified_character"],
             "Weight": "1"
         }
     ],

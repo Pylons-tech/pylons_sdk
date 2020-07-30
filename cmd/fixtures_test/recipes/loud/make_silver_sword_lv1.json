@@ -17,7 +17,7 @@
     },
     "Outputs": [
         {
-            "ResultEntries": ["silver_sword"],
+            "EntryIDs": ["silver_sword"],
             "Weight": "1"
         }
     ],

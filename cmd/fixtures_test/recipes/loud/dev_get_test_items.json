@@ -37,7 +37,7 @@
     },
     "Outputs": [
         {
-            "ResultEntries": [
+            "EntryIDs": [
                 "goblin_ear", "troll_toes", "wolf_tail",
                 "drop_from_acid_dragon", "drop_from_fire_dragon", "drop_from_ice_dragon"
             ],

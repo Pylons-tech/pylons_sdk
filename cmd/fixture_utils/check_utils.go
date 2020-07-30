@@ -213,21 +213,19 @@ func PropertyExistCheck(step FixtureStep, t *testing.T) {
 						t.WithFields(testing.Fields{
 							"cookbook_name": cbName,
 						}).Info("cookbook exist, ok")
-					} else {
-						t.WithFields(testing.Fields{
-							"cookbook_name": cbName,
-						}).Fatal("cookbook does not exist, but should exist")
 					}
+					t.WithFields(testing.Fields{
+						"cookbook_name": cbName,
+					}).MustTrue(exist, "cookbook does not exist, but should exist")
 				} else {
-					if exist {
-						t.WithFields(testing.Fields{
-							"cookbook_name": cbName,
-						}).Fatal("cookbook exist, but shouldn't exist")
-					} else {
+					if !exist {
 						t.WithFields(testing.Fields{
 							"cookbook_name": cbName,
 						}).Info("cookbook does not exist as expected, ok")
 					}
+					t.WithFields(testing.Fields{
+						"cookbook_name": cbName,
+					}).MustTrue(!exist, "cookbook exist, but shouldn't exist")
 				}
 			}
 		}
@@ -241,21 +239,19 @@ func PropertyExistCheck(step FixtureStep, t *testing.T) {
 						t.WithFields(testing.Fields{
 							"recipe_name": rcpName,
 						}).Info("recipe exist, ok")
-					} else {
-						t.WithFields(testing.Fields{
-							"recipe_name": rcpName,
-						}).Fatal("recipe with does not exist, but should exist")
 					}
+					t.WithFields(testing.Fields{
+						"recipe_name": rcpName,
+					}).MustTrue(len(guid) > 0, "recipe with does not exist, but should exist")
 				} else {
-					if len(guid) > 0 {
-						t.WithFields(testing.Fields{
-							"recipe_name": rcpName,
-						}).Fatal("recipe exist but shouldn't exist")
-					} else {
+					if len(guid) == 0 {
 						t.WithFields(testing.Fields{
 							"recipe_name": rcpName,
 						}).Info("recipe does not exist as expected, ok")
 					}
+					t.WithFields(testing.Fields{
+						"recipe_name": rcpName,
+					}).MustTrue(len(guid) == 0, "recipe exist but shouldn't exist")
 				}
 			}
 		}
@@ -287,24 +283,22 @@ func PropertyExistCheck(step FixtureStep, t *testing.T) {
 							"owner_address": pOwnerAddr,
 							"item_spec":     inttest.JSONFormatter(itemCheck),
 						}).Info("checked item existence")
-					} else {
-						t.WithFields(testing.Fields{
-							"owner_address": pOwnerAddr,
-							"item_spec":     inttest.JSONFormatter(itemCheck),
-						}).Fatal("no item exist which fit item spec")
 					}
+					t.WithFields(testing.Fields{
+						"owner_address": pOwnerAddr,
+						"item_spec":     inttest.JSONFormatter(itemCheck),
+					}).MustTrue(fitItemExist, "no item exist which fit item spec")
 				} else {
-					if fitItemExist {
-						t.WithFields(testing.Fields{
-							"owner_address": pOwnerAddr,
-							"item_spec":     inttest.JSONFormatter(itemCheck),
-						}).Fatal("item exist but shouldn't exist")
-					} else {
+					if !fitItemExist {
 						t.WithFields(testing.Fields{
 							"owner_address": pOwnerAddr,
 							"item_spec":     inttest.JSONFormatter(itemCheck),
 						}).Info("item does not exist as expected, ok")
 					}
+					t.WithFields(testing.Fields{
+						"owner_address": pOwnerAddr,
+						"item_spec":     inttest.JSONFormatter(itemCheck),
+					}).MustTrue(!fitItemExist, "item exist but shouldn't exist")
 				}
 			}
 		}

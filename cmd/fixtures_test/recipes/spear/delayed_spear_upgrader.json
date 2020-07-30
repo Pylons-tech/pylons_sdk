@@ -19,7 +19,7 @@
     },
     "Outputs": [
         {
-            "ResultEntries": ["upgraded_spear"],
+            "EntryIDs": ["upgraded_spear"],
             "Weight": "1"
         }
     ],

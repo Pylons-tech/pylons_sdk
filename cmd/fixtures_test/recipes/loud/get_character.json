@@ -15,7 +15,7 @@
     },
     "Outputs": [
         {
-            "ResultEntries": ["tiger_character"],
+            "EntryIDs": ["tiger_character"],
             "Weight": "1"
         }
     ],

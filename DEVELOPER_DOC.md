@@ -111,7 +111,7 @@ Sample Recipe JSON
     },
     "Outputs": [
         {
-            "ResultEntries": ["knife_shield_lv1"],
+            "EntryIDs": ["knife_shield_lv1"],
             "Weight": "1"
         }
     ],
@@ -442,14 +442,14 @@ Outputs is an array of result sets by weights.
 
 | No | Field         | type   | sample   | description                                                         |
 |----|---------------|--------|----------|---------------------------------------------------------------------|
-| 1  | ResultEntries | array  | [0, 1]   | This contains the result set that is consists of entry indexes.     |
+| 1  | EntryIDs | array  | [0, 1]   | This contains the result set that is consists of entry indexes.     |
 | 2  | Weight        | string | "100-HP" | This is cel program which determines weight of specific result set. |
 
 Sample Outputs JSON
 ```
   "Outputs": [
       {
-          "ResultEntries": ["knife_shield_v1"],
+          "EntryIDs": ["knife_shield_v1"],
           "Weight": "1"
       }
   ],
@@ -477,16 +477,16 @@ When both CoinOutputs and ItemOutputs are available, indexing start from CoinOut
     },
     "Outputs": [
         {
-            "ResultEntries": ["modified_javelin"],
+            "EntryIDs": ["modified_javelin"],
             "Weight": "1"
         },
         {
-            "ResultEntries": ["javecoin", "modified_javelin"],
+            "EntryIDs": ["javecoin", "modified_javelin"],
             "Weight": "int(attack) * 2 + 1"
         }
     ],
 ```
-e.g. on above, ResultEntries `["javecoin", "modified_javelin"]` means javecoin + modified_javelin, `["modified_javelin"]` means modified_javelin
+e.g. on above, EntryIDs `["javecoin", "modified_javelin"]` means javecoin + modified_javelin, `["modified_javelin"]` means modified_javelin
 
 ## Execution of recipes
 

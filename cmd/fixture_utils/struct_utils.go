@@ -327,10 +327,12 @@ func GetEntriesFromBytes(bytes []byte, t *testing.T) types.EntriesList {
 		Entries struct {
 			CoinOutputs       []types.CoinOutput
 			ItemModifyOutputs []struct {
+				ID              string
 				ItemInputRef    int
 				ModifyParamsRef string
 			}
 			ItemOutputs []struct {
+				ID  string
 				Ref string
 			}
 		}
@@ -347,14 +349,9 @@ func GetEntriesFromBytes(bytes []byte, t *testing.T) types.EntriesList {
 	}
 
 	for _, io := range entriesReader.Entries.ItemModifyOutputs {
-		var pio types.ItemModifyOutput
-		pio.ItemInputRef = io.ItemInputRef
-
 		ModifyParams := GetModifyParamsFromRef(io.ModifyParamsRef, t)
-		pio.Doubles = ModifyParams.Doubles
-		pio.Longs = ModifyParams.Longs
-		pio.Strings = ModifyParams.Strings
-		pio.TransferFee = ModifyParams.TransferFee
+		pio := types.NewItemModifyOutput(io.ID, io.ItemInputRef, ModifyParams)
+
 		// This is hot fix for signature verification failed issue of item output Doubles: [] instead of Doubles: nil
 		if pio.Doubles != nil && len(pio.Doubles) == 0 {
 			pio.Doubles = nil
@@ -377,6 +374,7 @@ func GetEntriesFromBytes(bytes []byte, t *testing.T) types.EntriesList {
 				"item_output_bytes": string(ioBytes),
 			}).MustNil(err, "error unmarshaling into item outputs")
 		}
+		pio.ID = io.ID
 		// This is hot fix for signature verification failed issue of item output Doubles: [] instead of Doubles: nil
 		if pio.Doubles != nil && len(pio.Doubles) == 0 {
 			pio.Doubles = nil

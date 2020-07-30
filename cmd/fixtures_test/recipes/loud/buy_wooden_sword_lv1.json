@@ -15,7 +15,7 @@
     },
     "Outputs": [
         {
-            "ResultEntries": ["wooden_sword_lv1"],
+            "EntryIDs": ["wooden_sword_lv1"],
             "Weight": "1"
         }
     ],

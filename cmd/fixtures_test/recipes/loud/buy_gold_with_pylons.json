@@ -16,7 +16,7 @@
     },
     "Outputs": [
         {
-            "ResultEntries": ["coin_bought"],
+            "EntryIDs": ["coin_bought"],
             "Weight": "1"
         }
     ],

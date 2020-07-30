@@ -12,11 +12,11 @@
     },
     "Outputs": [
         {
-            "ResultEntries": ["coin_reward", "coin_reward"],
+            "EntryIDs": ["coin_reward", "coin_reward"],
             "Weight": "90"
         },
         {
-            "ResultEntries": [],
+            "EntryIDs": [],
             "Weight": "10"
         }
     ],

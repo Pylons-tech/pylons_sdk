@@ -11,7 +11,7 @@
     },
     "Outputs": [
         {
-            "ResultEntries": ["double_empty_type2"],
+            "EntryIDs": ["double_empty_type2"],
             "Weight": "1"
         }
     ],

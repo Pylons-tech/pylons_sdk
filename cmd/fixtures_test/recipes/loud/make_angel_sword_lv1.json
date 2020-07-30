@@ -19,7 +19,7 @@
     },
     "Outputs": [
         {
-            "ResultEntries": ["angel_sword"],
+            "EntryIDs": ["angel_sword"],
             "Weight": "1"
         }
     ],

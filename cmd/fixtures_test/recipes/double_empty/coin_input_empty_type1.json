@@ -12,7 +12,7 @@
     },
     "Outputs": [
         {
-            "ResultEntries": ["regular"],
+            "EntryIDs": ["regular"],
             "Weight": "1"
         }
     ],
