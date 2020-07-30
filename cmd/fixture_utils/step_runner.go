@@ -665,7 +665,9 @@ func RunExecuteRecipe(step FixtureStep, t *testing.T) {
 			t.WithFields(testing.Fields{
 				"response_output": string(resp.Output),
 			}).MustNil(err, "error decoding raw json")
+			execIDRWMutex.Lock()
 			execIDs[step.ID] = scheduleRes.ExecID
+			execIDRWMutex.Unlock()
 			for _, itemID := range execMsg.ItemIDs {
 				item, err := inttest.GetItemByGUID(itemID)
 				t.WithFields(testing.Fields{

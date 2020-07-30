@@ -13,7 +13,7 @@ import (
 	"github.com/Pylons-tech/pylons_sdk/x/pylons/types"
 )
 
-var runtimeKeyGenMux sync.Mutex
+var execIDRWMutex sync.Mutex
 var execIDs = make(map[string]string)
 
 // ReadFile is a function to read file
@@ -39,6 +39,8 @@ func UnmarshalIntoEmptyInterface(bytes []byte, t *testing.T) map[string]interfac
 
 // RegisterDefaultAccountKeys register the accounts configured on FixtureTestOpts.AccountNames
 func RegisterDefaultAccountKeys() {
+	runtimeKeyGenMux.Lock()
+	defer runtimeKeyGenMux.Unlock()
 	for idx, key := range FixtureTestOpts.AccountNames {
 		runtimeAccountKeys[fmt.Sprintf("account%d", idx+1)] = key
 	}
@@ -47,10 +49,10 @@ func RegisterDefaultAccountKeys() {
 // GetAccountKeyFromTempName is a function to get account key from temp name
 func GetAccountKeyFromTempName(tempName string, t *testing.T) string {
 	t.MustTrue(len(tempName) > 0, "account key should not be an empty string")
+	runtimeKeyGenMux.Lock()
+	defer runtimeKeyGenMux.Unlock()
 	key, ok := runtimeAccountKeys[tempName]
 	if !ok {
-		runtimeKeyGenMux.Lock()
-		defer runtimeKeyGenMux.Unlock()
 		key = fmt.Sprintf("FixtureRuntime_%s_%d", tempName, time.Now().Unix())
 		runtimeAccountKeys[tempName] = key
 	}
@@ -172,7 +174,9 @@ func UpdateExecID(bytes []byte, t *testing.T) []byte {
 	}).MustNil(err, "error unmarshaling into exec ref")
 
 	var ok bool
+	execIDRWMutex.Lock()
 	raw["ExecID"], ok = execIDs[execRefReader.ExecRef]
+	execIDRWMutex.Unlock()
 	t.WithFields(testing.Fields{
 		"execRef": execRefReader.ExecRef,
 	}).MustTrue(ok, "execID not available")
