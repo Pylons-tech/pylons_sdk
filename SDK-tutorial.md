@@ -81,16 +81,16 @@ As we are on the local environment, `--keyring-backend=test` flag should be set 
 
 - Add your first private key
   ```
-  pylonscli keys add test --keyring-backend=test
+  pylonscli keys add jack --keyring-backend=test
   ```
 
-  You can replace the private key name that is set `test` in the command with any name you want.
+  You can replace the private key name that is set `jack` in the command with any name you want.
 
   This command will create a private key with the name given as the argument. The result will be like following.
 
   ```
   {
-    "name": "test",
+    "name": "jack",
     "type": "local",
     "address": "cosmos1fun8le2dxrclr633psv7gke6wtlycunnm8dlm7",
     "pubkey": "cosmospub1addwnpepqv6ppfkfu7cm62a2n3qfjr6r2h5dcssrywly59n699v9g6gykccq55hzewf",
@@ -102,13 +102,13 @@ As we are on the local environment, `--keyring-backend=test` flag should be set 
 
 - Show the created private key
   ```
-  pylonscli keys show test --keyring-backend=test
+  pylonscli keys show jack --keyring-backend=test
   ```
-  This will show the info of the private key `test` that is just added.
+  This will show the info of the private key `jack` that is just added.
   The result will be like following.
   ```
   {
-    "name": "test",
+    "name": "jack",
     "type": "local",
     "address": "cosmos1fun8le2dxrclr633psv7gke6wtlycunnm8dlm7",
     "pubkey": "cosmospub1addwnpepqv6ppfkfu7cm62a2n3qfjr6r2h5dcssrywly59n699v9g6gykccq55hzewf"
@@ -142,7 +142,7 @@ As we are on the local environment, `--keyring-backend=test` flag should be set 
       "pubkey": "cosmospub1addwnpepq2ht7s5t3kp7058w2kntx9ha8av396xv78nhs6lszqtcwtf6kwdm20axerv"
     },
     {
-      "name": "test",
+      "name": "jack",
       "type": "local",
       "address": "cosmos1fun8le2dxrclr633psv7gke6wtlycunnm8dlm7",
       "pubkey": "cosmospub1addwnpepqv6ppfkfu7cm62a2n3qfjr6r2h5dcssrywly59n699v9g6gykccq55hzewf"
@@ -160,7 +160,7 @@ We can use `pylonscli tx pylons create-account` command for this.
 pylonscli tx pylons create-account --from cosmos1fun8le2dxrclr633psv7gke6wtlycunnm8dlm7 --keyring-backend=test
 ```
 
-For the `from` flag, you should give the address of the key genereated. We used the address of `test` key.
+For the `from` flag, you should give the address of the key genereated. We used the address of `jack` key.
 
 Press `y` for the confirm line.
 
@@ -203,7 +203,7 @@ We can use `pylonscli tx pylons get-pylons` command to get some `pylon`.
 ```
 pylonscli tx pylons get-pylons --amount 500000 --from cosmos1fun8le2dxrclr633psv7gke6wtlycunnm8dlm7 --keyring-backend=test
 ```
-`from` flag sets the address of the account to get pylons and `amount` flag sets the amount of `pylon` to get. In this command, we are getting 500 pylons for the account `test`. You should press `y` to the confirmation line.
+`from` flag sets the address of the account to get pylons and `amount` flag sets the amount of `pylon` to get. In this command, we are getting 500 pylons for the account `jack`. You should press `y` to the confirmation line.
 
 The result will be like the following.
 
@@ -279,12 +279,12 @@ Create a new json file in your local folder and name it `tx_cook.json`. Write co
 }
 ```
 
-For the sender account of this cookbook, we can use the `test` account we created above.
-The address of the `test` account is `cosmos1fun8le2dxrclr633psv7gke6wtlycunnm8dlm7`.
+For the sender account of this cookbook, we can use the `jack` account we created above.
+The address of the `jack` account is `cosmos1fun8le2dxrclr633psv7gke6wtlycunnm8dlm7`.
 So let's replace `<Address for the sender account>` with `cosmos1fun8le2dxrclr633psv7gke6wtlycunnm8dlm7`.
 
 ```
-pylonscli tx sign tx_cook.json --from test --keyring-backend=test > tx_cook_signed.json
+pylonscli tx sign tx_cook.json --from jack --keyring-backend=test > tx_cook_signed.json
 ```
 This command signs the transaction written in the `tx_cook.json` file and creates `tx_cook_signed.json` file with the signed transaction result. It will include `signature` field.
 
@@ -458,7 +458,7 @@ Sample transaction is similar to the following.
 The progress to create recipe is similar to create cookbook.
 
 ```
-pylonscli tx sign tx_recipe.json --from test --keyring-backend=test > tx_recipe_signed.json
+pylonscli tx sign tx_recipe.json --from jack --keyring-backend=test > tx_recipe_signed.json
 pylonscli tx broadcast tx_recipe_signed.json 
 sleep 6
 ```
@@ -662,7 +662,7 @@ To execute recipe, we need to sign execute transaction. Create `tx_execte.json`
 The signature and broadcast commands are the same.
 
 ```
-pylonscli tx sign tx_execute.json --from test --keyring-backend=test > tx_execute_signed.json
+pylonscli tx sign tx_execute.json --from jack --keyring-backend=test > tx_execute_signed.json
 pylonscli tx broadcast tx_execute_signed.json
 sleep 6
 ```
@@ -762,7 +762,7 @@ Create `tx_check.json` file and write check execution transaction.
 Run commands to sign and broadcast the transaction.
 
 ```
-pylonscli tx sign tx_check.json --from test --keyring-backend=test > tx_check_signed.json
+pylonscli tx sign tx_check.json --from jack --keyring-backend=test > tx_check_signed.json
 pylonscli tx broadcast tx_check_signed.json
 ```
 
