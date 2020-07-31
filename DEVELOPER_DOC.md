@@ -96,21 +96,28 @@ Sample Recipe JSON
 {
     "ID": "Submarine-knife-shield-generation-recipe-v0.0.0-1583801800",
     "CoinInputs":[],
-    "ItemInputRefs": [
-        "./recipes/submarine/item_input/knife_lv1.json",
-        "./recipes/submarine/item_input/shield_lv1.json"
+    "ItemInputs": [
+        {
+            "ID": "knife_lv1",
+            "Ref": "./recipes/submarine/item_input/knife_lv1.json"
+        },
+        {
+            "ID": "shield_lv1",
+            "Ref": "./recipes/submarine/item_input/shield_lv1.json"
+        }
     ],
     "Entries":{
         "CoinOutputs":[],
         "ItemOutputs":[
             {
+                "ID": "knife_shield_lv1",
                 "Ref": "./recipes/submarine/item_output/knife_shield_lv1.json"
             }
         ]
     },
     "Outputs": [
         {
-            "ResultEntries": ["0"],
+            "EntryIDs": ["knife_shield_lv1"],
             "Weight": "1"
         }
     ],
@@ -251,7 +258,8 @@ Sample ItemOutputs JSON using ModifyItem
 ```
 {
   "ModifyItem": {
-    "ItemInputRef": 0,
+    "ID": "modified_monster",
+    "ItemInputRef": "monster",
     "Doubles": [{
         "Key": "attack", 
         "Program": "attack * 2.0"
@@ -278,9 +286,7 @@ Specific amount of fee percentage configured as `recipe_fee_percentage` in `pylo
 
 ###### ItemInputRef
 
-`ItemInputRef` is referencing to index of item input starting from 0.
-When `ItemInputRef` is -1, it means it's generating item without from input item.
-For JSON, if you don't specify a field for ItemInputRef, it's default value is set to -1.
+`ItemInputRef` is referencing to ID of item input.
 
 ###### ModifyParams 
 
@@ -441,14 +447,14 @@ Outputs is an array of result sets by weights.
 
 | No | Field         | type   | sample   | description                                                         |
 |----|---------------|--------|----------|---------------------------------------------------------------------|
-| 1  | ResultEntries | array  | [0, 1]   | This contains the result set that is consists of entry indexes.     |
+| 1  | EntryIDs | array  | [0, 1]   | This contains the result set that is consists of entry indexes.     |
 | 2  | Weight        | string | "100-HP" | This is cel program which determines weight of specific result set. |
 
 Sample Outputs JSON
 ```
   "Outputs": [
       {
-          "ResultEntries": ["0"],
+          "EntryIDs": ["knife_shield_v1"],
           "Weight": "1"
       }
   ],
@@ -459,6 +465,7 @@ When both CoinOutputs and ItemOutputs are available, indexing start from CoinOut
     "Entries":{
         "CoinOutputs":[
             {
+                "ID": "coin_reward",
                 "Coin":"javecoin",
                 "Count":"100"
             }
@@ -466,7 +473,8 @@ When both CoinOutputs and ItemOutputs are available, indexing start from CoinOut
         "ItemOutputs":[
             {
                 "ModifyItem": {
-                    "ItemInputRef": 0,
+                    "ID": "modified_javelin",
+                    "ItemInputRef": "javelin",
                     "ModifyParamsRef": "./recipes/javelin/upgrader/javelin_program.json"
                 }
             }
@@ -474,16 +482,16 @@ When both CoinOutputs and ItemOutputs are available, indexing start from CoinOut
     },
     "Outputs": [
         {
-            "ResultEntries": ["1"],
+            "EntryIDs": ["modified_javelin"],
             "Weight": "1"
         },
         {
-            "ResultEntries": ["0", "1"],
+            "EntryIDs": ["javecoin", "modified_javelin"],
             "Weight": "int(attack) * 2 + 1"
         }
     ],
 ```
-e.g. on above, ResultEntries `[0, 1]` means javecoin + javelin, `[1]` means javelin
+e.g. on above, EntryIDs `["javecoin", "modified_javelin"]` means javecoin + modified_javelin, `["modified_javelin"]` means modified_javelin
 
 ## Execution of recipes
 
@@ -554,7 +562,7 @@ Coin to coin trading
           "Count": "1"
       }
   ],
-  "ItemInputRefs": [],
+  "ItemInputs": [],
   "CoinOutputs": [{
       "denom":"node0token",
       "amount": "200"
@@ -573,7 +581,7 @@ Coin to item trading
           "Count": "1"
       }
   ],
-  "ItemInputRefs": null,
+  "ItemInputs": null,
   "CoinOutputs": null,
   "ItemOutputNames": ["Trading Knife v1"],
   "ExtraInfo":"coin to item trading",
@@ -584,8 +592,11 @@ Item to coin trading
 ```
 {
     "CoinInputs":[],
-    "ItemInputRefs": [
-        "./trades/item_input/trading_knife_v3.json"
+    "ItemInputs": [
+        {
+            "ID": "trading_knife_v3",
+            "Ref": "./trades/item_input/trading_knife_v3.json"
+        }
     ],
     "CoinOutputs": [{
         "denom":"node0token",
@@ -600,8 +611,10 @@ Item to item trading
 ```
 {
     "CoinInputs":[],
-    "ItemInputRefs": [
-        "./trades/item_input/trading_knife_v4.json"
+    "ItemInputs": [
+        {
+            "Ref": "./trades/item_input/trading_knife_v4.json"
+        }
     ],
     "CoinOutputs": [],
     "ItemOutputNames": ["Trading Knife v2"],

@@ -2,18 +2,22 @@
     "NodeVersion": "0.0.1",
     "ID": "LOUD-sell-a-sword-recipe-v0.0.0-1590029710",
     "CoinInputs":[],
-    "ItemInputRefs":[
-        "./recipes/loud/item_input/sword.json"
+    "ItemInputs":[
+        {
+            "ID": "sword",
+            "Ref": "./recipes/loud/item_input/sword.json"
+        }
     ],
     "Entries": {
         "CoinOutputs": [{
+            "ID": "coin_reward",
             "Coin":"loudcoin",
             "Count": "int(attack * double(rand_int(2)+20))"
         }]
     },
     "Outputs": [
         {
-            "ResultEntries": ["0"],
+            "EntryIDs": ["coin_reward"],
             "Weight": "1"
         }
     ],

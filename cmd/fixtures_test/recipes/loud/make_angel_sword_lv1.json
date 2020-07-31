@@ -5,20 +5,30 @@
         "Coin": "loudcoin",
         "Count": "20000"
     }],
-    "ItemInputRefs": [
-        "./recipes/loud/item_input/drop_from_fire_dragon.json",
-        "./recipes/loud/item_input/drop_from_ice_dragon.json",
-        "./recipes/loud/item_input/drop_from_acid_dragon.json"
+    "ItemInputs": [
+        {
+            "ID": "drop_from_fire_dragon",
+            "Ref": "./recipes/loud/item_input/drop_from_fire_dragon.json"
+        },
+        {
+            "ID": "drop_from_ice_dragon",
+            "Ref": "./recipes/loud/item_input/drop_from_ice_dragon.json"
+        },
+        {
+            "ID": "drop_from_acid_dragon",
+            "Ref": "./recipes/loud/item_input/drop_from_acid_dragon.json"
+        }
     ],
     "Entries":{
         "CoinOutputs":[],
         "ItemOutputs":[{
+            "ID": "angel_sword",
             "Ref": "./recipes/loud/item_output/angel_sword_lv1.json"
         }]
     },
     "Outputs": [
         {
-            "ResultEntries": ["0"],
+            "EntryIDs": ["angel_sword"],
             "Weight": "1"
         }
     ],

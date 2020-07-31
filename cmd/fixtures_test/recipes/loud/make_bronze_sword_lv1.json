@@ -5,18 +5,22 @@
         "Coin": "loudcoin",
         "Count": "250"
     }],
-    "ItemInputRefs": [
-        "./recipes/loud/item_input/wolf_tail.json"
+    "ItemInputs": [
+        {
+            "ID": "wolf_tail",
+            "Ref": "./recipes/loud/item_input/wolf_tail.json"
+        }
     ],
     "Entries":{
         "CoinOutputs":[],
         "ItemOutputs":[{
+            "ID": "bronze_sword",
             "Ref": "./recipes/loud/item_output/bronze_sword_lv1.json"
         }]
     },
     "Outputs": [
         {
-            "ResultEntries": ["0"],
+            "EntryIDs": ["bronze_sword"],
             "Weight": "1"
         }
     ],

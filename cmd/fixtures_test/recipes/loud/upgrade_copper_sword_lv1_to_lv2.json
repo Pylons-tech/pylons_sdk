@@ -5,21 +5,25 @@
         "Coin": "loudcoin",
         "Count": "250"
     }],    
-    "ItemInputRefs":[
-        "./recipes/loud/item_input/copper_sword_lv1.json"
+    "ItemInputs":[
+        {
+            "ID": "copper_sword_lv1",
+            "Ref": "./recipes/loud/item_input/copper_sword_lv1.json"
+        }
     ],
     "Entries":{
         "CoinOutputs":[],
         "ItemModifyOutputs":[
             {
-                "ItemInputRef": 0,
+                "ID": "upgraded_sword",
+                "ItemInputRef": "copper_sword_lv1",
                 "ModifyParamsRef": "./recipes/loud/upgrader/level.json"
             }
         ]
     },
     "Outputs": [
         {
-            "ResultEntries": ["0"],
+            "EntryIDs": ["upgraded_sword"],
             "Weight": "1"
         }
     ],

@@ -2,20 +2,21 @@
     "NodeVersion": "0.0.1",
     "ID": "Invalid-recipe-v0.0.0-1590029710",
     "CoinInputs":[],    
-    "ItemInputRefs":[],
+    "ItemInputs":[],
     "Entries":{
         "CoinOutputs":[{
+            "ID": "coin_reward",
             "Coin":"loudcoin",
             "Count": "rand_int(2)+1"
         }]
     },
     "Outputs": [
         {
-            "ResultEntries": ["0", "0"],
+            "EntryIDs": ["coin_reward", "coin_reward"],
             "Weight": "90"
         },
         {
-            "ResultEntries": [],
+            "EntryIDs": [],
             "Weight": "10"
         }
     ],

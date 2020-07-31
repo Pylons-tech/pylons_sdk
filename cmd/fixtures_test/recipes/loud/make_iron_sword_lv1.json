@@ -5,18 +5,22 @@
         "Coin": "loudcoin",
         "Count": "250"
     }],
-    "ItemInputRefs": [
-        "./recipes/loud/item_input/troll_toes.json"
+    "ItemInputs": [
+        {
+            "ID": "troll_toes",
+            "Ref": "./recipes/loud/item_input/troll_toes.json"
+        }
     ],
     "Entries":{
         "CoinOutputs":[],
         "ItemOutputs":[{
+            "ID": "iron_sword",
             "Ref": "./recipes/loud/item_output/iron_sword_lv1.json"
         }]
     },
     "Outputs": [
         {
-            "ResultEntries": ["0"],
+            "EntryIDs": ["iron_sword"],
             "Weight": "1"
         }
     ],

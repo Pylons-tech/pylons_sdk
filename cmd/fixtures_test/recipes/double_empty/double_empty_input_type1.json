@@ -2,8 +2,11 @@
     "NodeVersion": "0.0.1",
     "ID": "DE-double-empty-input-type1",
     "CoinInputs":[],
-    "ItemInputRefs":[
-        "./recipes/double_empty/item_input/double_empty_type1.json"
+    "ItemInputs":[
+        {
+            "ID": "double_empty_type1",
+            "Ref": "./recipes/double_empty/item_input/double_empty_type1.json"
+        }
     ],
     "ExtraInfo":"",
     "Sender":"de_account1",

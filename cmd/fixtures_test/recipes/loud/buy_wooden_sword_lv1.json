@@ -5,16 +5,17 @@
         "Coin": "loudcoin",
         "Count": "100"
     }],
-    "ItemInputRefs": [],
+    "ItemInputs": [],
     "Entries":{
         "CoinOutputs":[],
         "ItemOutputs":[{
+            "ID": "wooden_sword_lv1",
             "Ref": "./recipes/loud/item_output/wooden_sword_lv1.json"
         }]
     },
     "Outputs": [
         {
-            "ResultEntries": ["0"],
+            "EntryIDs": ["wooden_sword_lv1"],
             "Weight": "1"
         }
     ],

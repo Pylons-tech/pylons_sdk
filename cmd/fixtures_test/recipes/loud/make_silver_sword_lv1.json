@@ -5,18 +5,22 @@
         "Coin": "loudcoin",
         "Count": "250"
     }],
-    "ItemInputRefs": [
-        "./recipes/loud/item_input/goblin_ear.json"
+    "ItemInputs": [
+        {
+            "ID": "goblin_ear",
+            "Ref": "./recipes/loud/item_input/goblin_ear.json"
+        }
     ],
     "Entries":{
         "CoinOutputs":[],
         "ItemOutputs":[{
+            "ID": "silver_sword",
             "Ref": "./recipes/loud/item_output/silver_sword_lv1.json"
         }]
     },
     "Outputs": [
         {
-            "ResultEntries": ["0"],
+            "EntryIDs": ["silver_sword"],
             "Weight": "1"
         }
     ],

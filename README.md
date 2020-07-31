@@ -201,7 +201,7 @@ github.com/Pylons-tech/pylons_sdk/x/pylons/msgs
 |----|------|--------------------------------|------------------------------------------------------------------------------------------------|
 | 1  | Fn   | GenCoinInputList               | GenCoinInputList is a utility function to genearte coin input list                             |
 | 2  | Fn   | GenEntries                     | GenEntries is a function to generate entries from coin name and item name                      |
-| 3  | Fn   | GenEntriesFirstItemNameUpgrade | GenEntriesFirstItemNameUpgrade is a function to generate entries that update first item's name |
+| 3  | Fn   | GenEntriesItemNameUpgrade      | GenEntriesItemNameUpgrade is a function to generate entries that update first item's name      |
 | 4  | Fn   | GenItemInputList               | GenItemInputList is a utility function to genearte item input list                             |
 | 5  | Fn   | GenItemOnlyEntry               | GenItemOnlyEntry is a utility function to generate item only entry                             |
 | 6  | Fn   | GenOneOutput                   | GenOneOutput is a function to generate output with one from entry list                         |

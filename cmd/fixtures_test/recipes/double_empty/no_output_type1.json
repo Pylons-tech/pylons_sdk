@@ -4,12 +4,13 @@
     "Entries":{
         "CoinOutputs":[],
         "ItemOutputs":[{
+            "ID": "regular",
             "Ref": "./recipes/double_empty/item_output/regular.json"
         }]
     },
     "Outputs": [
         {
-            "ResultEntries": [],
+            "EntryIDs": [],
             "Weight": "1"
         }
     ],

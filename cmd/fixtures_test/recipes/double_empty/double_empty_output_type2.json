@@ -1,16 +1,17 @@
 {
     "NodeVersion": "0.0.1",
     "ID": "DE-double-empty-output-type2",
-    "ItemInputRefs": [],
+    "ItemInputs": [],
     "Entries":{
         "CoinOutputs":[],
         "ItemOutputs":[{
+            "ID": "double_empty_type2",
             "Ref": "./recipes/double_empty/item_output/double_empty_type2.json"
         }]
     },
     "Outputs": [
         {
-            "ResultEntries": ["0"],
+            "EntryIDs": ["double_empty_type2"],
             "Weight": "1"
         }
     ],

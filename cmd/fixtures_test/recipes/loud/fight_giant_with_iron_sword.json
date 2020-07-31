@@ -2,36 +2,45 @@
     "NodeVersion": "0.0.1",
     "ID": "LOUD-fight-giant-with-iron-sword-recipe-v0.0.0-1590029710",
     "CoinInputs":[],
-    "ItemInputRefs":[
-        "./recipes/loud/item_input/character_nospecial.json",
-        "./recipes/loud/item_input/iron_sword.json"
+    "ItemInputs":[
+        {
+            "ID": "character_nospecial",
+            "Ref": "./recipes/loud/item_input/character_nospecial.json"
+        },
+        {
+            "ID": "iron_sword",
+            "Ref": "./recipes/loud/item_input/iron_sword.json"
+        }
     ],
     "Entries":{
         "CoinOutputs":[{
+            "ID": "coin_reward",
             "Coin":"loudcoin",
             "Count": "3000"
         }],
         "ItemModifyOutputs":[
             {
-                "ItemInputRef": 0,
+                "ID": "modified_character",
+                "ItemInputRef": "character_nospecial",
                 "ModifyParamsRef": "./recipes/loud/upgrader/character_after_fighting_giant.json"
             },
             {
-                "ItemInputRef": 1 
+                "ID": "returned_sword",
+                "ItemInputRef": "iron_sword" 
             }
         ]
     },
     "Outputs": [
         {
-            "ResultEntries": [],
+            "EntryIDs": [],
             "Weight": "100 * 10 / int(input1.attack) - HP"
         },
         {
-            "ResultEntries": ["0", "1"],
+            "EntryIDs": ["coin_reward", "modified_character"],
             "Weight": "HP / 10"
         },
         {
-            "ResultEntries": ["0", "1", "2"],
+            "EntryIDs": ["coin_reward", "modified_character", "returned_sword"],
             "Weight": "HP * 9 / 10"
         }
     ],

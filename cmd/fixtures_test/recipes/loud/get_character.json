@@ -5,16 +5,17 @@
         "Coin": "pylon",
         "Count": "1"
     }],
-    "ItemInputRefs": [],
+    "ItemInputs": [],
     "Entries":{
         "CoinOutputs":[],
         "ItemOutputs":[{
+            "ID": "tiger_character",
             "Ref": "./recipes/loud/item_output/tiger_character_lv1.json"
         }]
     },
     "Outputs": [
         {
-            "ResultEntries": ["0"],
+            "EntryIDs": ["tiger_character"],
             "Weight": "1"
         }
     ],

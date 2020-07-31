@@ -2,10 +2,14 @@ package types
 
 import (
 	"encoding/json"
+	"fmt"
 )
 
 // Entry describes an output which can be produced from a recipe
-type Entry interface{}
+type Entry interface {
+	GetID() string
+	String() string
+}
 
 // EntriesList is a struct to keep list of items and coins
 type EntriesList []Entry
@@ -14,6 +18,27 @@ type serializeEntriesList struct {
 	CoinOutputs       []CoinOutput
 	ItemModifyOutputs []ItemModifyOutput
 	ItemOutputs       []ItemOutput
+}
+
+func (wpl EntriesList) String() string {
+	itm := "EntriesList{"
+
+	for _, output := range wpl {
+		itm += output.String() + ",\n"
+	}
+
+	itm += "}"
+	return itm
+}
+
+// FindByID is a function to find an entry by ID
+func (wpl EntriesList) FindByID(ID string) (Entry, error) {
+	for _, wp := range wpl {
+		if wp.GetID() == ID {
+			return wp, nil
+		}
+	}
+	return nil, fmt.Errorf("no entry with the ID %s available", ID)
 }
 
 // MarshalJSON is a custom marshal function

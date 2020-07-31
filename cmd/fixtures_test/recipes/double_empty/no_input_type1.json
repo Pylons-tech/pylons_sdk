@@ -2,16 +2,17 @@
     "NodeVersion": "0.0.1",
     "ID": "DE-no-input-empty-type1",
     "CoinInputs":[],
-    "ItemInputRefs": [],
+    "ItemInputs": [],
     "Entries":{
         "CoinOutputs":[],
         "ItemOutputs":[{
+            "ID": "regular",
             "Ref": "./recipes/double_empty/item_output/regular.json"
         }]
     },
     "Outputs": [
         {
-            "ResultEntries": ["0"],
+            "EntryIDs": ["regular"],
             "Weight": "1"
         }
     ],
