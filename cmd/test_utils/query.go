@@ -52,10 +52,10 @@ func ListCookbookViaCLI(account string) ([]types.Cookbook, error) {
 	return listCBResp.Cookbooks, err
 }
 
-// ListLockedCoinsViaCLI is a function to list locked coins via cli
-func ListLockedCoinsViaCLI(account string) (types.LockedCoin, error) {
+// GetLockedCoinsViaCLI is a function to list locked coins via cli
+func GetLockedCoinsViaCLI(account string) (types.LockedCoin, error) {
 	lcResp := types.LockedCoin{}
-	queryParams := []string{"query", "pylons", "list_locked_coins"}
+	queryParams := []string{"query", "pylons", "get_locked_coins"}
 	if len(account) != 0 {
 		queryParams = append(queryParams, "--account", account)
 	}
@@ -67,10 +67,10 @@ func ListLockedCoinsViaCLI(account string) (types.LockedCoin, error) {
 	return lcResp, err
 }
 
-// ListLockedCoinDetailsViaCLI is a function to list locked coins via cli
-func ListLockedCoinDetailsViaCLI(account string) (types.LockedCoinDetails, error) {
+// GetLockedCoinDetailsViaCLI is a function to list locked coins via cli
+func GetLockedCoinDetailsViaCLI(account string) (types.LockedCoinDetails, error) {
 	lcdResp := types.LockedCoinDetails{}
-	queryParams := []string{"query", "pylons", "list_locked_coin_details"}
+	queryParams := []string{"query", "pylons", "get_locked_coin_details"}
 	if len(account) != 0 {
 		queryParams = append(queryParams, "--account", account)
 	}

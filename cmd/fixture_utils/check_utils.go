@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
 
 	originT "testing"
 
@@ -67,6 +68,7 @@ type TestOptions struct {
 	AccountNames      []string
 }
 
+var runtimeKeyGenMux sync.Mutex
 var runtimeAccountKeys = make(map[string]string)
 
 // FixtureTestOpts is a variable to have fixture test options
@@ -332,8 +334,8 @@ func ProcessSingleFixtureQueueItem(file string, idx int, fixtureSteps []FixtureS
 	})
 }
 
-// RunSingleFixtureTest add a work queue into fixture test runner and execute work queues
-func RunSingleFixtureTest(file string, t *testing.T) {
+// RunRegisterWorkQueuesForSingleFixture is function to add queue items before running whole test
+func RunRegisterWorkQueuesForSingleFixture(file string, t *testing.T) {
 	var fixtureSteps []FixtureStep
 	byteValue := ReadFile(file, t)
 
@@ -344,18 +346,29 @@ func RunSingleFixtureTest(file string, t *testing.T) {
 
 	CheckSteps(fixtureSteps, t)
 
+	for idx, step := range fixtureSteps {
+		workQueues = append(workQueues, QueueItem{
+			fixtureFileName: file,
+			idx:             idx,
+			stepID:          step.ID,
+			status:          NotStarted,
+		})
+	}
+}
+
+// RunSingleFixtureTest add a work queue into fixture test runner and execute work queues
+func RunSingleFixtureTest(file string, t *testing.T) {
+	var fixtureSteps []FixtureStep
+	byteValue := ReadFile(file, t)
+
+	err := json.Unmarshal([]byte(byteValue), &fixtureSteps)
+	t.WithFields(testing.Fields{
+		"raw_json": string(byteValue),
+	}).MustNil(err, "error decoding fixture steps")
+
 	t.Run(file, func(t *testing.T) {
 		if FixtureTestOpts.IsParallel {
 			t.Parallel()
-		}
-
-		for idx, step := range fixtureSteps {
-			workQueues = append(workQueues, QueueItem{
-				fixtureFileName: file,
-				idx:             idx,
-				stepID:          step.ID,
-				status:          NotStarted,
-			})
 		}
 
 		for idx := range fixtureSteps {
@@ -390,6 +403,11 @@ func RunTestScenarios(scenarioDir string, scenarioFileNames []string, t *originT
 	if err != nil {
 		t.Fatal("error walking through scenario directory", err)
 	}
+	for _, file := range files {
+		t.Log("Registering work queues for scenario path=", file)
+		RunRegisterWorkQueuesForSingleFixture(file, &newT)
+	}
+
 	for _, file := range files {
 		t.Log("Running scenario path=", file)
 		RunSingleFixtureTest(file, &newT)

@@ -74,6 +74,7 @@ func UpdateWorkQueueStatus(file string, idx int, fixtureSteps []FixtureStep, tar
 		if FixtureTestOpts.IsParallel {
 			for sidx, sstep := range fixtureSteps {
 				squeID := GetQueueID(file, sidx, sstep.ID)
+				t.MustTrue(squeID != -1, "work queue id out of range")
 				if workQueues[squeID].status == NotStarted {
 					UpdateWorkQueueStatus(file, sidx, fixtureSteps, InProgress, t)
 				}
