@@ -196,7 +196,7 @@ confirm transaction before signing and broadcasting [y/N]: y
 
 ### Get pylon coin for the created account
 
-`pylon` coin is used for fees of all the transactions in this sdk. So the account should have some amount of `pylon`s.
+`pylon` coin is used for fees of all the transactions in this sdk. So the account should have some amount of `pylon`.
 
 We can use `pylonscli tx pylons get-pylons` command to get some `pylon`.
 
