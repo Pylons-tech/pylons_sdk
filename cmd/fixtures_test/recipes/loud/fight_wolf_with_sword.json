@@ -2,9 +2,15 @@
     "NodeVersion": "0.0.1",
     "ID": "LOUD-fight-wolf-with-a-sword-recipe-v0.0.0-1590029710",
     "CoinInputs":[],
-    "ItemInputRefs":[
-        "./recipes/loud/item_input/character.json",
-        "./recipes/loud/item_input/sword.json"
+    "ItemInputs":[
+        {
+            "ID": "character",
+            "Ref": "./recipes/loud/item_input/character.json"
+        },
+        {
+            "ID": "sword",
+            "Ref": "./recipes/loud/item_input/sword.json"
+        }
     ],
     "Entries":{
         "CoinOutputs":[{
@@ -15,12 +21,12 @@
         "ItemModifyOutputs": [
             {
                 "ID": "modified_character",
-                "ItemInputRef": 0,
+                "ItemInputRef": "character",
                 "ModifyParamsRef": "./recipes/loud/upgrader/character_after_fighting_wolf.json"
             },
             {
                 "ID": "returned_sword",
-                "ItemInputRef": 1 
+                "ItemInputRef": "sword" 
             }
         ],
         "ItemOutputs":[

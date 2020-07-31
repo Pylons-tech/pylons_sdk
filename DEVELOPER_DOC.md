@@ -96,9 +96,15 @@ Sample Recipe JSON
 {
     "ID": "Submarine-knife-shield-generation-recipe-v0.0.0-1583801800",
     "CoinInputs":[],
-    "ItemInputRefs": [
-        "./recipes/submarine/item_input/knife_lv1.json",
-        "./recipes/submarine/item_input/shield_lv1.json"
+    "ItemInputs": [
+        {
+            "ID": "knife_lv1",
+            "Ref": "./recipes/submarine/item_input/knife_lv1.json"
+        },
+        {
+            "ID": "shield_lv1",
+            "Ref": "./recipes/submarine/item_input/shield_lv1.json"
+        }
     ],
     "Entries":{
         "CoinOutputs":[],
@@ -252,7 +258,8 @@ Sample ItemOutputs JSON using ModifyItem
 ```
 {
   "ModifyItem": {
-    "ItemInputRef": 0,
+    "ID": "modified_monster",
+    "ItemInputRef": "monster",
     "Doubles": [{
         "Key": "attack", 
         "Program": "attack * 2.0"
@@ -279,9 +286,7 @@ Specific amount of fee percentage configured as `recipe_fee_percentage` in `pylo
 
 ###### ItemInputRef
 
-`ItemInputRef` is referencing to index of item input starting from 0.
-When `ItemInputRef` is -1, it means it's generating item without from input item.
-For JSON, if you don't specify a field for ItemInputRef, it's default value is set to -1.
+`ItemInputRef` is referencing to ID of item input.
 
 ###### ModifyParams 
 
@@ -469,7 +474,7 @@ When both CoinOutputs and ItemOutputs are available, indexing start from CoinOut
             {
                 "ModifyItem": {
                     "ID": "modified_javelin",
-                    "ItemInputRef": 0,
+                    "ItemInputRef": "javelin",
                     "ModifyParamsRef": "./recipes/javelin/upgrader/javelin_program.json"
                 }
             }
@@ -557,7 +562,7 @@ Coin to coin trading
           "Count": "1"
       }
   ],
-  "ItemInputRefs": [],
+  "ItemInputs": [],
   "CoinOutputs": [{
       "denom":"node0token",
       "amount": "200"
@@ -576,7 +581,7 @@ Coin to item trading
           "Count": "1"
       }
   ],
-  "ItemInputRefs": null,
+  "ItemInputs": null,
   "CoinOutputs": null,
   "ItemOutputNames": ["Trading Knife v1"],
   "ExtraInfo":"coin to item trading",
@@ -587,8 +592,11 @@ Item to coin trading
 ```
 {
     "CoinInputs":[],
-    "ItemInputRefs": [
-        "./trades/item_input/trading_knife_v3.json"
+    "ItemInputs": [
+        {
+            "ID": "trading_knife_v3",
+            "Ref": "./trades/item_input/trading_knife_v3.json"
+        }
     ],
     "CoinOutputs": [{
         "denom":"node0token",
@@ -603,8 +611,10 @@ Item to item trading
 ```
 {
     "CoinInputs":[],
-    "ItemInputRefs": [
-        "./trades/item_input/trading_knife_v4.json"
+    "ItemInputs": [
+        {
+            "Ref": "./trades/item_input/trading_knife_v4.json"
+        }
     ],
     "CoinOutputs": [],
     "ItemOutputNames": ["Trading Knife v2"],

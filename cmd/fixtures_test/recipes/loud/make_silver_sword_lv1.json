@@ -5,8 +5,11 @@
         "Coin": "loudcoin",
         "Count": "250"
     }],
-    "ItemInputRefs": [
-        "./recipes/loud/item_input/goblin_ear.json"
+    "ItemInputs": [
+        {
+            "ID": "goblin_ear",
+            "Ref": "./recipes/loud/item_input/goblin_ear.json"
+        }
     ],
     "Entries":{
         "CoinOutputs":[],

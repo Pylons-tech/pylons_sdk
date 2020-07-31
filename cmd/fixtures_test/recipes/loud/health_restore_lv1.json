@@ -5,15 +5,18 @@
         "Coin": "loudcoin",
         "Count": "10"
     }],    
-    "ItemInputRefs":[
-        "./recipes/loud/item_input/character.json"
+    "ItemInputs":[
+        {
+            "ID": "character",
+            "Ref": "./recipes/loud/item_input/character.json"
+        }
     ],
     "Entries":{
         "CoinOutputs":[],
         "ItemModifyOutputs":[
             {
                 "ID": "modified_character",
-                "ItemInputRef": 0,
+                "ItemInputRef": "character",
                 "ModifyParamsRef": "./recipes/loud/upgrader/character_restore_health.json"
             }
         ]

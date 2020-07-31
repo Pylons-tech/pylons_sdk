@@ -5,8 +5,11 @@
         "Coin": "loudcoin",
         "Count": "250"
     }],
-    "ItemInputRefs": [
-        "./recipes/loud/item_input/wolf_tail.json"
+    "ItemInputs": [
+        {
+            "ID": "wolf_tail",
+            "Ref": "./recipes/loud/item_input/wolf_tail.json"
+        }
     ],
     "Entries":{
         "CoinOutputs":[],

@@ -4,15 +4,18 @@
         "Coin": "pylon",
         "Count": "5000"
     }],
-    "ItemInputRefs": [
-        "./recipes/spear/item_input/spear.json"
+    "ItemInputs": [
+        {
+            "ID": "spear",
+            "Ref": "./recipes/spear/item_input/spear.json"
+        }
     ],
     "Entries":{
         "CoinOutputs":[],
         "ItemModifyOutputs":[
             {
                 "ID": "upgraded_spear",
-                "ItemInputRef": 0,
+                "ItemInputRef": "spear",
                 "ModifyParamsRef": "./recipes/spear/upgrader/spear.json"
             }
         ]

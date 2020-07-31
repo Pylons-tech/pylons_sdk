@@ -5,15 +5,18 @@
         "Coin": "loudcoin",
         "Count": "100"
     }],
-    "ItemInputRefs":[
-        "./recipes/loud/item_input/wooden_sword_lv1.json"
+    "ItemInputs":[
+        {
+            "ID": "wooden_sword_lv1",
+            "Ref": "./recipes/loud/item_input/wooden_sword_lv1.json"
+        }
     ],
     "Entries":{
         "CoinOutputs":[],
         "ItemModifyOutputs":[
             {
                 "ID": "upgraded_sword",
-                "ItemInputRef": 0,
+                "ItemInputRef": "wooden_sword_lv1",
                 "ModifyParamsRef": "./recipes/loud/upgrader/level.json"
             }
         ]

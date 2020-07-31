@@ -5,7 +5,7 @@
         "Coin": "pylon",
         "Count": "100"
     }],    
-    "ItemInputRefs":[],
+    "ItemInputs":[],
     "Entries":{
         "CoinOutputs":[ {
             "ID": "coin_bought",

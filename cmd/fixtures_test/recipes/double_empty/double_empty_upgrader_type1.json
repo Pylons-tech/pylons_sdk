@@ -5,15 +5,18 @@
         "Coin": "loudcoin",
         "Count": "250"
     }],    
-    "ItemInputRefs":[
-        "./recipes/double_empty/item_input/regular.json"
+    "ItemInputs":[
+        {
+            "ID": "regular",
+            "Ref": "./recipes/double_empty/item_input/regular.json"
+        }
     ],
     "Entries":{
         "CoinOutputs":[],
         "ItemModifyOutputs":[
             {
                 "ID": "double_empty_type1",
-                "ItemInputRef": 0,
+                "ItemInputRef": "regular",
                 "ModifyParamsRef": "./recipes/double_empty/upgrader/double_empty_type1.json"
             }
         ]

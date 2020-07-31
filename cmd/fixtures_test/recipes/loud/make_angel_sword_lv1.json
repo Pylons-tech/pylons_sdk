@@ -5,10 +5,19 @@
         "Coin": "loudcoin",
         "Count": "20000"
     }],
-    "ItemInputRefs": [
-        "./recipes/loud/item_input/drop_from_fire_dragon.json",
-        "./recipes/loud/item_input/drop_from_ice_dragon.json",
-        "./recipes/loud/item_input/drop_from_acid_dragon.json"
+    "ItemInputs": [
+        {
+            "ID": "drop_from_fire_dragon",
+            "Ref": "./recipes/loud/item_input/drop_from_fire_dragon.json"
+        },
+        {
+            "ID": "drop_from_ice_dragon",
+            "Ref": "./recipes/loud/item_input/drop_from_ice_dragon.json"
+        },
+        {
+            "ID": "drop_from_acid_dragon",
+            "Ref": "./recipes/loud/item_input/drop_from_acid_dragon.json"
+        }
     ],
     "Entries":{
         "CoinOutputs":[],

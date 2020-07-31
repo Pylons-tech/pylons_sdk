@@ -5,8 +5,11 @@
         "Coin": "loudcoin",
         "Count": "250"
     }],
-    "ItemInputRefs": [
-        "./recipes/loud/item_input/troll_toes.json"
+    "ItemInputs": [
+        {
+            "ID": "troll_toes",
+            "Ref": "./recipes/loud/item_input/troll_toes.json"
+        }
     ],
     "Entries":{
         "CoinOutputs":[],

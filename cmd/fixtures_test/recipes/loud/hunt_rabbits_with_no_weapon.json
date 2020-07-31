@@ -2,8 +2,11 @@
     "NodeVersion": "0.0.1",
     "ID": "LOUD-hunt-rabbits-with-no-weapon-recipe-v0.0.0-1590029710",
     "CoinInputs":[],    
-    "ItemInputRefs":[
-        "./recipes/loud/item_input/character.json"
+    "ItemInputs":[
+        {
+            "ID": "character",
+            "Ref": "./recipes/loud/item_input/character.json"
+        }
     ],
     "Entries":{
         "CoinOutputs":[{
@@ -14,7 +17,7 @@
         "ItemModifyOutputs":[
             {
                 "ID": "modified_character",
-                "ItemInputRef": 0,
+                "ItemInputRef": "character",
                 "ModifyParamsRef": "./recipes/loud/upgrader/character_after_hunting_rabbits.json"
             }
         ]

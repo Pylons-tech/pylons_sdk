@@ -5,7 +5,7 @@
         "Coin": "loudcoin",
         "Count": "250"
     }],
-    "ItemInputRefs": [],
+    "ItemInputs": [],
     "Entries":{
         "CoinOutputs":[],
         "ItemOutputs":[{

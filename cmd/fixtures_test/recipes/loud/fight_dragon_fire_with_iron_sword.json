@@ -2,9 +2,15 @@
     "NodeVersion": "0.0.1",
     "ID": "LOUD-fight-fire-dragon-with-iron-sword-recipe-v0.0.0-1590029710",
     "CoinInputs":[],
-    "ItemInputRefs":[
-        "./recipes/loud/item_input/character_fire.json",
-        "./recipes/loud/item_input/iron_sword.json"
+    "ItemInputs":[
+        {
+            "ID": "character_fire",
+            "Ref": "./recipes/loud/item_input/character_fire.json"
+        },
+        {
+            "ID": "iron_sword",
+            "Ref": "./recipes/loud/item_input/iron_sword.json"
+        }
     ],
     "Entries":{
         "CoinOutputs":[{
@@ -15,12 +21,12 @@
         "ItemModifyOutputs": [
             {
                 "ID": "modified_character",
-                "ItemInputRef": 0,
+                "ItemInputRef": "character_fire",
                 "ModifyParamsRef": "./recipes/loud/upgrader/character_after_fighting_special_dragon.json"
             },
             {
                 "ID": "returned_sword",
-                "ItemInputRef": 1 
+                "ItemInputRef": "iron_sword" 
             }
         ],
         "ItemOutputs":[

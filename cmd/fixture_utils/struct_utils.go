@@ -246,7 +246,10 @@ func GetItemIDsFromNames(bytes []byte, sender string, includeLockedByRecipe, inc
 // GetItemInputsFromBytes is a function to get item input list from bytes
 func GetItemInputsFromBytes(bytes []byte, t *testing.T) types.ItemInputList {
 	var itemInputRefsReader struct {
-		ItemInputRefs []string
+		ItemInputs []struct {
+			ID  string
+			Ref string
+		}
 	}
 	err := json.Unmarshal(bytes, &itemInputRefsReader)
 	t.WithFields(testing.Fields{
@@ -255,15 +258,16 @@ func GetItemInputsFromBytes(bytes []byte, t *testing.T) types.ItemInputList {
 
 	var itemInputs types.ItemInputList
 
-	for _, iiRef := range itemInputRefsReader.ItemInputRefs {
+	for _, iia := range itemInputRefsReader.ItemInputs {
 		var ii types.ItemInput
-		iiBytes := ReadFile(iiRef, t)
+		iiBytes := ReadFile(iia.Ref, t)
 		err := inttest.GetAminoCdc().UnmarshalJSON(iiBytes, &ii)
 		if err != nil {
 			t.WithFields(testing.Fields{
 				"item_input_bytes": string(iiBytes),
 			}).MustNil(err, "error unmarshaling item inputs")
 		}
+		ii.ID = iia.ID
 		itemInputs = append(itemInputs, ii)
 	}
 	return itemInputs
@@ -271,17 +275,17 @@ func GetItemInputsFromBytes(bytes []byte, t *testing.T) types.ItemInputList {
 
 // GetTradeItemInputsFromBytes is a function to get item input list from bytes
 func GetTradeItemInputsFromBytes(bytes []byte, t *testing.T) types.TradeItemInputList {
-	var itemInputRefsReader struct {
+	var tradeItemInputRefsReader struct {
 		ItemInputRefs []string
 	}
-	err := json.Unmarshal(bytes, &itemInputRefsReader)
+	err := json.Unmarshal(bytes, &tradeItemInputRefsReader)
 	t.WithFields(testing.Fields{
 		"bytes": string(bytes),
 	}).MustNil(err, "error unmarshaling into trade item input refs")
 
 	var itemInputs types.TradeItemInputList
 
-	for _, tiiRef := range itemInputRefsReader.ItemInputRefs {
+	for _, tiiRef := range tradeItemInputRefsReader.ItemInputRefs {
 		var tii types.TradeItemInput
 		tiiBytes := ReadFile(tiiRef, t)
 		err := inttest.GetAminoCdc().UnmarshalJSON(tiiBytes, &tii)
@@ -328,7 +332,7 @@ func GetEntriesFromBytes(bytes []byte, t *testing.T) types.EntriesList {
 			CoinOutputs       []types.CoinOutput
 			ItemModifyOutputs []struct {
 				ID              string
-				ItemInputRef    int
+				ItemInputRef    string
 				ModifyParamsRef string
 			}
 			ItemOutputs []struct {
