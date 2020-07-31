@@ -2,6 +2,9 @@
 
 Pylons SDK can be used for blockchain game developers to build their own games that run on blockchain involving game characters and items.
 
+This document is basic tutorial for begineers.
+For more detailed and deeper tutorial, please check DEVELOPER_DOC.md file.
+
 Important points in pylons SDK are:
 
 - item: Item is an important concept in Pylons sdk. It can simply be considered as the items in original games. Items will have properties in the format of Double, String, Integer etc. Characters can be created as items either.
@@ -72,21 +75,22 @@ Use "pylonscli [command] --help" for more information about a command.
 
 Now let's move forward with some important cli commands one by one.
 
-As we are on the local environment, `--keyring-backend=test` flag should be set for every command we do from now.
+All the pylonscli commands require user password. To avoid it, we can use `--keyring-backend=test` flag. 
+`--keyring-backend=test` flag should be set for every command we do from now.
 
 
-### Add private key to the chain
+### Add local key to the chain
 
-`pylonscli keys` command will let you add or view local private keys in the chain.
+`pylonscli keys` command will let you add or view local keys in the chain.
 
-- Add your first private key
+- Add your first local key
   ```
   pylonscli keys add jack --keyring-backend=test
   ```
 
-  You can replace the private key name that is set `jack` in the command with any name you want.
+  You can replace the local key name that is set `jack` in the command with any name you want.
 
-  This command will create a private key with the name given as the argument. The result will be like following.
+  This command will create a local key with the name given as the argument. The result will be like following.
 
   ```
   {
@@ -100,11 +104,11 @@ As we are on the local environment, `--keyring-backend=test` flag should be set 
 
   The `address` value `cosmos1fun8le2dxrclr633psv7gke6wtlycunnm8dlm7` will be used for the other cli commands.
 
-- Show the created private key
+- Show the created local key
   ```
   pylonscli keys show jack --keyring-backend=test
   ```
-  This will show the info of the private key `jack` that is just added.
+  This will show the info of the local key `jack` that is just added.
   The result will be like following.
   ```
   {
@@ -119,7 +123,7 @@ As we are on the local environment, `--keyring-backend=test` flag should be set 
   ```
   pylonscli keys list --keyring-backend=test
   ```
-  This command will list all the private keys that are available in the chain.
+  This command will list all the local keys that are available in the chain.
   The result will be like the following.
   ```
   [
@@ -730,6 +734,8 @@ The result will be like the following:
   ]
 }
 ```
+
+### Check execution
 
 Now the execution is created. 
 To run this execution, we should check this execution.
