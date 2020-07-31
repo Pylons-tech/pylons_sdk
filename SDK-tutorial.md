@@ -928,6 +928,260 @@ In the above example, the data is the following.
 }
 ```
 
+
+### Create Trade
+
+Let's try trading between accounts
+Create `tx_trade.json` file and write trade msg in the file.
+
+```
+{
+  "type": "cosmos-sdk/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "pylons/CreateTrade",
+        "value": {
+          "CoinInputs":[
+              {
+                  "Coin": "pylon",
+                  "Count": "10"
+              }
+          ],
+          "ItemInputRefs": [],
+          "CoinOutputs": [{
+              "denom":"pylon",
+              "amount": "200"
+          }],
+          "ItemOutputNames": [],
+          "ExtraInfo":"coin to coin trading",
+          "Sender":"cosmos1fun8le2dxrclr633psv7gke6wtlycunnm8dlm7"
+        }
+      }
+    ],
+    "fee": {
+      "amount": [],
+      "gas": "200000"
+    },
+    "signatures": null,
+    "memo": ""
+  }
+}
+```
+
+`Sender` field defines the creator of this trade. We use `jack` account's address in this file.
+
+In this example, the trade creator will send 200 pylon to the fulfiller and get 10 pylon for that. It's simple coin-coin trade.
+
+Run the same commands to sign and broadcast transactions.
+
+```
+pylonscli tx sign tx_trade.json --from jack --keyring-backend=test > tx_trade_signed.json
+pylonscli tx broadcast tx_trade_signed.json 
+sleep 6
+```
+
+The content of the `tx_trade_signed.json` file will be like the following:
+```
+{
+  "type": "cosmos-sdk/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "pylons/CreateTrade",
+        "value": {
+          "CoinInputs": [
+            {
+              "Coin": "pylon",
+              "Count": "10"
+            }
+          ],
+          "ItemInputs": null,
+          "CoinOutputs": [
+            {
+              "denom": "pylon",
+              "amount": "200"
+            }
+          ],
+          "ItemOutputs": null,
+          "ExtraInfo": "coin to coin trading",
+          "Sender": "cosmos1fun8le2dxrclr633psv7gke6wtlycunnm8dlm7"
+        }
+      }
+    ],
+    "fee": {
+      "amount": [],
+      "gas": "200000"
+    },
+    "signatures": [
+      {
+        "pub_key": {
+          "type": "tendermint/PubKeySecp256k1",
+          "value": "AzQQpsnnsb0rqpxAmQ9DVejcQgMjvkoWeilYVGkEtjAK"
+        },
+        "signature": "qvvZswRWr4nmmRzftMyT6GNz9+5WSOwVsVXvQk1P0PlIL0li2yty5BIscdFM2OgU8zbEHXAK5EBTw8Wn0zMJjA=="
+      }
+    ],
+    "memo": ""
+  }
+}
+```
+
+You can check the created trade with `list_trade` cli.
+
+```
+pylonscli query pylons list_trade
+```
+
+The result will be like the following: 
+```
+{
+  "Trades": [
+    {
+      "NodeVersion": "0.0.1",
+      "ID": "cosmos1fun8le2dxrclr633psv7gke6wtlycunnm8dlm7bb9dfffb-6969-4626-960a-0689e3d37de1",
+      "CoinInputs": [
+        {
+          "Coin": "pylon",
+          "Count": "10"
+        }
+      ],
+      "ItemInputs": null,
+      "CoinOutputs": [
+        {
+          "denom": "pylon",
+          "amount": "200"
+        }
+      ],
+      "ItemOutputs": null,
+      "ExtraInfo": "coin to coin trading",
+      "Sender": "cosmos1fun8le2dxrclr633psv7gke6wtlycunnm8dlm7",
+      "FulFiller": "",
+      "Disabled": false,
+      "Completed": false
+    }
+  ]
+}
+```
+
+Now we've successfully created the trade. It's time to fulfill this trade.
+
+### Fulfill Trade
+
+From the above `list_trade` cli, you need to keep `ID` field of the trade. We will make fulfill trade with this ID.
+
+The ID is `cosmos1fun8le2dxrclr633psv7gke6wtlycunnm8dlm7bb9dfffb-6969-4626-960a-0689e3d37de1`
+
+We will use `eugen` account which is created by `init_accounts.local.sh` file at first. The address of `eugen` account is `cosmos1g5w79thfvt86m6cpa0a7jezfv0sjt0u7y09ldm`.
+
+Create `tx_fulfill_trade.json` file and write fulfill trade msg in the file.
+
+```
+{
+  "type": "cosmos-sdk/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "pylons/FulfillTrade",
+        "value": {
+          "TradeID": "cosmos1fun8le2dxrclr633psv7gke6wtlycunnm8dlm7bb9dfffb-6969-4626-960a-0689e3d37de1",
+          "Sender":"cosmos1g5w79thfvt86m6cpa0a7jezfv0sjt0u7y09ldm",
+          "ItemIDs": []
+        }
+      }
+    ],
+    "fee": {
+      "amount": [],
+      "gas": "200000"
+    },
+    "signatures": null,
+    "memo": ""
+  }
+}
+```
+
+We gave the `TradeID` as the ID of the trade we've created and `Sender` as the address of `eugen` account.
+
+We don't trade items in this example, so `ItemIDs` is set empty.
+
+Run the commands to sign and broadcast the transaction.
+
+```
+pylonscli tx sign tx_fulfill_trade.json --from eugen --keyring-backend=test > tx_fulfill_trade_signed.json
+pylonscli tx broadcast tx_fulfill_trade_signed.json 
+sleep 6
+```
+
+The content of the `tx_fulfill_trade_signed.json` file will be like the following:
+
+```
+{
+  "type": "cosmos-sdk/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "pylons/FulfillTrade",
+        "value": {
+          "TradeID": "cosmos1fun8le2dxrclr633psv7gke6wtlycunnm8dlm7bb9dfffb-6969-4626-960a-0689e3d37de1",
+          "Sender": "cosmos1g5w79thfvt86m6cpa0a7jezfv0sjt0u7y09ldm",
+          "ItemIDs": null
+        }
+      }
+    ],
+    "fee": {
+      "amount": [],
+      "gas": "200000"
+    },
+    "signatures": [
+      {
+        "pub_key": {
+          "type": "tendermint/PubKeySecp256k1",
+          "value": "AjYqn+rgwd0UTStkPt1A/ivPT0gJT4vEjbESHfj2XPRu"
+        },
+        "signature": "u3I477UJLgjErVRI1TP9rZXPwQG9jxLS9T/5bQmoM5gG4u5KWLi36IA09a1ynQs2nB5rCL8g9un9BVJVf5YZWQ=="
+      }
+    ],
+    "memo": ""
+  }
+}
+```
+
+After you run the commands, you can check the `list_trade` cli again to check if the transaction is completed.
+
+```
+{
+  "Trades": [
+    {
+      "NodeVersion": "0.0.1",
+      "ID": "cosmos1fun8le2dxrclr633psv7gke6wtlycunnm8dlm7bb9dfffb-6969-4626-960a-0689e3d37de1",
+      "CoinInputs": [
+        {
+          "Coin": "pylon",
+          "Count": "10"
+        }
+      ],
+      "ItemInputs": null,
+      "CoinOutputs": [
+        {
+          "denom": "pylon",
+          "amount": "200"
+        }
+      ],
+      "ItemOutputs": null,
+      "ExtraInfo": "coin to coin trading",
+      "Sender": "cosmos1fun8le2dxrclr633psv7gke6wtlycunnm8dlm7",
+      "FulFiller": "cosmos1g5w79thfvt86m6cpa0a7jezfv0sjt0u7y09ldm",
+      "Disabled": false,
+      "Completed": true
+    }
+  ]
+}
+```
+
+You can check if `FulFiller` field is set and `Completed` field is set true.
+
+So the trade is fulfilled correctly.
+
 Now you have successfully executed the recipe and ready to go into the deep side of pylons sdk.
 
 We hope this tutorial document and all the commands described here help you understand pylons sdk.
