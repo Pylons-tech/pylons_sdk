@@ -3,7 +3,7 @@
 Pylons SDK can be used for blockchain game developers to build their own games that run on blockchain involving game characters and items.
 
 This document is basic tutorial for begineers.
-For more detailed and deeper tutorial, please check DEVELOPER_DOC.md file.
+For more detailed and deeper tutorial, please check [developer doc](https://github.com/Pylons-tech/pylons_sdk/blob/master/DEVELOPER_DOC.md).
 
 Important points in pylons SDK are:
 
@@ -11,27 +11,30 @@ Important points in pylons SDK are:
 - recipe: in this sdk, recipes will decide and generate everything like item generation and modification, combination of items. Recipes can be used to get result of some action between items and characters. Every action related to items are taken by recipes.
 - trade: Pylons SDK enables accounts to trade their coins themselves. Trade includes items - items trading, coins - coins trading and mixed trading.
 
-You need to know some basic knowledge about `cosmos-sdk` as our Pylons sdk is based on `cosmos-sdk`.
-You can check more details in the following link: https://cosmos.network/sdk
+It's helpful if you know something about `cosmos-sdk` as our Pylons is based on [cosmos-sdk](https://cosmos.network/sdk).
 
-## Setup Local Environment
+# Setup Local Environment
 
-### Install Golang
+## Install Golang
   
 Pylons sdk is based on Golang. So you need to install Go to setup local environment.
 The easiest way is to use homebrew. You can follow this link:
 https://ahmadawais.com/install-go-lang-on-macos-with-homebrew/
 
-### Start pylons daemon
+Configure GOPATH and put GOPATH into PATH.
 
-You need to start pylons daemon to make the sdk work. Download binary files from Pylons and run the following command.
+## Start pylons daemon
+
+You need to start pylons daemon to make the sdk work. Download binary files for `pylonsd` and `pylonscli` and copy this into GOPATH/bin.
+And run the following command.
 
 ```
+cd PATH/TO/pylons_sdk
 sh init_accounts.local.sh
 pylonsd start
 ```
 
-`init_accounts.local.sh` will create initial test accounts named `node0`, `michael`, `eugen` and `jose`. These accounts will be used in the pylonscli tests.
+`init_accounts.local.sh` will create initial test accounts named `node0`, `michael`, `eugen`. These accounts will be used in the pylonscli tests.
 
 # Pylonscli
 
@@ -75,11 +78,10 @@ Use "pylonscli [command] --help" for more information about a command.
 
 Now let's move forward with some important cli commands one by one.
 
-All the pylonscli commands require user password. To avoid it, we can use `--keyring-backend=test` flag. 
-`--keyring-backend=test` flag should be set for every command we do from now.
+All the pylonscli commands require user password for keyring-backend. 
+If you set `--keyring-backend=test` flag, it use testing keyring and which does not require password, on our tutorial, we will be using test keyring for most of the commands.
 
-
-### Add local key to the chain
+### Local keys
 
 `pylonscli keys` command will let you add or view local keys in the chain.
 
@@ -88,7 +90,7 @@ All the pylonscli commands require user password. To avoid it, we can use `--key
   pylonscli keys add jack --keyring-backend=test
   ```
 
-  You can replace the local key name that is set `jack` in the command with any name you want.
+  You can replace the local key that is set `jack` in the example with any key you want.
 
   This command will create a local key with the name given as the argument. The result will be like following.
 
@@ -104,7 +106,7 @@ All the pylonscli commands require user password. To avoid it, we can use `--key
 
   The `address` value `cosmos1fun8le2dxrclr633psv7gke6wtlycunnm8dlm7` will be used for the other cli commands.
 
-- Show the created local key
+- Show the local key
   ```
   pylonscli keys show jack --keyring-backend=test
   ```
@@ -118,6 +120,8 @@ All the pylonscli commands require user password. To avoid it, we can use `--key
     "pubkey": "cosmospub1addwnpepqv6ppfkfu7cm62a2n3qfjr6r2h5dcssrywly59n699v9g6gykccq55hzewf"
   }
   ```
+  **Warn**  
+  If you don't set keyring backend like `pylonscli keys show jack` it will default keyring as `os` and will require your computer password. But in the end, keys are not stored in os backend, it will not show you the same key that is created right now.
 
 - List all the keys available
   ```
@@ -154,9 +158,9 @@ All the pylonscli commands require user password. To avoid it, we can use `--key
   ]
   ```
 
-### Create an account
+### Create an account on chain
 
-We already added key to the chain. Now we can register an account with the key added.
+We already added key on local. But this does not mean that this account is registerd on pylons chain. Now we can register an account with the key added.
 
 We can use `pylonscli tx pylons create-account` command for this.
 
@@ -198,11 +202,12 @@ confirm transaction before signing and broadcasting [y/N]: y
 }
 ```
 
-### Get pylon coin for the created account
+### Get test pylon coins for the created account
 
-`pylon` coin is used for fees of all the transactions in this sdk. So the account should have some amount of `pylon`.
+`pylon` is basic token on pylons ecosystem and the account should have some amount of `pylon`. 
 
-We can use `pylonscli tx pylons get-pylons` command to get some `pylon`.
+We can use `pylonscli tx pylons get-pylons` command to get some `pylon`. 
+This is for test and on mainnet, this feature will not be available. Instead there's a method called Google IAP get pylons that buy pylons by paying from google play account.
 
 ```
 pylonscli tx pylons get-pylons --amount 500000 --from cosmos1fun8le2dxrclr633psv7gke6wtlycunnm8dlm7 --keyring-backend=test
@@ -247,9 +252,9 @@ confirm transaction before signing and broadcasting [y/N]: y
 
 ### Create cookbook
 
-All the transactions in pylons sdk will be done based on cookbook. You should create cookbook first to do any transaction in pylons sdk.
+A cookbook is a game. And to build recipes and items, you need to have cookbooks.
 
-`pylonscli tx sign` command will be used to create signature for cookbook. This command let you sign transactions generated offline.
+`pylonscli tx sign` command will be used to create signature for cookbook. This command let you sign transactions before broadcast.
 
 Create a new json file in your local folder and name it `tx_cook.json`. Write cookbook information in the json file. Sample cookbook json is like the following.
 
@@ -261,12 +266,12 @@ Create a new json file in your local folder and name it `tx_cook.json`. Write co
       {
         "type": "pylons/CreateCookbook",
         "value": {
-          "CookbookID": "<Unique id for this cookbook>",
+          "CookbookID": "<Unique id for this cookbook, it's optional>",
           "Name": "<Name of the cookbook>",
           "Description": "<Description>",
           "Developer": "<Developer name>",
           "Level": "0",
-          "Sender": "<Address for the sender account>",
+          "Sender": "<Address for the owner account>",
           "SupportEmail": "<Support email>",
           "Version": "1.0.0",
           "CostPerBlock": "50"
@@ -283,7 +288,7 @@ Create a new json file in your local folder and name it `tx_cook.json`. Write co
 }
 ```
 
-For the sender account of this cookbook, we can use the `jack` account we created above.
+For the owner account of this cookbook, we can use the `jack` account we created above.
 The address of the `jack` account is `cosmos1fun8le2dxrclr633psv7gke6wtlycunnm8dlm7`.
 So let's replace `<Address for the sender account>` with `cosmos1fun8le2dxrclr633psv7gke6wtlycunnm8dlm7`.
 
@@ -335,12 +340,7 @@ The content of `tx_cook_signed.json` will be like the following.
 After the signature is created, you should broadcast this transaction to the chain.
 ```
 pylonscli tx broadcast tx_cook_signed.json 
-sleep 6
 ```
-
-This transaction will take 1 block to be completed.
-1 block takes around 5 seconds, so here we waited for 6 seconds with `sleep` command.
-
 The result will be like the following.
 ```
 {
@@ -349,6 +349,8 @@ The result will be like the following.
   "raw_log": "[]"
 }
 ```
+
+You need to wait more than 1 block until this transaction to be confirmed.
 
 To check the created cookbook we can use `pylonscli query pylons list_cookbook` command.
 
@@ -380,7 +382,7 @@ The result will be like the following:
 
 ### Create recipe
 
-Recipe defines actions like generate items and modify items.
+Recipe defines actions like generate items and modify items, generate coins etc.
 
 First, create `tx_recipe.json` file and write recipe json in the file.
 Sample transaction is similar to the following.
@@ -459,12 +461,11 @@ Sample transaction is similar to the following.
 }
 ```
 
-The progress to create recipe is similar to create cookbook.
+The progress to create recipe is similar to cookbook.
 
 ```
 pylonscli tx sign tx_recipe.json --from jack --keyring-backend=test > tx_recipe_signed.json
 pylonscli tx broadcast tx_recipe_signed.json 
-sleep 6
 ```
 
 The content of the `tx_recipe_signed.json` will be like the following.
@@ -635,7 +636,7 @@ The result of this command will be like the following:
 
 ### Execute the recipe
 
-Now the recipe is created. We need to execute the created recipe now.
+The recipe is created. We need to execute the created recipe now.
 
 To execute recipe, we need to sign execute transaction. Create `tx_execte.json`
 
@@ -668,7 +669,6 @@ The signature and broadcast commands are the same.
 ```
 pylonscli tx sign tx_execute.json --from jack --keyring-backend=test > tx_execute_signed.json
 pylonscli tx broadcast tx_execute_signed.json
-sleep 6
 ```
 
 The content of `tx_execute_signed.json` will be like the following:
@@ -737,8 +737,8 @@ The result will be like the following:
 
 ### Check execution
 
-Now the execution is created. 
-To run this execution, we should check this execution.
+Now the execution is created. Execution is only created when block interval of recipe is more than 1.
+To run this execution, we should run check_excution for the execution ID.
 Create `tx_check.json` file and write check execution transaction.
 
 ```
@@ -815,7 +815,7 @@ The result of the broadcast command will be like the following:
 }
 ```
 
-You can check the execution with `list_executions` command if it's already completed.
+You can check if the execution's already completed with `list_executions` command .
 
 ```
 pylonscli query pylons list_executions
@@ -916,7 +916,7 @@ The result will be like the following:
 
 In this result, `data` field contains the result of the transaction as hex format. You can convert the hex data into string if you want to see the result.
 
-You can use online hex to string converter like `https://codebeautify.org/hex-string-converter`.
+You can use online [hex to string converter](https://codebeautify.org/hex-string-converter).
 
 In the above example, the data is the following.
 
@@ -928,11 +928,17 @@ In the above example, the data is the following.
 }
 ```
 
+The output has more details and it's in base64. It's all managed by amino codec. Sorry for inconvenience.
+If you decode the base64 output into string via [base64 decoder](https://www.base64decode.org)
+
+```
+[{"type":"ITEM","coin":"","amount":0,"itemID":"cosmos1fun8le2dxrclr633psv7gke6wtlycunnm8dlm789f59b14-9827-46c6-ac94-1d9ba41f2110"}]
+```
 
 ### Create Trade
 
-Let's try trading between accounts
-Create `tx_trade.json` file and write trade msg in the file.
+Let's try trading between accounts.  
+Create `tx_trade.json` file and write create trade msg in the file.
 
 ```
 {
@@ -978,7 +984,6 @@ Run the same commands to sign and broadcast transactions.
 ```
 pylonscli tx sign tx_trade.json --from jack --keyring-backend=test > tx_trade_signed.json
 pylonscli tx broadcast tx_trade_signed.json 
-sleep 6
 ```
 
 The content of the `tx_trade_signed.json` file will be like the following:
@@ -1027,7 +1032,7 @@ The content of the `tx_trade_signed.json` file will be like the following:
 }
 ```
 
-You can check the created trade with `list_trade` cli.
+You can check the created trade with `list_trade` cli command.
 
 ```
 pylonscli query pylons list_trade
@@ -1109,7 +1114,6 @@ Run the commands to sign and broadcast the transaction.
 ```
 pylonscli tx sign tx_fulfill_trade.json --from eugen --keyring-backend=test > tx_fulfill_trade_signed.json
 pylonscli tx broadcast tx_fulfill_trade_signed.json 
-sleep 6
 ```
 
 The content of the `tx_fulfill_trade_signed.json` file will be like the following:
@@ -1182,9 +1186,9 @@ You can check if `FulFiller` field is set and `Completed` field is set true.
 
 So the trade is fulfilled correctly.
 
-Now you have successfully executed the recipe and ready to go into the deep side of pylons sdk.
+Now you have successfully executed the recipe, trades and you probably understood pylons about 30%.
+And you are ready to go into the deep level of pylons ecosystem.
 
-We hope this tutorial document and all the commands described here help you understand pylons sdk.
+## Conclusion
 
-
-## Thank you
+Please suggest some feedbacks on this document from game developer's perspective before going into more details.
