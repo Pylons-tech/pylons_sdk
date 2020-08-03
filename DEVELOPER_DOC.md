@@ -138,9 +138,10 @@ This field is showing required items to run recipe.
 
 | No | Field        | type       | sample              | description                                    |
 |----|--------------|------------|---------------------|------------------------------------------------|
-| 1  | Doubles      | array      | "attack": 1         | required conditions for double attributes.     |
-| 2  | Longs        | array      | "level": 1          | required conditions for int attributes.        |
-| 3  | Strings      | array      | "name": "shield"    | required conditions for string attributes.     |
+| 1  | ID           | string     | "monster"           | required to reference on entries section.      |
+| 2  | Doubles      | array      | "attack": 1         | required conditions for double attributes.     |
+| 3  | Longs        | array      | "level": 1          | required conditions for int attributes.        |
+| 4  | Strings      | array      | "name": "shield"    | required conditions for string attributes.     |
 
 | No | Field    | Type       | sample   | description                                                                         |
 |----|----------|------------|----------|-------------------------------------------------------------------------------------|
@@ -153,6 +154,7 @@ Sample ItemInputs JSON
 
 ```
 [{
+    "ID": "monster",
     "Doubles": [{"Key": "attack", "MinValue": "1", "MaxValue": "2000"}],
     "Longs": [{"Key": "level", "MinValue": "1", "MaxValue": "2000"}],
     "Strings": [{"Key": "Name", "Value": "Monster"}],
@@ -286,9 +288,9 @@ Specific amount of fee percentage configured as `recipe_fee_percentage` in `pylo
 
 ###### ItemInputRef
 
-`ItemInputRef` is referencing to ID of item input.
+`ItemInputRef` is a string value that is referencing to ID of the item input.
 
-###### ModifyParams 
+###### ItemModifyParams 
 
 This describes the fields of ModifyParams field.
 
@@ -371,7 +373,7 @@ Here when program field is available, Count is ignored.
 
 ##### How program works in general
 1) For first input, it can be used without setting `attack = input0.attack`
-2) For multiple input cases, it can call `input1.attack` etc.
+2) For multiple input cases, it can call `input1.attack` etc. If item input has reference ID of `sword`, you can use `sword.attack` variable within program.
 3) Have tested `+`, `*`  in double/long and merge string operation using `+` for now
 `input0.attack + input1.attack`
 `(input0.attack + input1.attack) * 0.7`
