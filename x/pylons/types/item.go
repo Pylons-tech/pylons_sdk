@@ -2,7 +2,10 @@ package types
 
 import (
 	"errors"
+	"fmt"
+	"reflect"
 
+	"github.com/Pylons-tech/pylons_sdk/x/pylons/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -39,6 +42,34 @@ type Item struct {
 	Tradable      bool
 	LastUpdate    int64
 	TransferFee   int64
+}
+
+// SetTransferFee set item's TransferFee
+func (it *Item) SetTransferFee(transferFee int64) {
+	it.TransferFee = transferFee
+}
+
+// Max returns the larger of x or y.
+func Max(x, y int64) int64 {
+	if x < y {
+		return y
+	}
+	return x
+}
+
+// Min returns the larger of x or y.
+func Min(x, y int64) int64 {
+	if x > y {
+		return y
+	}
+	return x
+}
+
+// GetTransferFee set item's TransferFee
+func (it Item) GetTransferFee() int64 {
+	minItemTransferFee := config.Config.Fee.MinItemTransferFee
+	maxItemTransferFee := config.Config.Fee.MaxItemTransferFee
+	return Min(Max(it.TransferFee, minItemTransferFee), maxItemTransferFee)
 }
 
 // ItemList is a list of items
@@ -135,6 +166,44 @@ func NewItem(cookbookID string, doubles []DoubleKeyValue, longs []LongKeyValue, 
 	return item
 }
 
+func (it Item) String() string {
+	return fmt.Sprintf(`
+	Item{ 
+		NodeVersion: %s,
+		ID: %s,
+		Sender: %s,
+		Doubles: %+v,
+		Longs: %+v,
+		Strings: %+v,
+		CookbookID: %+v,
+		TransferFee: %d,
+	}`,
+		it.NodeVersion,
+		it.ID,
+		it.Sender,
+		it.Doubles,
+		it.Longs,
+		it.Strings,
+		it.CookbookID,
+		it.TransferFee)
+}
+
+// Equals compares two items
+func (it Item) Equals(other Item) bool {
+	return it.ID == other.ID &&
+		reflect.DeepEqual(it.Doubles, other.Doubles) &&
+		reflect.DeepEqual(it.Strings, other.Strings) &&
+		reflect.DeepEqual(it.Longs, other.Longs) &&
+		reflect.DeepEqual(it.CookbookID, other.CookbookID)
+}
+
+// MatchItemInput checks if the ItemInput matches the item
+func (it Item) MatchItemInput(other ItemInput) bool {
+	return reflect.DeepEqual(it.Doubles, other.Doubles) &&
+		reflect.DeepEqual(it.Strings, other.Strings) &&
+		reflect.DeepEqual(it.Longs, other.Longs)
+}
+
 // NewTradeError check if an item can be sent to someone else
 func (it Item) NewTradeError() error {
 	if !it.Tradable {
@@ -145,6 +214,20 @@ func (it Item) NewTradeError() error {
 	}
 	if it.OwnerTradeID != "" {
 		return errors.New("Item is owned by a trade")
+	}
+	return nil
+}
+
+// FulfillTradeError check if an item can be sent to someone else
+func (it Item) FulfillTradeError(tradeID string) error {
+	if !it.Tradable {
+		return errors.New("Item Tradable flag is not set")
+	}
+	if it.OwnerRecipeID != "" {
+		return errors.New("Item is owned by a recipe")
+	}
+	if it.OwnerTradeID != tradeID {
+		return errors.New("Item is not owned by the trade")
 	}
 	return nil
 }

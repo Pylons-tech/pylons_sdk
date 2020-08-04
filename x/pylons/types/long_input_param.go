@@ -9,3 +9,8 @@ type LongInputParam struct {
 
 // LongInputParamList is a list of LongInputParam
 type LongInputParamList []LongInputParam
+
+// Has validate if input is between min max range
+func (lp LongInputParam) Has(input int) bool {
+	return input >= lp.MinValue && input <= lp.MaxValue
+}

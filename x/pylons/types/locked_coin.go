@@ -16,9 +16,10 @@ type LockedCoin struct {
 func (lc LockedCoin) String() string {
 	return fmt.Sprintf(`
 	LockedCoin{ 
+		NodeVersion: %s,
 		Address: %s,
 		Amount: %s,
-	}`, lc.Sender.String(), lc.Amount.String())
+	}`, lc.NodeVersion, lc.Sender.String(), lc.Amount.String())
 }
 
 // NewLockedCoin return a new locked coin
