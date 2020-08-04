@@ -628,10 +628,6 @@ func UpdateRecipeMsgFromRef(ref string, t *testing.T) msgs.MsgUpdateRecipe {
 		"new_bytes": string(newByteValue),
 	}).MustNil(err, "error reading using GetAminoCdc")
 
-	t.Error("\n\n---    HERE   ---\n\n")
-	t.Error("\n\nID:", rcpTempl.ID, "\n\n")
-	t.Error("\n\nName:", rcpTempl.Name, "\n\n")
-
 	return msgs.NewMsgUpdateRecipe(
 		rcpTempl.Name,
 		rcpTempl.CookbookID,
