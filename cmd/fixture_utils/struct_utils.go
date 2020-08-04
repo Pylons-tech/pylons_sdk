@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path"
 	"sync"
 	"time"
 
@@ -18,7 +19,7 @@ var execIDs = make(map[string]string)
 
 // ReadFile is a function to read file
 func ReadFile(fileURL string, t *testing.T) []byte {
-	jsonFile, err := os.Open(fileURL)
+	jsonFile, err := os.Open(path.Join(FixtureTestOpts.BaseDirectory, fileURL))
 	t.MustNil(err, "fatal log reading file")
 
 	defer jsonFile.Close()

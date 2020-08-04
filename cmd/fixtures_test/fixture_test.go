@@ -30,6 +30,7 @@ func TestFixturesViaCLI(t *testing.T) {
 	fixturetestSDK.FixtureTestOpts.IsParallel = !runSerialMode
 	fixturetestSDK.FixtureTestOpts.CreateNewCookbook = !useKnownCookbook
 	fixturetestSDK.FixtureTestOpts.VerifyOnly = verifyOnly
+	fixturetestSDK.FixtureTestOpts.BaseDirectory = "."
 	if useRest {
 		inttestSDK.CLIOpts.RestEndpoint = "http://localhost:1317"
 	}
