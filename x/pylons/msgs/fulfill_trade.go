@@ -34,7 +34,6 @@ func (msg MsgFulfillTrade) ValidateBasic() error {
 
 	if msg.Sender.Empty() {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Sender.String())
-
 	}
 
 	return nil
