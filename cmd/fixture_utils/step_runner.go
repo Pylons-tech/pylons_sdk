@@ -235,6 +235,9 @@ func RunMultiMsgTx(step FixtureStep, t *testing.T) {
 			case "create_recipe":
 				msg := CreateRecipeMsgFromRef(ref.ParamsRef, t)
 				newMsg, sender = msg, msg.Sender
+			case "update_recipe":
+				msg := UpdateRecipeMsgFromRef(ref.ParamsRef, t)
+				newMsg, sender = msg, msg.Sender
 			case "execute_recipe":
 				msg := ExecuteRecipeMsgFromRef(ref.ParamsRef, t)
 				newMsg, sender = msg, msg.Sender
@@ -598,6 +601,74 @@ func RunCreateRecipe(step FixtureStep, t *testing.T) {
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
 		resp := handlers.CreateRecipeResponse{}
+		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		t.MustTrue(resp.RecipeID != "", "recipe id shouldn't be empty")
+	}
+}
+
+// UpdateRecipeMsgFromRef is a function to get update recipe message from reference
+func UpdateRecipeMsgFromRef(ref string, t *testing.T) msgs.MsgUpdateRecipe {
+	byteValue := ReadFile(ref, t)
+	// translate sender from account name to account address
+	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
+	// translate cookbook name to cookbook id
+	newByteValue = UpdateCBNameToID(newByteValue, t)
+	// get item inputs from fileNames
+	itemInputs := GetItemInputsFromBytes(newByteValue, t)
+	// get entries from fileNames
+	entries := GetEntriesFromBytes(newByteValue, t)
+	// translate recipe name to recipe id
+	newByteValue = UpdateOldRecipeName(newByteValue, t)
+
+	var rcpTempl types.Recipe
+	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &rcpTempl)
+	t.WithFields(testing.Fields{
+		"rcpTempl":  inttest.AminoCodecFormatter(rcpTempl),
+		"new_bytes": string(newByteValue),
+	}).MustNil(err, "error reading using GetAminoCdc")
+
+	t.Error("\n\n---    HERE   ---\n\n")
+	t.Error("\n\nID:", rcpTempl.ID, "\n\n")
+	t.Error("\n\nName:", rcpTempl.Name, "\n\n")
+
+	return msgs.NewMsgUpdateRecipe(
+		rcpTempl.Name,
+		rcpTempl.CookbookID,
+		rcpTempl.ID,
+		rcpTempl.Description,
+		rcpTempl.CoinInputs,
+		itemInputs,
+		entries,
+		rcpTempl.Outputs,
+		rcpTempl.BlockInterval,
+		rcpTempl.Sender,
+	)
+}
+
+// RunUpdateRecipe is a function to update recipe
+func RunUpdateRecipe(step FixtureStep, t *testing.T) {
+	if FixtureTestOpts.VerifyOnly {
+		return
+	}
+	if step.ParamsRef != "" {
+		rcpMsg := UpdateRecipeMsgFromRef(step.ParamsRef, t)
+
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, rcpMsg, rcpMsg.Sender.String(), true)
+		if err != nil {
+			TxBroadcastErrorCheck(err, txhash, step, t)
+			return
+		}
+
+		WaitForNextBlockWithErrorCheck(t)
+
+		TxErrorLogCheck(txhash, step.Output.TxResult.ErrorLog, t)
+		if len(step.Output.TxResult.ErrorLog) > 0 {
+			return
+		}
+
+		txHandleResBytes := GetTxHandleResult(txhash, t)
+		resp := handlers.UpdateRecipeResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(resp.RecipeID != "", "recipe id shouldn't be empty")

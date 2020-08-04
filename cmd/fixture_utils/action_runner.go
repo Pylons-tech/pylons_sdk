@@ -40,6 +40,7 @@ func RegisterDefaultActionRunners() {
 	RegisterActionRunner("create_cookbook", RunCreateCookbook)
 	RegisterActionRunner("mock_cookbook", RunMockCookbook) // mock_account + create_cookbook
 	RegisterActionRunner("create_recipe", RunCreateRecipe)
+	RegisterActionRunner("update_recipe", RunUpdateRecipe)
 	RegisterActionRunner("execute_recipe", RunExecuteRecipe)
 	RegisterActionRunner("check_execution", RunCheckExecution)
 	RegisterActionRunner("create_trade", RunCreateTrade)
