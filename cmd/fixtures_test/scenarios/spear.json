@@ -46,6 +46,26 @@
         }
     },
     {
+        "ID": "UPDATE_DELAYED_SPEAR_UPDATE_RECIPE",        
+        "runAfter": {
+            "precondition": ["CREATE_SPEAR_COOKBOOK", "CREATE_DELAYED_SPEAR_UPDATE_RECIPE"],
+            "blockWait": 0
+        },
+        "action": "update_recipe",
+        "paramsRef": "./recipes/spear/spear_upgrader.json",
+        "output": {
+            "txResult": {
+                "status": "Success"
+            },
+            "property": [
+                {
+                    "owner": "sp_account1",
+                    "recipes": ["Spear Upgrade Recipe"]
+                }
+            ]
+        }
+    },
+    {
       "ID": "MOCK_ACCOUNT_SP_ACCOUNT2",
       "runAfter": {
         "precondition": [],
@@ -97,11 +117,11 @@
     {
         "ID": "EXECUTE_DELAYED_SPEAR_UPDATE_RECIPE",
         "runAfter": {
-            "precondition": ["CREATE_DELAYED_SPEAR_UPDATE_RECIPE", "CREATE_SPEAR_LV1"],
+            "precondition": ["CREATE_DELAYED_SPEAR_UPDATE_RECIPE", "CREATE_SPEAR_LV1", "UPDATE_DELAYED_SPEAR_UPDATE_RECIPE"],
             "blockWait": 0
         },
         "action": "execute_recipe",
-        "paramsRef": "./recipes/spear/executions/delayed_spear_upgrader.json",
+        "paramsRef": "./recipes/spear/executions/spear_upgrader.json",
         "output": {
             "txResult": {
                 "status": "Success",
