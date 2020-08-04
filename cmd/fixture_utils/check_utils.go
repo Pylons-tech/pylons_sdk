@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -66,6 +67,7 @@ type TestOptions struct {
 	CreateNewCookbook bool
 	VerifyOnly        bool
 	AccountNames      []string
+	BaseDirectory     string
 }
 
 var runtimeKeyGenMux sync.Mutex
@@ -386,7 +388,7 @@ func RunTestScenarios(scenarioDir string, scenarioFileNames []string, t *originT
 
 	var files []string
 
-	scenarioDirectory := "scenarios"
+	scenarioDirectory := path.Join(FixtureTestOpts.BaseDirectory, scenarioDir)
 	err := filepath.Walk(scenarioDirectory, func(path string, info os.FileInfo, err error) error {
 		if filepath.Ext(path) != ".json" {
 			return nil
