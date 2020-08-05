@@ -38,6 +38,7 @@ func RegisterDefaultActionRunners() {
 	RegisterActionRunner("update_item_string", RunUpdateItemString)
 	RegisterActionRunner("send_items", RunSendItems)
 	RegisterActionRunner("create_cookbook", RunCreateCookbook)
+	RegisterActionRunner("update_cookbook", RunUpdateCookbook)
 	RegisterActionRunner("mock_cookbook", RunMockCookbook) // mock_account + create_cookbook
 	RegisterActionRunner("create_recipe", RunCreateRecipe)
 	RegisterActionRunner("update_recipe", RunUpdateRecipe)
@@ -46,5 +47,6 @@ func RegisterDefaultActionRunners() {
 	RegisterActionRunner("create_trade", RunCreateTrade)
 	RegisterActionRunner("fulfill_trade", RunFulfillTrade)
 	RegisterActionRunner("disable_trade", RunDisableTrade)
+	RegisterActionRunner("enable_trade", RunEnableTrade)
 	RegisterActionRunner("multi_msg_tx", RunMultiMsgTx)
 }

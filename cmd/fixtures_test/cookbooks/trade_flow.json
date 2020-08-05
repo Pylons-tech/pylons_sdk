@@ -1,0 +1,12 @@
+{
+    "NodeVersion": "0.0.1",
+    "ID": "trade_flow_cookbook-1589853709",
+    "Name": "trade_flow_cookbook",
+    "Description": "cookbook for the test of trading flow that includes create, disable, enable and fulfill trade.",
+    "Developer": "SketchyCo",
+    "Level": "0",
+    "Sender": "trade_flow_cbowner",
+    "SupportEmail": "example@example.com",
+    "Version": "1.0.0",
+    "CostPerBlock": "50"
+}

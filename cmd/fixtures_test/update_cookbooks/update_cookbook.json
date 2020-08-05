@@ -1,0 +1,9 @@
+{
+    "ID": "update_cookbook-1589853709",
+    "Description": "this is updated cookbook description!",
+    "Developer": "NewSketchyCo",
+    "Level": "0",
+    "Sender": "uc_account1",
+    "Version": "1.0.0",
+    "SupportEmail": "updated@example.com"
+}

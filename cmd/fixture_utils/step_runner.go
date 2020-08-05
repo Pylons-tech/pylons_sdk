@@ -232,6 +232,9 @@ func RunMultiMsgTx(step FixtureStep, t *testing.T) {
 			case "create_cookbook":
 				msg := CreateCookbookMsgFromRef(ref.ParamsRef, t)
 				newMsg, sender = msg, msg.Sender
+			case "update_cookbook":
+				msg := UpdateCookbookMsgFromRef(ref.ParamsRef, t)
+				newMsg, sender = msg, msg.Sender
 			case "create_recipe":
 				msg := CreateRecipeMsgFromRef(ref.ParamsRef, t)
 				newMsg, sender = msg, msg.Sender
@@ -252,6 +255,9 @@ func RunMultiMsgTx(step FixtureStep, t *testing.T) {
 				newMsg, sender = msg, msg.Sender
 			case "disable_trade":
 				msg := DisableTradeMsgFromRef(ref.ParamsRef, t)
+				newMsg, sender = msg, msg.Sender
+			case "enable_trade":
+				msg := EnableTradeMsgFromRef(ref.ParamsRef, t)
 				newMsg, sender = msg, msg.Sender
 			}
 			msgs = append(msgs, newMsg)
@@ -527,6 +533,58 @@ func RunCreateCookbook(step FixtureStep, t *testing.T) {
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
 		resp := handlers.CreateCookbookResponse{}
+		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		t.MustTrue(resp.CookbookID != "", "coookbook id shouldn't be empty")
+	}
+}
+
+// UpdateCookbookMsgFromRef is a function to get update cookbook message from reference
+func UpdateCookbookMsgFromRef(ref string, t *testing.T) msgs.MsgUpdateCookbook {
+	byteValue := ReadFile(ref, t)
+	// translate sender from account name to account address
+	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
+
+	var cbType types.Cookbook
+	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &cbType)
+	t.WithFields(testing.Fields{
+		"cbType":    inttest.AminoCodecFormatter(cbType),
+		"new_bytes": string(newByteValue),
+	}).MustNil(err, "error reading using GetAminoCdc")
+
+	return msgs.NewMsgUpdateCookbook(
+		cbType.ID,
+		cbType.Description,
+		cbType.Developer,
+		cbType.Version,
+		cbType.SupportEmail,
+		cbType.Sender,
+	)
+}
+
+// RunUpdateCookbook is a function to update cookbook
+func RunUpdateCookbook(step FixtureStep, t *testing.T) {
+	if FixtureTestOpts.VerifyOnly {
+		return
+	}
+	if step.ParamsRef != "" {
+		cbMsg := UpdateCookbookMsgFromRef(step.ParamsRef, t)
+
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, cbMsg, cbMsg.Sender.String(), true)
+		if err != nil {
+			TxBroadcastErrorCheck(err, txhash, step, t)
+			return
+		}
+
+		WaitForNextBlockWithErrorCheck(t)
+
+		TxErrorLogCheck(txhash, step.Output.TxResult.ErrorLog, t)
+		if len(step.Output.TxResult.ErrorLog) > 0 {
+			return
+		}
+
+		txHandleResBytes := GetTxHandleResult(txhash, t)
+		resp := handlers.UpdateCookbookResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(resp.CookbookID != "", "coookbook id shouldn't be empty")
@@ -911,6 +969,57 @@ func RunDisableTrade(step FixtureStep, t *testing.T) {
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
 		resp := handlers.DisableTradeResponse{}
+		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
+	}
+}
+
+// EnableTradeMsgFromRef collect enable trade msg from reference string
+func EnableTradeMsgFromRef(ref string, t *testing.T) msgs.MsgEnableTrade {
+	byteValue := ReadFile(ref, t)
+	// translate sender from account name to account address
+	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
+	// translate extra info to trade id
+	newByteValue = UpdateTradeExtraInfoToID(newByteValue, t)
+
+	var trdType struct {
+		TradeID string
+		Sender  sdk.AccAddress
+	}
+
+	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &trdType)
+	t.WithFields(testing.Fields{
+		"trdType":   inttest.AminoCodecFormatter(trdType),
+		"new_bytes": string(newByteValue),
+	}).MustNil(err, "error reading using GetAminoCdc")
+
+	return msgs.NewMsgEnableTrade(trdType.TradeID, trdType.Sender)
+}
+
+// RunEnableTrade is a function to enable trade
+func RunEnableTrade(step FixtureStep, t *testing.T) {
+
+	if FixtureTestOpts.VerifyOnly {
+		return
+	}
+	if step.ParamsRef != "" {
+		dsTrdMsg := EnableTradeMsgFromRef(step.ParamsRef, t)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, dsTrdMsg, dsTrdMsg.Sender.String(), true)
+		if err != nil {
+			TxBroadcastErrorCheck(err, txhash, step, t)
+			return
+		}
+
+		WaitForNextBlockWithErrorCheck(t)
+
+		TxErrorLogCheck(txhash, step.Output.TxResult.ErrorLog, t)
+		if len(step.Output.TxResult.ErrorLog) > 0 {
+			return
+		}
+
+		txHandleResBytes := GetTxHandleResult(txhash, t)
+		resp := handlers.EnableTradeResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
