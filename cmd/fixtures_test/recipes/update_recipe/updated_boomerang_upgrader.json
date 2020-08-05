@@ -1,0 +1,36 @@
+{
+    "NodeVersion": "0.0.1",
+    "CoinInputs":[{
+        "Coin": "pylon",
+        "Count": "5000"
+    }],
+    "ItemInputs": [
+        {
+            "ID": "boomerang",
+            "Ref": "./recipes/update_recipe/item_input/boomerang.json"
+        }
+    ],
+    "Entries":{
+        "CoinOutputs":[],
+        "ItemModifyOutputs":[
+            {
+                "ID": "upgraded_boomerang",
+                "ItemInputRef": "boomerang",
+                "ModifyParamsRef": "./recipes/update_recipe/upgrader/boomerang.json"
+            }
+        ]
+    },
+    "Outputs": [
+        {
+            "EntryIDs": ["upgraded_boomerang"],
+            "Weight": "1"
+        }
+    ],
+    "ExtraInfo":"",
+    "Sender":"ur_account1",
+    "OldName": "Original Boomerang Upgrade Recipe",
+    "Name": "Boomerang Upgrade Recipe",
+    "CookbookID": "update_recipe_cookbook-1589853709",
+    "Description": "this recipe is updated recipe for boomerang upgrader.",
+    "BlockInterval":"2"
+}

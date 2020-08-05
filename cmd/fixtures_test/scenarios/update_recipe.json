@@ -26,13 +26,13 @@
         }
     },
     {
-        "ID": "CREATE_ORIGINAL_SPEAR_UPGRADER_RECIPE",        
+        "ID": "CREATE_ORIGINAL_BOOMERANG_UPGRADER_RECIPE",        
         "runAfter": {
             "precondition": ["CREATE_UPDATE_RECIPE_COOKBOOK"],
             "blockWait": 0
         },
         "action": "create_recipe",
-        "paramsRef": "./recipes/update_recipe/original_spear_upgrader.json",
+        "paramsRef": "./recipes/update_recipe/original_boomerang_upgrader.json",
         "output": {
             "txResult": {
                 "status": "Success"
@@ -40,19 +40,19 @@
             "property": [
                 {
                     "owner": "ur_account1",
-                    "recipes": ["Original Spear Upgrade Recipe"]
+                    "recipes": ["Original Boomerang Upgrade Recipe"]
                 }
             ]
         }
     },
     {
-        "ID": "UPDATE_ORIGINAL_SPEAR_UPGRADER_RECIPE",
+        "ID": "UPDATE_ORIGINAL_BOOMERANG_UPGRADER_RECIPE",
         "runAfter": {
-            "precondition": ["CREATE_UPDATE_RECIPE_COOKBOOK", "CREATE_ORIGINAL_SPEAR_UPGRADER_RECIPE"],
+            "precondition": ["CREATE_UPDATE_RECIPE_COOKBOOK", "CREATE_ORIGINAL_BOOMERANG_UPGRADER_RECIPE"],
             "blockWait": 0
         },
         "action": "update_recipe",
-        "paramsRef": "./recipes/update_recipe/updated_spear_upgrader.json",
+        "paramsRef": "./recipes/update_recipe/updated_boomerang_upgrader.json",
         "output": {
             "txResult": {
                 "status": "Success"
@@ -60,7 +60,7 @@
             "property": [
                 {
                     "owner": "ur_account1",
-                    "recipes": ["Spear Upgrade Recipe"]
+                    "recipes": ["Boomerang Upgrade Recipe"]
                 }
             ]
         }
@@ -91,13 +91,13 @@
       }
     },
     {
-        "ID": "CREATE_UPDATE_RECIPE_SPEAR_LV1",        
+        "ID": "CREATE_BOOMERANG",        
         "runAfter": {
             "precondition": ["CREATE_UPDATE_RECIPE_COOKBOOK", "MOCK_ACCOUNT_UR_ACCOUNT2"],
             "blockWait": 0
         },
         "action": "fiat_item",
-        "paramsRef": "./items/update_recipe/spear.json",
+        "paramsRef": "./items/update_recipe/boomerang.json",
         "output": {
             "txResult": {
                 "status": "Success"
@@ -107,7 +107,7 @@
                     "owner": "ur_account2",
                     "items": [
                         {
-                            "stringValues": { "Name": "Spear" }
+                            "stringValues": { "Name": "Boomerang" }
                         }
                     ]
                 }
@@ -115,13 +115,13 @@
         }
     },
     {
-        "ID": "EXECUTE_UPDATED_SPEAR_UPGRADER_RECIPE",
+        "ID": "EXECUTE_UPDATED_BOOMERANG_UPGRADER_RECIPE",
         "runAfter": {
-            "precondition": ["CREATE_UPDATE_RECIPE_SPEAR_LV1", "UPDATE_ORIGINAL_SPEAR_UPGRADER_RECIPE"],
+            "precondition": ["CREATE_BOOMERANG", "UPDATE_ORIGINAL_BOOMERANG_UPGRADER_RECIPE"],
             "blockWait": 0
         },
         "action": "execute_recipe",
-        "paramsRef": "./recipes/update_recipe/executions/spear_upgrader.json",
+        "paramsRef": "./recipes/update_recipe/executions/boomerang_upgrader.json",
         "output": {
             "txResult": {
                 "status": "Success",
@@ -131,13 +131,13 @@
         }
     },
     {
-        "ID": "CHECK_EXECUTION_UPDATED_SPEAR_UPGRADER_RECIPE",
+        "ID": "CHECK_EXECUTION_UPDATED_BOOMERANG_UPGRADER_RECIPE",
         "runAfter": {
-            "precondition": ["MOCK_ACCOUNT_UR_ACCOUNT2", "EXECUTE_UPDATED_SPEAR_UPGRADER_RECIPE"],
+            "precondition": ["MOCK_ACCOUNT_UR_ACCOUNT2", "EXECUTE_UPDATED_BOOMERANG_UPGRADER_RECIPE"],
             "blockWait": 0
         },
         "action": "check_execution",
-        "paramsRef": "./recipes/update_recipe/check_executions/spear_upgrader_check.json",
+        "paramsRef": "./recipes/update_recipe/check_executions/boomerang_upgrader_check.json",
         "output": {
             "txResult": {
                 "status": "Success"
@@ -147,7 +147,7 @@
                     "owner": "ur_account2",
                     "items": [
                         {
-                            "stringValues": { "Name": "Spear",  "LastName": "Upgraded Spear" },
+                            "stringValues": { "Name": "Boomerang",  "LastName": "Upgraded Boomerang" },
                             "dblValues": { "attack": "3.0" },
                             "longValues": { "level": 2 }
                         }

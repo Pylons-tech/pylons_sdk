@@ -6,31 +6,30 @@
     }],
     "ItemInputs": [
         {
-            "ID": "spear",
-            "Ref": "./recipes/update_recipe/item_input/spear.json"
+            "ID": "boomerang",
+            "Ref": "./recipes/update_recipe/item_input/boomerang.json"
         }
     ],
     "Entries":{
         "CoinOutputs":[],
         "ItemModifyOutputs":[
             {
-                "ID": "upgraded_spear",
-                "ItemInputRef": "spear",
-                "ModifyParamsRef": "./recipes/update_recipe/upgrader/spear.json"
+                "ID": "upgraded_boomerang",
+                "ItemInputRef": "boomerang",
+                "ModifyParamsRef": "./recipes/update_recipe/upgrader/boomerang.json"
             }
         ]
     },
     "Outputs": [
         {
-            "EntryIDs": ["upgraded_spear"],
+            "EntryIDs": ["upgraded_boomerang"],
             "Weight": "1"
         }
     ],
     "ExtraInfo":"",
     "Sender":"ur_account1",
-    "OldName": "Original Spear Upgrade Recipe",
-    "Name": "Spear Upgrade Recipe",
+    "Name": "Original Boomerang Upgrade Recipe",
     "CookbookID": "update_recipe_cookbook-1589853709",
-    "Description": "this recipe is updated recipe for spear upgrader.",
+    "Description": "this is original boomerang upgrader recipe.",
     "BlockInterval":"2"
 }
