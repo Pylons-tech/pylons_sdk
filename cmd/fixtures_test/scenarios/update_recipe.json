@@ -1,20 +1,20 @@
 [
     {
-        "ID": "CREATE_SPEAR_COOKBOOK",
+        "ID": "CREATE_UPDATE_RECIPE_COOKBOOK",
         "runAfter": {
             "precondition": [],
             "blockWait": 0
         },
         "action": "mock_cookbook",
-        "paramsRef": "./cookbooks/spear.json",
+        "paramsRef": "./cookbooks/update_recipe.json",
         "output": {
             "txResult": {
                 "status": "Success"
             },
             "property": [
                 {
-                    "owner": "sp_account1",
-                    "cookbooks": ["spearcookbook"],
+                    "owner": "ur_account1",
+                    "cookbooks": ["update_recipe_cookbook"],
                     "coins": [
                       {
                         "denom": "pylon",
@@ -26,40 +26,60 @@
         }
     },
     {
-        "ID": "CREATE_DELAYED_SPEAR_UPDATE_RECIPE",        
+        "ID": "CREATE_ORIGINAL_SPEAR_UPGRADER_RECIPE",        
         "runAfter": {
-            "precondition": ["CREATE_SPEAR_COOKBOOK"],
+            "precondition": ["CREATE_UPDATE_RECIPE_COOKBOOK"],
             "blockWait": 0
         },
         "action": "create_recipe",
-        "paramsRef": "./recipes/spear/delayed_spear_upgrader.json",
+        "paramsRef": "./recipes/update_recipe/original_spear_upgrader.json",
         "output": {
             "txResult": {
                 "status": "Success"
             },
             "property": [
                 {
-                    "owner": "sp_account1",
-                    "recipes": ["Delayed Spear Upgrade Recipe"]
+                    "owner": "ur_account1",
+                    "recipes": ["Original Spear Upgrade Recipe"]
                 }
             ]
         }
     },
     {
-      "ID": "MOCK_ACCOUNT_SP_ACCOUNT2",
+        "ID": "UPDATE_ORIGINAL_SPEAR_UPGRADER_RECIPE",
+        "runAfter": {
+            "precondition": ["CREATE_UPDATE_RECIPE_COOKBOOK", "CREATE_ORIGINAL_SPEAR_UPGRADER_RECIPE"],
+            "blockWait": 0
+        },
+        "action": "update_recipe",
+        "paramsRef": "./recipes/update_recipe/updated_spear_upgrader.json",
+        "output": {
+            "txResult": {
+                "status": "Success"
+            },
+            "property": [
+                {
+                    "owner": "ur_account1",
+                    "recipes": ["Spear Upgrade Recipe"]
+                }
+            ]
+        }
+    },
+    {
+      "ID": "MOCK_ACCOUNT_UR_ACCOUNT2",
       "runAfter": {
         "precondition": [],
         "blockWait": 0
       },
       "action": "mock_account",
-      "paramsRef": "sp_account2",
+      "paramsRef": "ur_account2",
       "output": {
         "txResult": {
           "status": "Success"
         },
         "property": [
           {
-            "owner": "sp_account2",
+            "owner": "ur_account2",
             "coins": [
               {
                 "denom": "pylon",
@@ -71,20 +91,20 @@
       }
     },
     {
-        "ID": "CREATE_SPEAR_LV1",        
+        "ID": "CREATE_UPDATE_RECIPE_SPEAR_LV1",        
         "runAfter": {
-            "precondition": ["CREATE_SPEAR_COOKBOOK", "MOCK_ACCOUNT_SP_ACCOUNT2"],
+            "precondition": ["CREATE_UPDATE_RECIPE_COOKBOOK", "MOCK_ACCOUNT_UR_ACCOUNT2"],
             "blockWait": 0
         },
         "action": "fiat_item",
-        "paramsRef": "./items/spear/spear_lv1.json",
+        "paramsRef": "./items/update_recipe/spear.json",
         "output": {
             "txResult": {
                 "status": "Success"
             },
             "property": [
                 {
-                    "owner": "sp_account2",
+                    "owner": "ur_account2",
                     "items": [
                         {
                             "stringValues": { "Name": "Spear" }
@@ -95,13 +115,13 @@
         }
     },
     {
-        "ID": "EXECUTE_DELAYED_SPEAR_UPDATE_RECIPE",
+        "ID": "EXECUTE_UPDATED_SPEAR_UPGRADER_RECIPE",
         "runAfter": {
-            "precondition": ["CREATE_DELAYED_SPEAR_UPDATE_RECIPE", "CREATE_SPEAR_LV1"],
+            "precondition": ["CREATE_UPDATE_RECIPE_SPEAR_LV1", "UPDATE_ORIGINAL_SPEAR_UPGRADER_RECIPE"],
             "blockWait": 0
         },
         "action": "execute_recipe",
-        "paramsRef": "./recipes/spear/executions/delayed_spear_upgrader.json",
+        "paramsRef": "./recipes/update_recipe/executions/spear_upgrader.json",
         "output": {
             "txResult": {
                 "status": "Success",
@@ -111,20 +131,20 @@
         }
     },
     {
-        "ID": "CHECK_EXECUTION_DELAYED_SPEAR_UPDATE_RECIPE",
+        "ID": "CHECK_EXECUTION_UPDATED_SPEAR_UPGRADER_RECIPE",
         "runAfter": {
-            "precondition": ["MOCK_ACCOUNT_SP_ACCOUNT2", "EXECUTE_DELAYED_SPEAR_UPDATE_RECIPE"],
+            "precondition": ["MOCK_ACCOUNT_UR_ACCOUNT2", "EXECUTE_UPDATED_SPEAR_UPGRADER_RECIPE"],
             "blockWait": 0
         },
         "action": "check_execution",
-        "paramsRef": "./recipes/spear/check_executions/spear_upgrader_check.json",
+        "paramsRef": "./recipes/update_recipe/check_executions/spear_upgrader_check.json",
         "output": {
             "txResult": {
                 "status": "Success"
             },
             "property": [
                 {
-                    "owner": "sp_account2",
+                    "owner": "ur_account2",
                     "items": [
                         {
                             "stringValues": { "Name": "Spear",  "LastName": "Upgraded Spear" },
@@ -134,8 +154,8 @@
                     ]
                 },
                 {
-                    "owner": "sp_account1",
-                    "cookbooks": ["spearcookbook"],
+                    "owner": "ur_account1",
+                    "cookbooks": ["update_recipe_cookbook"],
                     "coins": [
                       {
                         "denom": "pylon",

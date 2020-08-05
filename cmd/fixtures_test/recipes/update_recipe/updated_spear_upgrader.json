@@ -7,7 +7,7 @@
     "ItemInputs": [
         {
             "ID": "spear",
-            "Ref": "./recipes/spear/item_input/spear.json"
+            "Ref": "./recipes/update_recipe/item_input/spear.json"
         }
     ],
     "Entries":{
@@ -16,7 +16,7 @@
             {
                 "ID": "upgraded_spear",
                 "ItemInputRef": "spear",
-                "ModifyParamsRef": "./recipes/spear/upgrader/spear.json"
+                "ModifyParamsRef": "./recipes/update_recipe/upgrader/spear.json"
             }
         ]
     },
@@ -27,10 +27,10 @@
         }
     ],
     "ExtraInfo":"",
-    "Sender":"sp_account1",
-    "OldName": "Delayed Spear Upgrade Recipe",
+    "Sender":"ur_account1",
+    "OldName": "Original Spear Upgrade Recipe",
     "Name": "Spear Upgrade Recipe",
-    "CookbookID": "spearcookbook-1589853709",
-    "Description": "this recipe is delayed upgrader, used to upgrade spear which can update all versions of spear.",
+    "CookbookID": "update_recipe_cookbook-1589853709",
+    "Description": "this recipe is updated recipe for spear upgrader.",
     "BlockInterval":"2"
 }
