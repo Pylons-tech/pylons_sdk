@@ -232,6 +232,9 @@ func RunMultiMsgTx(step FixtureStep, t *testing.T) {
 			case "create_cookbook":
 				msg := CreateCookbookMsgFromRef(ref.ParamsRef, t)
 				newMsg, sender = msg, msg.Sender
+			case "update_cookbook":
+				msg := UpdateCookbookMsgFromRef(ref.ParamsRef, t)
+				newMsg, sender = msg, msg.Sender
 			case "create_recipe":
 				msg := CreateRecipeMsgFromRef(ref.ParamsRef, t)
 				newMsg, sender = msg, msg.Sender
@@ -530,6 +533,58 @@ func RunCreateCookbook(step FixtureStep, t *testing.T) {
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(resp.CookbookID != "", "coookbook id shouldn't be empty")
+	}
+}
+
+// UpdateCookbookMsgFromRef is a function to get update cookbook message from reference
+func UpdateCookbookMsgFromRef(ref string, t *testing.T) msgs.MsgUpdateCookbook {
+	byteValue := ReadFile(ref, t)
+	// translate sender from account name to account address
+	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
+
+	var cbType types.Cookbook
+	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &cbType)
+	t.WithFields(testing.Fields{
+		"cbType":    inttest.AminoCodecFormatter(cbType),
+		"new_bytes": string(newByteValue),
+	}).MustNil(err, "error reading using GetAminoCdc")
+
+	return msgs.NewMsgUpdateCookbook(
+		cbType.ID,
+		cbType.Description,
+		cbType.Developer,
+		cbType.Version,
+		cbType.SupportEmail,
+		cbType.Sender,
+	)
+}
+
+// RunUpdateCookbook is a function to update cookbook
+func RunUpdateCookbook(step FixtureStep, t *testing.T) {
+	if !FixtureTestOpts.CreateNewCookbook || FixtureTestOpts.VerifyOnly {
+		return
+	}
+	if step.ParamsRef != "" {
+		cbMsg := UpdateCookbookMsgFromRef(step.ParamsRef, t)
+
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, cbMsg, cbMsg.Sender.String(), true)
+		if err != nil {
+			TxBroadcastErrorCheck(err, txhash, step, t)
+			return
+		}
+
+		WaitForNextBlockWithErrorCheck(t)
+
+		TxErrorLogCheck(txhash, step.Output.TxResult.ErrorLog, t)
+		if len(step.Output.TxResult.ErrorLog) > 0 {
+			return
+		}
+
+		// txHandleResBytes := GetTxHandleResult(txhash, t)
+		// resp := sdk.Result{}
+		// err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		// TxResultDecodingErrorCheck(err, txhash, t)
+		// t.MustTrue(resp.CookbookID != "", "coookbook id shouldn't be empty")
 	}
 }
 
