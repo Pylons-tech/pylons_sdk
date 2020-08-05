@@ -8,7 +8,7 @@
     ],
     "ItemInputRefs": null,
     "CoinOutputs": null,
-    "ItemOutputNames": ["Enable Trade Sword v1"],
-    "ExtraInfo":"enable trade coin to item trading",
-    "Sender":"enable_trade_account2"
+    "ItemOutputNames": ["Trade Flow Sword v1"],
+    "ExtraInfo":"trade flow coin to item trading",
+    "Sender":"trade_flow_account2"
 }

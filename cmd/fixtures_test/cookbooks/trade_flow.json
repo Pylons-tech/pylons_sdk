@@ -5,7 +5,7 @@
     "Description": "cookbook for the test of trading flow that includes create, disable, enable and fulfill trade.",
     "Developer": "SketchyCo",
     "Level": "0",
-    "Sender": "enable_trade_cbowner",
+    "Sender": "trade_flow_cbowner",
     "SupportEmail": "example@example.com",
     "Version": "1.0.0",
     "CostPerBlock": "50"
