@@ -256,6 +256,9 @@ func RunMultiMsgTx(step FixtureStep, t *testing.T) {
 			case "disable_trade":
 				msg := DisableTradeMsgFromRef(ref.ParamsRef, t)
 				newMsg, sender = msg, msg.Sender
+			case "enable_trade":
+				msg := EnableTradeMsgFromRef(ref.ParamsRef, t)
+				newMsg, sender = msg, msg.Sender
 			}
 			msgs = append(msgs, newMsg)
 		}
@@ -966,6 +969,57 @@ func RunDisableTrade(step FixtureStep, t *testing.T) {
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
 		resp := handlers.DisableTradeResponse{}
+		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
+	}
+}
+
+// EnableTradeMsgFromRef collect enable trade msg from reference string
+func EnableTradeMsgFromRef(ref string, t *testing.T) msgs.MsgEnableTrade {
+	byteValue := ReadFile(ref, t)
+	// translate sender from account name to account address
+	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
+	// translate extra info to trade id
+	newByteValue = UpdateTradeExtraInfoToID(newByteValue, t)
+
+	var trdType struct {
+		TradeID string
+		Sender  sdk.AccAddress
+	}
+
+	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &trdType)
+	t.WithFields(testing.Fields{
+		"trdType":   inttest.AminoCodecFormatter(trdType),
+		"new_bytes": string(newByteValue),
+	}).MustNil(err, "error reading using GetAminoCdc")
+
+	return msgs.NewMsgEnableTrade(trdType.TradeID, trdType.Sender)
+}
+
+// RunEnableTrade is a function to enable trade
+func RunEnableTrade(step FixtureStep, t *testing.T) {
+
+	if FixtureTestOpts.VerifyOnly {
+		return
+	}
+	if step.ParamsRef != "" {
+		dsTrdMsg := EnableTradeMsgFromRef(step.ParamsRef, t)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, dsTrdMsg, dsTrdMsg.Sender.String(), true)
+		if err != nil {
+			TxBroadcastErrorCheck(err, txhash, step, t)
+			return
+		}
+
+		WaitForNextBlockWithErrorCheck(t)
+
+		TxErrorLogCheck(txhash, step.Output.TxResult.ErrorLog, t)
+		if len(step.Output.TxResult.ErrorLog) > 0 {
+			return
+		}
+
+		txHandleResBytes := GetTxHandleResult(txhash, t)
+		resp := handlers.EnableTradeResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)

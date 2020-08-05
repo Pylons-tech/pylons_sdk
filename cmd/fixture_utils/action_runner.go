@@ -47,5 +47,6 @@ func RegisterDefaultActionRunners() {
 	RegisterActionRunner("create_trade", RunCreateTrade)
 	RegisterActionRunner("fulfill_trade", RunFulfillTrade)
 	RegisterActionRunner("disable_trade", RunDisableTrade)
+	RegisterActionRunner("enable_trade", RunEnableTrade)
 	RegisterActionRunner("multi_msg_tx", RunMultiMsgTx)
 }
