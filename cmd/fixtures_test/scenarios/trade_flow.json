@@ -132,7 +132,7 @@
         }
     },
     {
-        "ID": "DISABLE_TRADE_FLOW_TRADE",        
+        "ID": "DISABLE_TRADE_TRADE_FLOW",        
         "runAfter": {
             "precondition": ["CREATE_TRADE_FLOW_COOKBOOK", "CREATE_TRADE_FLOW_TRADES"],
             "blockWait": 0
@@ -146,9 +146,9 @@
         }
     },
     {
-        "ID": "ENABLE_TRADE_FLOW_TRADE",        
+        "ID": "ENABLE_TRADE_TRADE_FLOW",        
         "runAfter": {
-            "precondition": ["CREATE_TRADE_FLOW_COOKBOOK", "CREATE_TRADE_FLOW_TRADES", "DISABLE_TRADE_FLOW_TRADE"],
+            "precondition": ["CREATE_TRADE_FLOW_COOKBOOK", "CREATE_TRADE_FLOW_TRADES", "DISABLE_TRADE_TRADE_FLOW"],
             "blockWait": 0
         },
         "action": "enable_trade",
@@ -162,7 +162,7 @@
     {
         "ID": "FULFILL_TRADE_FLOW_COIN_ITEM_TRADE",        
         "runAfter": {
-            "precondition": ["CREATE_TRADE_FLOW_COOKBOOK", "CREATE_TRADE_FLOW_TRADES", "DISABLE_TRADE_FLOW_TRADE", "ENABLE_TRADE_FLOW_TRADE"],
+            "precondition": ["CREATE_TRADE_FLOW_COOKBOOK", "CREATE_TRADE_FLOW_TRADES", "DISABLE_TRADE_TRADE_FLOW", "ENABLE_TRADE_TRADE_FLOW"],
             "blockWait": 0
         },
         "action": "fulfill_trade",
