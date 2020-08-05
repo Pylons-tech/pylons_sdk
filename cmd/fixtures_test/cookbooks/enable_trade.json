@@ -1,0 +1,12 @@
+{
+    "NodeVersion": "0.0.1",
+    "ID": "enable_trade_cookbook-1589853709",
+    "Name": "enable_trade_cookbook",
+    "Description": "this has to meet character limits lol",
+    "Developer": "SketchyCo",
+    "Level": "0",
+    "Sender": "enable_trade_cbowner",
+    "SupportEmail": "example@example.com",
+    "Version": "1.0.0",
+    "CostPerBlock": "50"
+}

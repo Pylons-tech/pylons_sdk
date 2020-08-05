@@ -1,0 +1,204 @@
+[
+    {
+        "ID": "CREATE_ENABLE_TRADE_COOKBOOK",
+        "runAfter": {
+            "precondition": [],
+            "blockWait": 0
+        },
+        "action": "mock_cookbook",
+        "paramsRef": "./cookbooks/enable_trade.json",
+        "output": {
+            "txResult": {
+                "status": "Success"
+            },
+            "property": [
+                {
+                    "owner": "enable_trade_cbowner",
+                    "cookbooks": ["enable_trade_cookbook"],
+                    "coins": [
+                      {
+                        "denom": "pylon",
+                        "amount": 45000
+                      }
+                    ]
+                }
+            ]
+        }
+    },
+    {
+        "ID": "MOCK_ACCOUNT_ENABLE_TRADE_ACCOUNT1",
+        "runAfter": {
+          "precondition": [],
+          "blockWait": 0
+        },
+        "action": "mock_account",
+        "paramsRef": "enable_trade_account1",
+        "output": {
+          "txResult": {
+            "status": "Success"
+          },
+          "property": [
+            {
+              "owner": "enable_trade_account1",
+              "coins": [
+                {
+                  "denom": "pylon",
+                  "amount": 55000
+                }
+              ]
+            }
+          ]
+        }
+    },
+    {
+        "ID": "MOCK_ACCOUNT_ENABLE_TRADE_ACCOUNT2",
+        "runAfter": {
+          "precondition": [],
+          "blockWait": 0
+        },
+        "action": "mock_account",
+        "paramsRef": "enable_trade_account2",
+        "output": {
+          "txResult": {
+            "status": "Success"
+          },
+          "property": [
+            {
+              "owner": "enable_trade_account2",
+              "coins": [
+                {
+                  "denom": "pylon",
+                  "amount": 55000
+                }
+              ]
+            }
+          ]
+        }
+    },
+    {
+        "ID": "CREATE_ENABLE_TRADE_ACCOUNT2_TRADING_ITEMS",
+        "runAfter": {
+            "precondition": ["CREATE_ENABLE_TRADE_COOKBOOK", "MOCK_ACCOUNT_ENABLE_TRADE_ACCOUNT2"],
+            "blockWait": 0
+        },
+        "action": "multi_msg_tx",
+        "msgRefs": [
+            {
+                "action": "fiat_item",
+                "paramsRef": "./items/trading/enable_trade_sword_v1.json"
+            }
+        ],
+        "output": {
+            "txResult": {
+                "status": "Success"
+            },
+            "property": [
+                {
+                    "owner": "enable_trade_account2",
+                    "items": [
+                        {
+                            "stringValues": { "Name": "Enable Trade Sword v1" }
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    {
+        "ID": "CREATE_ENABLE_TRADE_TEST_TRADES",
+        "runAfter": {
+            "precondition": ["CREATE_ENABLE_TRADE_COOKBOOK", "MOCK_ACCOUNT_ENABLE_TRADE_ACCOUNT1", "CREATE_ENABLE_TRADE_ACCOUNT2_TRADING_ITEMS"],
+            "blockWait": 0
+        },
+        "action": "multi_msg_tx",
+        "msgRefs": [
+            {
+                "action": "create_trade",
+                "paramsRef": "./trades/enable_trade_coin_item.json"
+            }
+        ],
+        "output": {
+            "txResult": {
+                "status": "Success"
+            },
+            "property": [
+                {
+                    "owner": "enable_trade_account2",
+                    "trades": [
+                        "enable trade coin to item trading"
+                    ]
+                }
+            ]
+        }
+    },
+    {
+        "ID": "DISABLE_ENABLE_TRADE_TEST_TRADE",        
+        "runAfter": {
+            "precondition": ["CREATE_ENABLE_TRADE_COOKBOOK", "CREATE_ENABLE_TRADE_TEST_TRADES"],
+            "blockWait": 0
+        },
+        "action": "disable_trade",
+        "paramsRef": "./disable_trades/enable_trade_test.json",
+        "output": {
+            "txResult": {
+                "status": "Success"
+            }
+        }
+    },
+    {
+        "ID": "ENABLE_ENABLE_TRADE_TEST_TRADE",        
+        "runAfter": {
+            "precondition": ["CREATE_ENABLE_TRADE_COOKBOOK", "CREATE_ENABLE_TRADE_TEST_TRADES", "DISABLE_ENABLE_TRADE_TEST_TRADE"],
+            "blockWait": 0
+        },
+        "action": "enable_trade",
+        "paramsRef": "./enable_trades/enable_trade_test.json",
+        "output": {
+            "txResult": {
+                "status": "Success"
+            }
+        }
+    },
+    {
+        "ID": "FULFILL_ENABLE_TRADE_COIN_ITEM_TRADE",        
+        "runAfter": {
+            "precondition": ["CREATE_ENABLE_TRADE_COOKBOOK", "CREATE_ENABLE_TRADE_TEST_TRADES", "DISABLE_ENABLE_TRADE_TEST_TRADE", "ENABLE_ENABLE_TRADE_TEST_TRADE"],
+            "blockWait": 0
+        },
+        "action": "fulfill_trade",
+        "paramsRef": "./fulfill_trades/enable_trade_coin_item.json",
+        "output": {
+            "txResult": {
+                "status": "Success"
+            },
+            "property": [
+                {
+                    "owner": "enable_trade_account1",
+                    "items": [
+                        {
+                            "stringValues": { "Name": "Enable Trade Sword v1" }
+                        }
+                    ]
+                },
+                {
+                    "owner": "enable_trade_account2",
+                    "shouldNotExist": true,
+                    "items": [
+                        {
+                            "stringValues": { "Name": "Enable Trade Sword v1" }
+                        }
+                    ]
+                },
+                {
+                    "owner": "enable_trade_cbowner",
+                    "coins": [
+                        {
+                            "denom": "pylon",
+                            "amount": 45009
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+]

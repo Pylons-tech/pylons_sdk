@@ -1,0 +1,14 @@
+{
+    "NodeVersion": "0.0.1",
+    "CoinInputs":[
+        {
+            "Coin": "pylon",
+            "Count": "100"
+        }
+    ],
+    "ItemInputRefs": null,
+    "CoinOutputs": null,
+    "ItemOutputNames": ["Enable Trade Sword v1"],
+    "ExtraInfo":"enable trade coin to item trading",
+    "Sender":"enable_trade_account2"
+}
