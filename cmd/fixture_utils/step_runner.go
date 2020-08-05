@@ -582,6 +582,9 @@ func RunCreateRecipe(step FixtureStep, t *testing.T) {
 	}
 	if step.ParamsRef != "" {
 		rcpMsg := CreateRecipeMsgFromRef(step.ParamsRef, t)
+		t.WithFields(testing.Fields{
+			"parsed_recipe": string(inttest.GetAminoCdc().MustMarshalJSON(rcpMsg)),
+		}).Info("recipe info")
 
 		txhash, err := inttest.TestTxWithMsgWithNonce(t, rcpMsg, rcpMsg.Sender.String(), true)
 		if err != nil {
