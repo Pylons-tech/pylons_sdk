@@ -2,16 +2,16 @@
 
 🌿🌿🌿🌿🌿🌿🌿🌿🌿🌿🌿🌿🌿🌿🌿🌿🌿🌿🌿🌿🌿
 
-Pylons eco system consists of cookbooks, items, coin and recipes.
+Pylons eco system consists of cookbooks, recipes, items, coins and trades.
 
-Here's detailed description of how to use cookbooks, items, coins and recipes which are compatible with pylons eco system.
+Here's description of how to use cookbooks, recipes, items, coins and trades which are compatible with pylons eco system.
 
 Usually, cookbook contains all recipes and items which is used for game.
 The game is corresponding to Cookbook 1: 1.
 
 Developers create a cookbook along with recipes and item which is going to be used within the game.
-Recipe can be used for buying items, upgrade items, merge two items into one. Also can be used for exchange of coins, sell items and trading items between users.
-And users owe items, coins and recipes. Recipes can be executed when user want.
+Recipe can be used for buying items, upgrade items, merge two items into one. Also can be used for the exchange of coins, sell items and trading items between users.
+And players owe items, coins and trade orders. Recipes can be executed if user fit the recipe conditions.
 
 Since it's a blockchain based system, running recipe is taking more than 1 block time. So developers consider these things when writing cookbooks, recipes and items for their game.
 
@@ -19,21 +19,25 @@ Since it's a blockchain based system, running recipe is taking more than 1 block
 
 Cookbook consists of below fields. Reference of [Table generator](https://www.tablesgenerator.com/markdown_tables).
 
-| No |     Field    |  Type  |                     Sample                     |                                         Description                                        |
-|---:|:------------:|:------:|:----------------------------------------------:|:------------------------------------------------------------------------------------------:|
-|  1 |     Name     | string |                   "submarine"                  |                                        Name of game.                                       |
-|  2 |  Description | string | "Submarine game is a type of exploration game" |                                    Description of game.                                    |
-|  3 |    Version   | SemVer |                     "1.0.0"                    |                                      Version of game.                                      |
-|  4 |   Developer  | string |                   "SketchyCo"                  |                                 Developer who created game.                                |
-|  5 | SupportEmail |  Email |              "example@example.com"             |                                Email of this game supporter.                               |
-|  6 |     Level    |  Level |                       "0"                      |                                     level of this game.                                    |
-|  7 |    Sender    | string |                     "eugen"                    |                           game creator user on pylons eco system.                          |
-|  8 | CostPerBlock |   int  |                        2                       | Pylons per block to be charged across this cookbook for delayed execution early completion |
+| No | Field        | Type   | Sample                                         | Description                                                                                |
+|----|--------------|--------|------------------------------------------------|--------------------------------------------------------------------------------------------|
+| 1  | NodeVersion  | string | "0.0.1"                                        | NodeVersion is available for all pylons entities like items, recipes, trades etc.          |
+| 2  | ID           | string | "submarine-1589853709"                         | ID is the unique identifier of cookbook. This is unique across whole eco system.           |
+| 3  | Name         | string | "submarine"                                    | Name of game.                                                                              |
+| 4  | Description  | string | "Submarine game is a type of exploration game" | Description of game.                                                                       |
+| 5  | Version      | SemVer | "1.0.0"                                        | Version of game.                                                                           |
+| 6  | Developer    | string | "SketchyCo"                                    | Developer who created game.                                                                |
+| 7  | SupportEmail | Email  | "example@example.com"                          | Email of this game supporter.                                                              |
+| 8  | Level        | Level  | "0"                                            | level of this game.                                                                        |
+| 9  | Sender       | string | "eugen"                                        | game creator user on pylons eco system.                                                    |
+| 10 | CostPerBlock | int    | 2                                              | Pylons per block to be charged across this cookbook for delayed execution early completion |
 
 Sample cookbook JSON
 
-```
+```json
 {
+  "NodeVersion": "0.0.1",
+  "ID": "submarine-1589853709",
   "Name": "submarine",
   "Description": "this has to meet character limits lol",
   "Developer": "SketchyCo",
@@ -52,25 +56,38 @@ We accept emails that fit `^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z0-9
 
 Item consists of below fields.
 
-| No | Field         | Type   | Sample                                | Description                                         |
-|----|---------------|--------|---------------------------------------|-----------------------------------------------------|
-| 1  | CookbookID    | string | "submarine-3942525"                   | contains the name of cookbook for the item.         |
-| 2  | Sender        | string | "eugen"                               | contains the owner of item.                         |
-| 3  | Doubles       | array  | defence: 1.0,  movement: 1.0          | contains double attributes of the item.             |
-| 4  | Longs         | array  | level: 1                              | contains int attributes of the item.                |
-| 5  | Strings       | array  | name: "shield", use: "defend and run" | contains string attributes of the item.             |
-| 6  | OwnerRecipeID | string | ""                                    | Contains owner recipe id, if not owned, value is "" |
+| No | Field         | Type   | Sample                                | Description                                                                       |
+|----|---------------|--------|---------------------------------------|-----------------------------------------------------------------------------------|
+| 1  | NodeVersion   | string | "0.0.1"                               | NodeVersion is available for all pylons entities like items, recipes, trades etc. |
+| 2  | ID            | string | "cosmos1yjrrrgt0xfqau9fz3vu6tlm3XXX"  | ID is the unique identifier of cookbook. This is unique across whole eco system.  |
+| 3  | CookbookID    | string | "submarine-3942525"                   | contains the name of cookbook for the item.                                       |
+| 4  | Sender        | string | "eugen"                               | contains the owner of item.                                                       |
+| 5  | Doubles       | array  | defence: 1.0,  movement: 1.0          | contains double attributes of the item.                                           |
+| 6  | Longs         | array  | level: 1                              | contains int attributes of the item.                                              |
+| 7  | Strings       | array  | name: "shield", use: "defend and run" | contains string attributes of the item.                                           |
+| 8  | OwnerRecipeID | string | ""                                    | contains owner recipe id, if not owned, value is ""                               |
+| 9  | OwnerTradeID  | string | ""                                    | contains owner trade id, if not owned by trade, value is ""                       |
+| 10 | Tradable      | bool   | true                                  | flag for an item is tradable, it's always true now                                |
+| 11 | LastUpdate    | int64  | 5649                                  | latest update block height                                                        |
+| 12 | TransferFee   | int64  | 0                                     | item transfer fee used for item transfer and item trade                           |
+
 
 Sample item JSON
 
-```
+```json
 {
+  "NodeVersion": "0.0.1",
+  "ID": "cosmos1yjrrrgt0xfqau9fz3vu6tlm380m7kjvqmzyd0scd8be417-3d63-4fcc-9fae-d9e98c498c55",
   "Doubles": [{ "Key": "defence", "Value": "1" }],
   "Longs": [{ "Key": "level", "Value": "1" }],
   "Strings": [{ "Key": "Name","Value": "Shield" }],
   "CookbookID": "submarine-3942525",
   "Sender": "eugen",
   "OwnerRecipeID": ""
+  "OwnerTradeID": "",
+  "Tradable": true,
+  "LastUpdate": "5649",
+  "TransferFee": "0"
 }
 ```
 
@@ -78,22 +95,25 @@ Sample item JSON
 
 Recipe consists of below fields.
 
-| No | Field         | Type   | Sample                                                       | Description                                                        |
-|----|---------------|--------|--------------------------------------------------------------|--------------------------------------------------------------------|
-| 1  |  CookbookID   | string | "submarine-3942525"                                          | contains the name of cookbook for the recipe.                      |
-| 2  | Name          | string | "Knife Shield Generation Recipe"                             | name of recipe.                                                    |
-| 3  | Description   | string | "level 1 knife and level 1 shield into level 1 knife-shield" | recipe description                                                 |
-| 4  | Sender        | string | "eugen"                                                      | recipe owner name.                                                 |
-| 5  | CoinInputs    | array  | "goldcoin": 1, "silvercoin": 1                               | required coins to run recipe.                                      |
-| 6  | ItemInputs    | array  | level 1 knife, level 1 shield                                | required items to run recipe. This can also describe item upgrade. |
-| 7  | Entries       | array  | level 1 knife-shield                                         | Items and coins which can be generated from this recipe.           |
-| 8  | Outputs       | array  | Weight: "100 - HP", Result: chararacter, coin                | This provides the weighted list of results that can be outputted.  |
-| 9  | BlockInterval | int    | 2                                                            | Recipe is able to produce output after BlockInterval time.         |
+| No | Field         | Type   | Sample                                                       | Description                                                                           |
+|----|---------------|--------|--------------------------------------------------------------|---------------------------------------------------------------------------------------|
+| 1  | NodeVersion   | string | "0.0.1"                                                      | NodeVersion is available for all pylons entities like cookbooks, recipes, trades etc. |
+| 2  | ID            | string | "Submarine-knife-recipe-3942525"                             | ID is the unique identifier of recipe. This is unique across whole eco system.        |
+| 3  | CookbookID    | string | "submarine-3942525"                                          | contains the name of cookbook for the recipe.                                         |
+| 4  | Name          | string | "Knife Shield Generation Recipe"                             | name of recipe.                                                                       |
+| 5  | Description   | string | "level 1 knife and level 1 shield into level 1 knife-shield" | recipe description                                                                    |
+| 6  | Sender        | string | "eugen"                                                      | recipe owner name.                                                                    |
+| 7  | CoinInputs    | array  | "goldcoin": 1, "silvercoin": 1                               | required coins to run recipe.                                                         |
+| 8  | ItemInputs    | array  | level 1 knife, level 1 shield                                | required items to run recipe. This can also describe item upgrade.                    |
+| 9  | Entries       | array  | level 1 knife-shield                                         | Items and coins which can be generated from this recipe.                              |
+| 10 | Outputs       | array  | Weight: "100 - HP", Result: chararacter, coin                | This provides the weighted list of results that can be outputted.                     |
+| 11 | BlockInterval | int    | 2                                                            | Recipe is able to produce output after BlockInterval time.                            |
 
 Sample Recipe JSON
 
-```
+```json
 {
+    "NodeVersion": "0.0.1",
     "ID": "Submarine-knife-shield-generation-recipe-v0.0.0-1583801800",
     "CoinInputs":[],
     "ItemInputs": [
@@ -121,7 +141,6 @@ Sample Recipe JSON
             "Weight": "1"
         }
     ],
-    "ExtraInfo":"",
     "Sender":"eugen",
     "Name": "Knife Shield Generation Recipe",
     "CookbookID": "submarine-3942525",
@@ -142,6 +161,7 @@ This field is showing required items to run recipe.
 | 2  | Doubles      | array      | "attack": 1         | required conditions for double attributes.     |
 | 3  | Longs        | array      | "level": 1          | required conditions for int attributes.        |
 | 4  | Strings      | array      | "name": "shield"    | required conditions for string attributes.     |
+| 5  | TransferFee  | range      | 1-1000              | required condition for transfer fee range.     |
 
 | No | Field    | Type       | sample   | description                                                                         |
 |----|----------|------------|----------|-------------------------------------------------------------------------------------|
@@ -152,12 +172,13 @@ This field is showing required items to run recipe.
 
 Sample ItemInputs JSON
 
-```
+```json
 [{
     "ID": "monster",
     "Doubles": [{"Key": "attack", "MinValue": "1", "MaxValue": "2000"}],
     "Longs": [{"Key": "level", "MinValue": "1", "MaxValue": "2000"}],
     "Strings": [{"Key": "Name", "Value": "Monster"}],
+    "TransferFee": {"MinValue": "1", "MaxValue": "2000"}
 }]
 ```
 
@@ -171,7 +192,7 @@ This field is showing required coins to run recipe.
 
 Sample CoinInput JSON
 
-```
+```json
 [{
     Coin: "goldcoin"
 	Count: "1"
@@ -181,11 +202,12 @@ Sample CoinInput JSON
 Entries consist of coin outputs and item outputs. It means recipe can generate coin or item.
 
 Sample Entries JSON
-```
+```json
 {
   "CoinOutputs":[],
   "ItemOutputs":[
     {
+      "ID": "knife_shield_lv1",
       "Ref": "./recipes/item_output/knife_shield_lv1.json",
     }
   ]
@@ -196,6 +218,14 @@ Sample Entries JSON
 #### ItemOutputs
 This describes item which can be generated from recipe.
 
+| No | Field       | type   | sample                  | description                          |
+|----|-------------|--------|-------------------------|--------------------------------------|
+| 1  | ID          | string | knife_lv1               | ID to reference at output section    |
+| 2  | Doubles     | range  | attack: 0.1-2.1,3.2-3.4 | describe double attributes           |
+| 3  | Longs       | range  | level: 1-2,4-1000       | describe int attributes              |
+| 4  | Strings     | range  | Name: "Knife"           | describe string attributes           |
+| 5  | TransferFee | int    | 1000                    | describe generated item transfer fee |
+
 | No | Field        | type   | sample         | description                                                                                |
 |----|--------------|--------|----------------|--------------------------------------------------------------------------------------------|
 | 1  | Key          | string | attack         | attribute which want to describe.                                                          |
@@ -205,75 +235,46 @@ This describes item which can be generated from recipe.
 | 5  | WeightRanges | array  | 3-5            | the recipe has randomness in output and this field is for int/double attributes.           |
 
 Sample ItemOutputs JSON
-```
+```json
 [{
+    "ID": "knife_shield_lv1"
     "Doubles":[
-        {
-            "Rate":"1.0",
-            "Key":"attack",
-            "WeightRanges":[{ "Lower":"1", "Upper":"1","Weight":1 }]
-        },
-        {
-            "Rate":"1.0",
-            "Key":"defence",
-            "WeightRanges":[{ "Lower":"1", "Upper":"1","Weight":1 }]
-        }
+        { "Rate":"1.0", "Key":"attack", "WeightRanges":[{ "Lower":"1", "Upper":"1","Weight":1 }] },
+        { "Rate":"1.0", "Key":"defence", "WeightRanges":[{ "Lower":"1", "Upper":"1","Weight":1 }] }
     ],
     "Longs":[
-        {
-            "Rate":"1.0",
-            "Key":"level",
-            "WeightRanges":[{ "Lower": 1, "Upper":1,"Weight":1 }]
-        }
+        { "Rate":"1.0", "Key":"level", "WeightRanges":[{ "Lower": 1, "Upper":1,"Weight":1 }] }
     ],
-    "Strings":[{ "Key":"Name", "Value":"Knife Shield", "Rate":"1.0" }]
+    "Strings":[{ "Key":"Name", "Value":"Knife Shield", "Rate":"1.0" }],
+    "TransferFee": 1000
 }]
 ```
 
 Sample ItemOutputs JSON using Program
-```
+```json
 [{
+    "ID": "knife_shield_lv1"
     "Doubles":[
-        {
-            "Rate":"1.0",
-            "Key":"attack",
-            "Program": "input0.attack + input1.attack"
-        },
-        {
-            "Rate":"1.0",
-            "Key":"defence",
-            "Program": "input0.defence + input1.defence"
-        }
+        { "Rate":"1.0", "Key":"attack", "Program": "input0.attack + input1.attack" },
+        { "Rate":"1.0", "Key":"defence", "Program": "input0.defence + input1.defence" }
     ],
     "Longs":[
-        {
-            "Rate":"1.0",
-            "Key":"level",
-            "Program": "input0.level + input1.level"
-        }
+        { "Rate":"1.0", "Key":"level", "Program": "input0.level + input1.level" }
     ],
-    "Strings":[{ "Key":"Name", "Program":"\"Merged \" + input0.name + input1.name", "Rate":"1.0" }]
+    "Strings":[{ "Key":"Name", "Program":"\"Merged \" + input0.name + input1.name", "Rate":"1.0" }],
+    "TransferFee": 1000
 }]
 ```
 
 Sample ItemOutputs JSON using ModifyItem
-```
+```json
 {
   "ModifyItem": {
     "ID": "modified_monster",
     "ItemInputRef": "monster",
-    "Doubles": [{
-        "Key": "attack", 
-        "Program": "attack * 2.0"
-    }],
-    "Longs": [{
-        "Key": "level", 
-        "Program": "level + 1"
-    }],
-    "Strings": [{
-        "Key": "LastName",
-        "Program": "\"Upgraded Monster\""
-    }]
+    "Doubles": [{ "Key": "attack", "Program": "attack * 2.0" }],
+    "Longs": [{ "Key": "level", "Program": "level + 1" }],
+    "Strings": [{ "Key": "LastName", "Program": "\"Upgraded Monster\"" }]
   }
 }
 ```
@@ -284,9 +285,45 @@ For every recipe execution that has pylons denom as input, fee rule is applied.
 Specific amount of fee percentage configured as `recipe_fee_percentage` in `pylons.yml` is distributed to Pylons LLC validator for every recipe execution. e.g. If someone purchase game item from cookbook owner at `100pylon`, `recipe_fee_percentage` is 10%, `10pylon` is sent to Pylons LLC validator for that transaction and the rest `90%` is sent to cookbook owner.
 **Warn** If the amount of pylons for the recipe execution is more than `1pylon` at least `1pylon` should be sent to Pylons LLC validator. e.g. if `1pylon` is spent for recipe execution, `1pylon` is sent to Pylons LLC validator and nothing is sent to cookbook owner.
 
-##### ModifyItem
+##### ModifyItemOutput
 
-###### ItemInputRef
+| No | Field        | Type   | Sample               | Description                                |
+|----|--------------|--------|----------------------|--------------------------------------------|
+| 1  | ID           | string | modified_knife_lv1   | ID to reference at output section          |
+| 2  | ItemInputRef | string | attack: +1.0         | ID of item input defined in item inputs    |
+| 3  | Doubles      | array  | attack: +1.0         | contains double attributes updates         |
+| 4  | Longs        | array  | level: +1            | contains int attributes updates            |
+| 5  | Strings      | array  | name: "Level2 Knife" | contains string attributes updates         |
+| 6  | TransferFee  | int64  | +200                 | increase the transfer fee value specified  |
+
+
+Sample ModifyItemOutput JSON
+
+```json
+{
+  "ID": "modified_character",
+  "ItemInputRef": "character_acid",
+  "Doubles": [{ "Key": "attack", "WeightRanges":[{ "Lower": "2.0", "Upper": "2.0","Weight":1 }] }],
+  "Longs": [{ "Key": "level", "WeightRanges":[{ "Lower": 1, "Upper":1,"Weight":1 }] }],
+  "Strings": [{"Key": "LastName", "Value": "Upgraded Adventurer"}],
+  "TransferFee": 200
+}
+```
+
+This recipe is to upgrade item's level, LastName, and attack.
+
+Sample ModifyParams JSON with Program
+
+```json
+{
+  "ID": "modified_character",
+  "ItemInputRef": "character_acid",
+  "Doubles": [{ "Key": "attack", "Program": "attack + 1" }],
+  "Longs": [{ "Key": "level", "Program": "level + 1" }],
+  "Strings": [{"Key": "LastName", "Program": "\"Upgraded Adventurer\""}],
+  "TransferFee": 200
+}
+```
 
 `ItemInputRef` is a string value that is referencing to ID of the item input.
 
@@ -299,46 +336,16 @@ This describes the fields of ModifyParams field.
 | 1  | Doubles      | array  | attack: +1.0         | contains double attributes updates         |
 | 2  | Longs        | array  | level: +1            | contains int attributes updates            |
 | 3  | Strings      | array  | name: "Level2 Knife" | contains string attributes updates         |
-| 4  | Key          | string | attack               | attribute which needs to be changed        |
-| 5  | Value        | string | "Upgraded Knife"     | Target value when string attr is changed   |
-| 6  | WeightRanges | array  | 3-5                  | range which describe delta between initial |
-| 7  | Program      | string | "attack x 2"         | target value when upgraded by program.     |
+| 4  | TransferFee  | int64  | +200                 | increase the transfer fee value specified  |
+
+| No | Field        | Type   | Sample               | Description                                |
+|----|--------------|--------|----------------------|--------------------------------------------|
+| 1  | Key          | string | attack               | attribute which needs to be changed        |
+| 2  | Value        | string | "Upgraded Knife"     | Target value when string attr is changed   |
+| 3  | WeightRanges | array  | 3-5                  | range which describe delta between initial |
+| 4  | Program      | string | "attack x 2"         | target value when upgraded by program.     |
 
 Upgrade also has random effect and for that, weightRanges are used for Doubles and Longs.
-
-Sample ModifyParams JSON
-
-```
-{
-  "Doubles": [{
-    "Key": "attack", 
-    "WeightRanges":[{ "Lower": "2.0", "Upper": "2.0","Weight":1 }]
-  }],
-  "Longs": [{
-    "Key": "level", 
-    "WeightRanges":[{ "Lower": 1, "Upper":1,"Weight":1 }]
-  }],
-  "Strings": [{"Key": "LastName", "Value": "Upgraded Adventurer"}]
-}
-```
-
-This recipe is to upgrade item's level, LastName, and attack.
-
-Sample ModifyParams JSON with Program
-
-```
-{
-  "Doubles": [{
-    "Key": "attack", 
-    "Program": "attack + 1"
-  }],
-  "Longs": [{
-    "Key": "level", 
-    "Program": "level + 1"
-  }],
-  "Strings": [{"Key": "LastName", "Program": "\"Upgraded Adventurer\""}]
-}
-```
 
 #### CoinOutputs
 This describes coin which can be generated from recipe.
@@ -346,24 +353,23 @@ This describes coin which can be generated from recipe.
 | No | Field   | type   | sample       | description                                                         |
 |----|---------|--------|--------------|---------------------------------------------------------------------|
 | 1  | Coin    | string | "goldcoin"   | This shows the name of coin to be generated.                        |
-| 2  | Count   | int    | 1            | This shows the number of coins to be generated.                     |
-| 3  | Program | string | "attack x 2" | This is showing that user will collect attack x 2 amount of gold    |
-| 4  | Weight  | int    | 1            | This is used to describe the percentage of coin could be generated. |
+| 3  | Count   | string | "attack x 2" | This is program string and you can use the variables from inputs    |
+| 4  | ID      | string | "coin_reward"| ID to reference at outputs section.                                 |
 
 Sample CoinOutputs JSON
-```
+```json
 {
-  "Coin":"submcoin",
-  "Count":1,
-  "Weight":1
+  "ID": "coin_reward",
+  "Coin": "submcoin",
+  "Count": "1"
 }
 ```
-Sample CoinOutputs JSON with Program
-```
+Sample CoinOutputs JSON with variables
+```json
 {
+  "ID": "coin_reward",
   "Coin":"submcoin",
-  "Program":"attack x 2",
-  "Weight":1
+  "Count":"attack x 2",
 }
 ```
 
@@ -447,13 +453,13 @@ log2(-1) //result: NaN
 
 Outputs is an array of result sets by weights.
 
-| No | Field         | type   | sample   | description                                                         |
-|----|---------------|--------|----------|---------------------------------------------------------------------|
-| 1  | EntryIDs | array  | [0, 1]   | This contains the result set that is consists of entry indexes.     |
-| 2  | Weight        | string | "100-HP" | This is cel program which determines weight of specific result set. |
+| No | Field    | type   | sample                       | description                                                         |
+|----|----------|--------|------------------------------|---------------------------------------------------------------------|
+| 1  | EntryIDs | array  | ["coin_reward", "character"] | This contains the result set that is consists of entry ids.         |
+| 2  | Weight   | string | "100-HP"                     | This is cel program which determines weight of specific result set. |
 
 Sample Outputs JSON
-```
+```json
   "Outputs": [
       {
           "EntryIDs": ["knife_shield_v1"],
@@ -463,22 +469,16 @@ Sample Outputs JSON
 ```
 
 When both CoinOutputs and ItemOutputs are available, indexing start from CoinOutputs.
-```
+```json
     "Entries":{
         "CoinOutputs":[
-            {
-                "ID": "coin_reward",
-                "Coin":"javecoin",
-                "Count":"100"
-            }
+            { "ID": "coin_reward", "Coin":"javecoin", "Count":"100" }
         ],
-        "ItemOutputs":[
+        "ItemModifyOutputs":[
             {
-                "ModifyItem": {
-                    "ID": "modified_javelin",
-                    "ItemInputRef": "javelin",
-                    "ModifyParamsRef": "./recipes/javelin/upgrader/javelin_program.json"
-                }
+                "ID": "modified_javelin",
+                "ItemInputRef": "javelin",
+                "ModifyParamsRef": "./recipes/javelin/upgrader/javelin_program.json"
             }
         ]
     },
@@ -498,7 +498,7 @@ e.g. on above, EntryIDs `["javecoin", "modified_javelin"]` means javecoin + modi
 ## Execution of recipes
 
 Sampe Execution JSON
-```
+```json
 {
     "RecipeID": "Submarine-knife-shield-generation-recipe-v0.0.0-1583801800",
     "Sender":"cosmos1mkk2q586y5pz263u5v8dv59723u58059ytprs9",
@@ -556,7 +556,7 @@ Order creator can set ItemOutputs for the item he want to receive on this tradin
 Tradings by example
 
 Coin to coin trading
-```
+```json
 {
   "CoinInputs":[
       {
@@ -575,7 +575,7 @@ Coin to coin trading
 }
 ```
 Coin to item trading
-```
+```json
 {
   "CoinInputs":[
       {
@@ -591,7 +591,7 @@ Coin to item trading
 }
 ```
 Item to coin trading
-```
+```json
 {
     "CoinInputs":[],
     "ItemInputs": [
@@ -610,7 +610,7 @@ Item to coin trading
 }
 ```
 Item to item trading
-```
+```json
 {
     "CoinInputs":[],
     "ItemInputs": [
@@ -627,7 +627,7 @@ Item to item trading
 
 Trading order can be fulfilled by running MsgFulfillTrade
 Sample JSON
-```
+```json
 {
   "TradeID": "ValidTradeIDXXXX",
   "Sender":"cosmos1mkk2q586y5pz263u5v8dv59723u58059ytprs9",
