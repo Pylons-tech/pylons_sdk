@@ -561,7 +561,7 @@ func UpdateCookbookMsgFromRef(ref string, t *testing.T) msgs.MsgUpdateCookbook {
 
 // RunUpdateCookbook is a function to update cookbook
 func RunUpdateCookbook(step FixtureStep, t *testing.T) {
-	if !FixtureTestOpts.CreateNewCookbook || FixtureTestOpts.VerifyOnly {
+	if FixtureTestOpts.VerifyOnly {
 		return
 	}
 	if step.ParamsRef != "" {
@@ -580,11 +580,11 @@ func RunUpdateCookbook(step FixtureStep, t *testing.T) {
 			return
 		}
 
-		// txHandleResBytes := GetTxHandleResult(txhash, t)
-		// resp := sdk.Result{}
-		// err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
-		// TxResultDecodingErrorCheck(err, txhash, t)
-		// t.MustTrue(resp.CookbookID != "", "coookbook id shouldn't be empty")
+		txHandleResBytes := GetTxHandleResult(txhash, t)
+		resp := handlers.UpdateCookbookResponse{}
+		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		t.MustTrue(resp.CookbookID != "", "coookbook id shouldn't be empty")
 	}
 }
 
