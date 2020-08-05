@@ -1,6 +1,6 @@
 [
     {
-        "ID": "CREATE_ENABLE_TRADE_COOKBOOK",
+        "ID": "CREATE_TRADE_FLOW_COOKBOOK",
         "runAfter": {
             "precondition": [],
             "blockWait": 0
@@ -14,7 +14,7 @@
             "property": [
                 {
                     "owner": "enable_trade_cbowner",
-                    "cookbooks": ["enable_trade_cookbook"],
+                    "cookbooks": ["trade_flow_cookbook"],
                     "coins": [
                       {
                         "denom": "pylon",
@@ -78,7 +78,7 @@
     {
         "ID": "CREATE_ENABLE_TRADE_ACCOUNT2_TRADING_ITEMS",
         "runAfter": {
-            "precondition": ["CREATE_ENABLE_TRADE_COOKBOOK", "MOCK_ACCOUNT_ENABLE_TRADE_ACCOUNT2"],
+            "precondition": ["CREATE_TRADE_FLOW_COOKBOOK", "MOCK_ACCOUNT_ENABLE_TRADE_ACCOUNT2"],
             "blockWait": 0
         },
         "action": "multi_msg_tx",
@@ -107,7 +107,7 @@
     {
         "ID": "CREATE_ENABLE_TRADE_TEST_TRADES",
         "runAfter": {
-            "precondition": ["CREATE_ENABLE_TRADE_COOKBOOK", "MOCK_ACCOUNT_ENABLE_TRADE_ACCOUNT1", "CREATE_ENABLE_TRADE_ACCOUNT2_TRADING_ITEMS"],
+            "precondition": ["CREATE_TRADE_FLOW_COOKBOOK", "MOCK_ACCOUNT_ENABLE_TRADE_ACCOUNT1", "CREATE_ENABLE_TRADE_ACCOUNT2_TRADING_ITEMS"],
             "blockWait": 0
         },
         "action": "multi_msg_tx",
@@ -134,7 +134,7 @@
     {
         "ID": "DISABLE_ENABLE_TRADE_TEST_TRADE",        
         "runAfter": {
-            "precondition": ["CREATE_ENABLE_TRADE_COOKBOOK", "CREATE_ENABLE_TRADE_TEST_TRADES"],
+            "precondition": ["CREATE_TRADE_FLOW_COOKBOOK", "CREATE_ENABLE_TRADE_TEST_TRADES"],
             "blockWait": 0
         },
         "action": "disable_trade",
@@ -148,7 +148,7 @@
     {
         "ID": "ENABLE_ENABLE_TRADE_TEST_TRADE",        
         "runAfter": {
-            "precondition": ["CREATE_ENABLE_TRADE_COOKBOOK", "CREATE_ENABLE_TRADE_TEST_TRADES", "DISABLE_ENABLE_TRADE_TEST_TRADE"],
+            "precondition": ["CREATE_TRADE_FLOW_COOKBOOK", "CREATE_ENABLE_TRADE_TEST_TRADES", "DISABLE_ENABLE_TRADE_TEST_TRADE"],
             "blockWait": 0
         },
         "action": "enable_trade",
@@ -162,7 +162,7 @@
     {
         "ID": "FULFILL_ENABLE_TRADE_COIN_ITEM_TRADE",        
         "runAfter": {
-            "precondition": ["CREATE_ENABLE_TRADE_COOKBOOK", "CREATE_ENABLE_TRADE_TEST_TRADES", "DISABLE_ENABLE_TRADE_TEST_TRADE", "ENABLE_ENABLE_TRADE_TEST_TRADE"],
+            "precondition": ["CREATE_TRADE_FLOW_COOKBOOK", "CREATE_ENABLE_TRADE_TEST_TRADES", "DISABLE_ENABLE_TRADE_TEST_TRADE", "ENABLE_ENABLE_TRADE_TEST_TRADE"],
             "blockWait": 0
         },
         "action": "fulfill_trade",

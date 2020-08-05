@@ -1,8 +1,8 @@
 {
     "NodeVersion": "0.0.1",
-    "ID": "enable_trade_cookbook-1589853709",
-    "Name": "enable_trade_cookbook",
-    "Description": "this has to meet character limits lol",
+    "ID": "trade_flow_cookbook-1589853709",
+    "Name": "trade_flow_cookbook",
+    "Description": "cookbook for the test of trading flow that includes create, disable, enable and fulfill trade.",
     "Developer": "SketchyCo",
     "Level": "0",
     "Sender": "enable_trade_cbowner",

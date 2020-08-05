@@ -3,6 +3,6 @@
     "Doubles": [{ "Key": "attack", "Value": "1" }],
     "Longs": [{ "Key": "level", "Value": "1" }],
     "Strings": [{ "Key": "Name","Value": "Enable Trade Sword v1"}],
-    "CookbookID": "enable_trade_cookbook-1589853709",
+    "CookbookID": "trade_flow_cookbook-1589853709",
     "Sender": "enable_trade_account2"
 }
