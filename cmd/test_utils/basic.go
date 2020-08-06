@@ -256,6 +256,14 @@ func GetLogFieldsFromMsgs(txMsgs []sdk.Msg) log.Fields {
 			fields[ikeypref+"type"] = "MsgExecuteRecipe"
 			fields[ikeypref+"rcp_id"] = msg.RecipeID
 			fields[ikeypref+"sender"] = msg.Sender
+		case msgs.MsgEnableRecipe:
+			fields[ikeypref+"type"] = "MsgEnableRecipe"
+			fields[ikeypref+"rcp_id"] = msg.RecipeID
+			fields[ikeypref+"sender"] = msg.Sender
+		case msgs.MsgDisableRecipe:
+			fields[ikeypref+"type"] = "MsgDisableRecipe"
+			fields[ikeypref+"rcp_id"] = msg.RecipeID
+			fields[ikeypref+"sender"] = msg.Sender
 		case msgs.MsgCheckExecution:
 			fields[ikeypref+"type"] = "MsgCheckExecution"
 			fields[ikeypref+"exec_id"] = msg.ExecID
