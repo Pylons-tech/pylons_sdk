@@ -163,6 +163,9 @@ This field is showing required items to run recipe.
 | 4  | Strings      | array      | "name": "shield"    | required conditions for string attributes.     |
 | 5  | TransferFee  | range      | 1-1000              | required condition for transfer fee range.     |
 
+**Warn**
+ID of item input should be empty or should fit `^[a-zA-Z_][a-zA-Z_0-9]*$`.
+
 | No | Field    | Type       | sample   | description                                                                         |
 |----|----------|------------|----------|-------------------------------------------------------------------------------------|
 | 1  | Key      | string     | "attack" | attribute of item to check.                                                         |
@@ -213,7 +216,9 @@ Sample Entries JSON
   ]
 }
 ```
-**Warn** There shouldn't be any recipes that generate pylon denom as an output.
+**Warn**  
+- There shouldn't be any recipes that generate pylon denom as an output.
+- ID of any entry should fit `^[a-zA-Z_][a-zA-Z_0-9]*$` (coin output, item modify output and item output).
 
 #### ItemOutputs
 This describes item which can be generated from recipe.
@@ -237,7 +242,7 @@ This describes item which can be generated from recipe.
 Sample ItemOutputs JSON
 ```json
 [{
-    "ID": "knife_shield_lv1"
+    "ID": "knife_shield_lv1",
     "Doubles":[
         { "Rate":"1.0", "Key":"attack", "WeightRanges":[{ "Lower":"1", "Upper":"1","Weight":1 }] },
         { "Rate":"1.0", "Key":"defence", "WeightRanges":[{ "Lower":"1", "Upper":"1","Weight":1 }] }
@@ -641,6 +646,80 @@ Here `TradeID` can be the one fetched from `list_trade` command.
 
 **Warn** The total amount of pylons participate in coin input and output should be more than `minimum_trade_price` configured in `pylons.yml`. Currently it's set to 10 pylons.
 
+### TradeItemInput
+
+Same TradeItemInput JSON  
+```json
+{
+    "ItemInput": {
+        "Doubles":null,
+        "Longs":null,
+        "Strings":[
+            {
+                "Key":"Name",
+                "Value":"Trading Knife v3"
+            }
+        ]
+    },
+    "CookbookID": "tradecookbook-1589853709"
+}
+```
+
+TradeItemInput = CookbookID + ItemInput
+
+Recipe itself is restricted to cookbook and there's no need to set cookbook ID.
+But with trading items, it is needed to set cookbook ID as it's not restricted to cookbook ID.
+
 ### Trading fee distribution
 
 Specific amount of fee percentage configured as `pylons_trade_percentage` in `pylons.yml` is distributed to Pylons LLC validator for every transaction. e.g. If someone sell an item at `100pylon`, `pylons_trade_percentage` is 10%, `10pylon` is sent to Pylons LLC validator for that trade when trading is fulfilled.
+
+## Item transfer fee distribution
+
+Actual item transfer fee is the sum of each item's transfer fee.
+And each item's transfer fee is determined as 
+`min( max(min_item_transfer_fee, item.TransferFee), max_item_transfer_fee)`
+
+Here `min_item_transfer_fee` and `max_item_transfer_fee` are global configurations.
+
+## Configuration
+
+- File name: `pylons.yml`
+
+```yaml
+fees:
+  recipe_fee_percentage: 10 # Pylons fee percentage
+  cookbook_basic_fee: 10000 # Cookbook creation fee
+  cookbook_premium_fee: 50000 # Cookbook creation fee
+  pylons_trade_percentage: 10 # Pylons trade percentage
+  minimum_trade_price: 10 # Minimum trade price
+  update_item_string_field_fee: 10 # Item string field update fee
+  min_item_transfer_fee: 1 # Basic item transfer fee
+  max_item_transfer_fee: 100000
+  item_transfer_cookbook_owner_profit_percent: 90 # Cookbook sender item transfer percent
+validators:
+  pylons_llc: cosmos105wr8t6y97rwv90xzhxd4juj4lsajtjaass6h7 # this should be replaced
+google_iap:
+  - package_name: com.pylons.loud
+    product_id: pylons_1000
+    amount: 1000
+  - package_name: com.pylons.loud
+    product_id: pylons_55000
+    amount: 55000
+google_iap_pubkey: XXXX
+is_production: false
+```
+
+- `recipe_fee_percentage` refers to the percentage of pylons that needs to be  transfered to Pylons LLC validator address for every pylons denom paid recipe.  
+- `cookbook_basic_fee` refers to the amount of pylons that needs to be paid to Pylons LLC validator address to create a basic tier cookbook creation.  
+- `cookbook_premium_fee` refers to the amount of pylons that needs to be paid to Pylons LLC validator address to create a premium tier cookbook creation.  
+- `pylons_trade_percentage` refers to the percentage of pylons that needs to be transfered from pylons incomer's side.
+- `minimum_trade_price` refers to the minimum amount of pylons that needs to participate per trading.
+- `update_item_string_field_fee` refers to item string field update fee per field
+- `pylons_llc` refers to cosmos address for Pylons LLC validator.
+- `min_item_transfer_fee` refers to the minimum pylons per item transfer
+- `max_item_transfer_fee` refers to the maximum pylons per item transfer
+- `item_transfer_cookbook_owner_profit_percent` refers to cookbook owner's profit percent in fee
+- `google_iap` define google iap packages/products along with the amount associated with the package/product.
+- `google_iap_pubkey` defines the google iap public key to verify google iap purchase signature
+- `is_production` defines the flag to show if this configuration is for production
