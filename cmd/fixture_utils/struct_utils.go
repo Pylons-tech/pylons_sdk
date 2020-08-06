@@ -157,25 +157,6 @@ func UpdateRecipeName(bytes []byte, t *testing.T) []byte {
 	return newBytes
 }
 
-// UpdateOldRecipeName is a function to update old recipe name into recipe id
-func UpdateOldRecipeName(bytes []byte, t *testing.T) []byte {
-	raw := UnmarshalIntoEmptyInterface(bytes, t)
-
-	rcpName, ok := raw["OldName"].(string)
-	t.MustTrue(ok, "old recipe name field is empty")
-	rcpID, exist, err := inttest.GetRecipeIDFromName(rcpName)
-	t.WithFields(testing.Fields{
-		"recipe_name": rcpName,
-	}).MustTrue(exist, "there's no recipe id with specific recipe name")
-	t.MustNil(err, "error getting recipe id from name")
-	raw["ID"] = rcpID
-	newBytes, err := json.Marshal(raw)
-	t.WithFields(testing.Fields{
-		"updated_recipe_id_interface": raw,
-	}).MustNil(err, "error encoding raw json")
-	return newBytes
-}
-
 // UpdateTradeExtraInfoToID is a function to update trade extra info into trade id
 func UpdateTradeExtraInfoToID(bytes []byte, t *testing.T) []byte {
 	raw := UnmarshalIntoEmptyInterface(bytes, t)

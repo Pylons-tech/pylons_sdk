@@ -1,5 +1,6 @@
 {
     "NodeVersion": "0.0.1",
+    "ID": "UpdateRecipeCB-boomerang-upgrade-recipe-v0.0.0-1590029710",
     "CoinInputs":[{
         "Coin": "pylon",
         "Count": "5000"

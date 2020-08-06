@@ -737,8 +737,6 @@ func UpdateRecipeMsgFromRef(ref string, t *testing.T) msgs.MsgUpdateRecipe {
 	itemInputs := GetItemInputsFromBytes(newByteValue, t)
 	// get entries from fileNames
 	entries := GetEntriesFromBytes(newByteValue, t)
-	// translate recipe name to recipe id
-	newByteValue = UpdateOldRecipeName(newByteValue, t)
 
 	var rcpTempl types.Recipe
 	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &rcpTempl)
@@ -748,9 +746,9 @@ func UpdateRecipeMsgFromRef(ref string, t *testing.T) msgs.MsgUpdateRecipe {
 	}).MustNil(err, "error reading using GetAminoCdc")
 
 	return msgs.NewMsgUpdateRecipe(
+		rcpTempl.ID,
 		rcpTempl.Name,
 		rcpTempl.CookbookID,
-		rcpTempl.ID,
 		rcpTempl.Description,
 		rcpTempl.CoinInputs,
 		itemInputs,

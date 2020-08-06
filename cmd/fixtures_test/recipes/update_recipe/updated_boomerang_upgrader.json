@@ -1,5 +1,6 @@
 {
     "NodeVersion": "0.0.1",
+    "ID": "UpdateRecipeCB-boomerang-upgrade-recipe-v0.0.0-1590029710",
     "CoinInputs":[{
         "Coin": "pylon",
         "Count": "5000"
@@ -28,7 +29,6 @@
     ],
     "ExtraInfo":"",
     "Sender":"ur_account1",
-    "OldName": "Original Boomerang Upgrade Recipe",
     "Name": "Boomerang Upgrade Recipe",
     "CookbookID": "update_recipe_cookbook-1589853709",
     "Description": "this recipe is updated recipe for boomerang upgrader.",
