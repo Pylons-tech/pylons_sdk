@@ -1,0 +1,12 @@
+{
+    "NodeVersion": "0.0.1",
+    "ID": "update_cookbook-1589853709",
+    "Name": "update_cookbook_test_cookbook",
+    "Description": "this has to meet character limits lol",
+    "Developer": "SketchyCo",
+    "Level": "0",
+    "Sender": "uc_account1",
+    "SupportEmail": "example@example.com",
+    "Version": "1.0.0",
+    "CostPerBlock": "50"
+}

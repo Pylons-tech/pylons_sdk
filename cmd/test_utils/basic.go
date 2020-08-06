@@ -240,12 +240,28 @@ func GetLogFieldsFromMsgs(txMsgs []sdk.Msg) log.Fields {
 			fields[ikeypref+"type"] = "MsgCreateCookbook"
 			fields[ikeypref+"cb_name"] = msg.Name
 			fields[ikeypref+"sender"] = msg.Sender.String()
+		case msgs.MsgUpdateCookbook:
+			fields[ikeypref+"type"] = "MsgUpdateCookbook"
+			fields[ikeypref+"cb_ID"] = msg.ID
+			fields[ikeypref+"sender"] = msg.Sender.String()
 		case msgs.MsgCreateRecipe:
 			fields[ikeypref+"type"] = "MsgCreateRecipe"
 			fields[ikeypref+"rcp_name"] = msg.Name
 			fields[ikeypref+"sender"] = msg.Sender.String()
+		case msgs.MsgUpdateRecipe:
+			fields[ikeypref+"type"] = "MsgUpdateRecipe"
+			fields[ikeypref+"rcp_name"] = msg.Name
+			fields[ikeypref+"sender"] = msg.Sender.String()
 		case msgs.MsgExecuteRecipe:
-			fields[ikeypref+"type"] = "MsgCreateRecipe"
+			fields[ikeypref+"type"] = "MsgExecuteRecipe"
+			fields[ikeypref+"rcp_id"] = msg.RecipeID
+			fields[ikeypref+"sender"] = msg.Sender
+		case msgs.MsgEnableRecipe:
+			fields[ikeypref+"type"] = "MsgEnableRecipe"
+			fields[ikeypref+"rcp_id"] = msg.RecipeID
+			fields[ikeypref+"sender"] = msg.Sender
+		case msgs.MsgDisableRecipe:
+			fields[ikeypref+"type"] = "MsgDisableRecipe"
 			fields[ikeypref+"rcp_id"] = msg.RecipeID
 			fields[ikeypref+"sender"] = msg.Sender
 		case msgs.MsgCheckExecution:

@@ -1,0 +1,35 @@
+{
+    "NodeVersion": "0.0.1",
+    "CoinInputs":[{
+        "Coin": "pylon",
+        "Count": "5000"
+    }],
+    "ItemInputs": [
+        {
+            "ID": "sling",
+            "Ref": "./recipes/recipe_flow/item_input/sling.json"
+        }
+    ],
+    "Entries":{
+        "CoinOutputs":[],
+        "ItemModifyOutputs":[
+            {
+                "ID": "upgraded_sling",
+                "ItemInputRef": "sling",
+                "ModifyParamsRef": "./recipes/recipe_flow/upgrader/sling.json"
+            }
+        ]
+    },
+    "Outputs": [
+        {
+            "EntryIDs": ["upgraded_sling"],
+            "Weight": "1"
+        }
+    ],
+    "ExtraInfo":"",
+    "Sender":"rf_account1",
+    "Name": "Sling Upgrade Recipe",
+    "CookbookID": "recipe_flow_cookbook-1589853709",
+    "Description": "this is sling upgrader recipe for recipe flow test.",
+    "BlockInterval":"2"
+}

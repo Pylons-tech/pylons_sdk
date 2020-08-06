@@ -1,0 +1,179 @@
+[
+    {
+        "ID": "CREATE_RECIPE_FLOW_COOKBOOK",
+        "runAfter": {
+            "precondition": [],
+            "blockWait": 0
+        },
+        "action": "mock_cookbook",
+        "paramsRef": "./cookbooks/recipe_flow.json",
+        "output": {
+            "txResult": {
+                "status": "Success"
+            },
+            "property": [
+                {
+                    "owner": "rf_account1",
+                    "cookbooks": ["recipe_flow_cookbook"],
+                    "coins": [
+                      {
+                        "denom": "pylon",
+                        "amount": 45000
+                      }
+                    ]
+                }
+            ]
+        }
+    },
+    {
+        "ID": "CREATE_SLING_UPGRADER_RECIPE",        
+        "runAfter": {
+            "precondition": ["CREATE_RECIPE_FLOW_COOKBOOK"],
+            "blockWait": 0
+        },
+        "action": "create_recipe",
+        "paramsRef": "./recipes/recipe_flow/sling_upgrader.json",
+        "output": {
+            "txResult": {
+                "status": "Success"
+            },
+            "property": [
+                {
+                    "owner": "rf_account1",
+                    "recipes": ["Sling Upgrade Recipe"]
+                }
+            ]
+        }
+    },
+    {
+      "ID": "MOCK_ACCOUNT_RF_ACCOUNT2",
+      "runAfter": {
+        "precondition": [],
+        "blockWait": 0
+      },
+      "action": "mock_account",
+      "paramsRef": "rf_account2",
+      "output": {
+        "txResult": {
+          "status": "Success"
+        },
+        "property": [
+          {
+            "owner": "rf_account2",
+            "coins": [
+              {
+                "denom": "pylon",
+                "amount": 55000
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+        "ID": "CREATE_SLING",
+        "runAfter": {
+            "precondition": ["CREATE_RECIPE_FLOW_COOKBOOK", "MOCK_ACCOUNT_RF_ACCOUNT2"],
+            "blockWait": 0
+        },
+        "action": "fiat_item",
+        "paramsRef": "./items/recipe_flow/sling.json",
+        "output": {
+            "txResult": {
+                "status": "Success"
+            },
+            "property": [
+                {
+                    "owner": "rf_account2",
+                    "items": [
+                        {
+                            "stringValues": { "Name": "Sling" }
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    {
+        "ID": "DISABLE_SLING_UPGRADER_RECIPE",
+        "runAfter": {
+            "precondition": ["CREATE_SLING", "CREATE_SLING_UPGRADER_RECIPE"],
+            "blockWait": 0
+        },
+        "action": "disable_recipe",
+        "paramsRef": "./recipes/recipe_flow/disable_recipes/sling_upgrader.json",
+        "output": {
+            "txResult": {
+                "status": "Success"
+            },
+            "property": []
+        }
+    },
+    {
+        "ID": "ENABLE_SLING_UPGRADER_RECIPE",
+        "runAfter": {
+            "precondition": ["CREATE_SLING", "CREATE_SLING_UPGRADER_RECIPE", "DISABLE_SLING_UPGRADER_RECIPE"],
+            "blockWait": 0
+        },
+        "action": "enable_recipe",
+        "paramsRef": "./recipes/recipe_flow/enable_recipes/sling_upgrader.json",
+        "output": {
+            "txResult": {
+                "status": "Success"
+            },
+            "property": []
+        }
+    },
+    {
+        "ID": "EXECUTE_SLING_UPGRADER_RECIPE",
+        "runAfter": {
+            "precondition": ["CREATE_SLING", "CREATE_SLING_UPGRADER_RECIPE", "DISABLE_SLING_UPGRADER_RECIPE", "ENABLE_SLING_UPGRADER_RECIPE"],
+            "blockWait": 0
+        },
+        "action": "execute_recipe",
+        "paramsRef": "./recipes/recipe_flow/executions/sling_upgrader.json",
+        "output": {
+            "txResult": {
+                "status": "Success",
+                "message": "scheduled the recipe"
+            },
+            "property": []
+        }
+    },
+    {
+        "ID": "CHECK_EXECUTION_SLING_UPGRADER_RECIPE",
+        "runAfter": {
+            "precondition": ["MOCK_ACCOUNT_RF_ACCOUNT2", "EXECUTE_SLING_UPGRADER_RECIPE"],
+            "blockWait": 0
+        },
+        "action": "check_execution",
+        "paramsRef": "./recipes/recipe_flow/check_executions/sling_upgrader_check.json",
+        "output": {
+            "txResult": {
+                "status": "Success"
+            },
+            "property": [
+                {
+                    "owner": "rf_account2",
+                    "items": [
+                        {
+                            "stringValues": { "Name": "Sling",  "LastName": "Upgraded Sling" },
+                            "dblValues": { "attack": "3.0" },
+                            "longValues": { "level": 2 }
+                        }
+                    ]
+                },
+                {
+                    "owner": "rf_account1",
+                    "cookbooks": ["recipe_flow_cookbook"],
+                    "coins": [
+                      {
+                        "denom": "pylon",
+                        "amount": 49500
+                      }
+                    ]
+                }
+            ]
+        }
+    }
+]
