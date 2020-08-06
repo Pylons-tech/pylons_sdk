@@ -1,0 +1,41 @@
+[
+  {
+    "ID": "CREATE_GI_ACCOUNT1",
+    "runAfter": {
+      "precondition": [],
+      "blockWait": 0
+    },
+    "action": "create_account",
+    "paramsRef": "gi_account1",
+    "output": {
+      "txResult": {
+        "status": "Success"
+      }
+    }
+  },
+  {
+    "ID": "GOOGLE_IAP_GET_PYLONS_GI_ACCOUNT1",
+    "runAfter": {
+      "precondition": ["CREATE_GI_ACCOUNT1"],
+      "blockWait": 0
+    },
+    "action": "google_iap_get_pylons",
+    "paramsRef": "./google_iap_get_pylons/google_iap.json",
+    "output": {
+      "txResult": {
+        "status": "Success"
+      },
+      "property": [
+        {
+          "owner": "gi_account1",
+          "coins": [
+            {
+              "denom": "pylon",
+              "amount": 1000
+            }
+          ]
+        }
+      ]
+    }
+  }
+]

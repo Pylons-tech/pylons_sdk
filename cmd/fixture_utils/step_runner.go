@@ -1,6 +1,7 @@
 package fixturetest
 
 import (
+	"encoding/base64"
 	"encoding/json"
 
 	testing "github.com/Pylons-tech/pylons_sdk/cmd/evtesting"
@@ -126,28 +127,6 @@ func GetPylonsMsgFromRef(ref string, t *testing.T) msgs.MsgGetPylons {
 	)
 }
 
-// SendCoinsMsgFromRef is a function to SendCoins message from reference
-func SendCoinsMsgFromRef(ref string, t *testing.T) msgs.MsgSendCoins {
-	byteValue := ReadFile(ref, t)
-	// translate sender from account name to account address
-	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
-	newByteValue = UpdateReceiverKeyToAddress(newByteValue, t)
-
-	var siType struct {
-		Sender   sdk.AccAddress
-		Receiver sdk.AccAddress
-		Amount   sdk.Coins
-	}
-
-	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &siType)
-	t.WithFields(testing.Fields{
-		"siType":    inttest.AminoCodecFormatter(siType),
-		"new_bytes": string(newByteValue),
-	}).MustNil(err, "error reading using GetAminoCdc")
-
-	return msgs.NewMsgSendCoins(siType.Amount, siType.Sender, siType.Receiver)
-}
-
 // RunGetPylons is a function to run GetPylos message
 func RunGetPylons(step FixtureStep, t *testing.T) {
 	if FixtureTestOpts.VerifyOnly {
@@ -169,6 +148,82 @@ func RunGetPylons(step FixtureStep, t *testing.T) {
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
 	}
+}
+
+// GoogleIAPGetPylonsMsgFromRef is a function to get GoogleIAPGetPylons message from reference
+func GoogleIAPGetPylonsMsgFromRef(ref string, t *testing.T) msgs.MsgGoogleIAPGetPylons {
+	byteValue := ReadFile(ref, t)
+	// translate requester from account name to account address
+	newByteValue := UpdateRequesterKeyToAddress(byteValue, t)
+
+	var gigpType struct {
+		ProductID     string
+		PurchaseToken string
+		ReceiptData   string
+		Signature     string
+		Requester     sdk.AccAddress
+	}
+
+	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &gigpType)
+	t.WithFields(testing.Fields{
+		"gigpType":  inttest.AminoCodecFormatter(gigpType),
+		"new_bytes": string(newByteValue),
+	}).MustNil(err, "error reading using GetAminoCdc")
+
+	receiptDataBase64 := base64.StdEncoding.EncodeToString([]byte(gigpType.ReceiptData))
+
+	return msgs.NewMsgGoogleIAPGetPylons(
+		gigpType.ProductID,
+		gigpType.PurchaseToken,
+		receiptDataBase64,
+		gigpType.Signature,
+		gigpType.Requester,
+	)
+}
+
+// RunGoogleIAPGetPylons is a function to run GoogleIAPGetPylons message
+func RunGoogleIAPGetPylons(step FixtureStep, t *testing.T) {
+	if FixtureTestOpts.VerifyOnly {
+		return
+	}
+	if step.ParamsRef != "" {
+		gigpMsg := GoogleIAPGetPylonsMsgFromRef(step.ParamsRef, t)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, gigpMsg, gigpMsg.Requester.String(), true)
+		if err != nil {
+			TxBroadcastErrorCheck(err, txhash, step, t)
+			return
+		}
+
+		WaitForNextBlockWithErrorCheck(t)
+
+		txHandleResBytes := GetTxHandleResult(txhash, t)
+		resp := handlers.GoogleIAPGetPylonsResponse{}
+		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
+	}
+}
+
+// SendCoinsMsgFromRef is a function to SendCoins message from reference
+func SendCoinsMsgFromRef(ref string, t *testing.T) msgs.MsgSendCoins {
+	byteValue := ReadFile(ref, t)
+	// translate sender from account name to account address
+	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
+	newByteValue = UpdateReceiverKeyToAddress(newByteValue, t)
+
+	var siType struct {
+		Sender   sdk.AccAddress
+		Receiver sdk.AccAddress
+		Amount   sdk.Coins
+	}
+
+	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &siType)
+	t.WithFields(testing.Fields{
+		"siType":    inttest.AminoCodecFormatter(siType),
+		"new_bytes": string(newByteValue),
+	}).MustNil(err, "error reading using GetAminoCdc")
+
+	return msgs.NewMsgSendCoins(siType.Amount, siType.Sender, siType.Receiver)
 }
 
 // RunSendCoins is a function to send coins from one address to another
