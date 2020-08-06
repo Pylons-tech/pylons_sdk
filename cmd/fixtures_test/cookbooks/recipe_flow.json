@@ -1,0 +1,12 @@
+{
+  "NodeVersion": "0.0.1",
+  "ID": "recipe_flow_cookbook-1589853709",
+  "Name": "recipe_flow_cookbook",
+  "Description": "cookbook for recipe flow fixture test",
+  "Developer": "SketchyCo",
+  "Level": "0",
+  "Sender": "rf_account1",
+  "SupportEmail": "example@example.com",
+  "Version": "1.0.0",
+  "CostPerBlock": "50"
+}
