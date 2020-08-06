@@ -241,6 +241,12 @@ func RunMultiMsgTx(step FixtureStep, t *testing.T) {
 			case "update_recipe":
 				msg := UpdateRecipeMsgFromRef(ref.ParamsRef, t)
 				newMsg, sender = msg, msg.Sender
+			case "enable_recipe":
+				msg := EnableRecipeMsgFromRef(ref.ParamsRef, t)
+				newMsg, sender = msg, msg.Sender
+			case "disable_recipe":
+				msg := DisableRecipeMsgFromRef(ref.ParamsRef, t)
+				newMsg, sender = msg, msg.Sender
 			case "execute_recipe":
 				msg := ExecuteRecipeMsgFromRef(ref.ParamsRef, t)
 				newMsg, sender = msg, msg.Sender
@@ -726,6 +732,108 @@ func RunUpdateRecipe(step FixtureStep, t *testing.T) {
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(resp.RecipeID != "", "recipe id shouldn't be empty")
+	}
+}
+
+// EnableRecipeMsgFromRef is a function to get enable recipe message from reference
+func EnableRecipeMsgFromRef(ref string, t *testing.T) msgs.MsgEnableRecipe {
+	byteValue := ReadFile(ref, t)
+	// translate sender from account name to account address
+	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
+	// translate recipe name to recipe id
+	newByteValue = UpdateRecipeName(newByteValue, t)
+
+	var recipeType struct {
+		RecipeID string
+		Sender   sdk.AccAddress
+	}
+
+	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &recipeType)
+	t.WithFields(testing.Fields{
+		"rcpTempl":  inttest.AminoCodecFormatter(recipeType),
+		"new_bytes": string(newByteValue),
+	}).MustNil(err, "error reading using GetAminoCdc")
+
+	return msgs.NewMsgEnableRecipe(recipeType.RecipeID, recipeType.Sender)
+}
+
+// RunEnableRecipe is a function to enable recipe
+func RunEnableRecipe(step FixtureStep, t *testing.T) {
+	if FixtureTestOpts.VerifyOnly {
+		return
+	}
+	if step.ParamsRef != "" {
+		rcpMsg := EnableRecipeMsgFromRef(step.ParamsRef, t)
+
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, rcpMsg, rcpMsg.Sender.String(), true)
+		if err != nil {
+			TxBroadcastErrorCheck(err, txhash, step, t)
+			return
+		}
+
+		WaitForNextBlockWithErrorCheck(t)
+
+		TxErrorLogCheck(txhash, step.Output.TxResult.ErrorLog, t)
+		if len(step.Output.TxResult.ErrorLog) > 0 {
+			return
+		}
+
+		txHandleResBytes := GetTxHandleResult(txhash, t)
+		resp := handlers.EnableRecipeResponse{}
+		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
+	}
+}
+
+// DisableRecipeMsgFromRef is a function to get disable recipe message from reference
+func DisableRecipeMsgFromRef(ref string, t *testing.T) msgs.MsgDisableRecipe {
+	byteValue := ReadFile(ref, t)
+	// translate sender from account name to account address
+	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
+	// translate recipe name to recipe id
+	newByteValue = UpdateRecipeName(newByteValue, t)
+
+	var recipeType struct {
+		RecipeID string
+		Sender   sdk.AccAddress
+	}
+
+	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &recipeType)
+	t.WithFields(testing.Fields{
+		"rcpTempl":  inttest.AminoCodecFormatter(recipeType),
+		"new_bytes": string(newByteValue),
+	}).MustNil(err, "error reading using GetAminoCdc")
+
+	return msgs.NewMsgDisableRecipe(recipeType.RecipeID, recipeType.Sender)
+}
+
+// RunDisableRecipe is a function to disable recipe
+func RunDisableRecipe(step FixtureStep, t *testing.T) {
+	if FixtureTestOpts.VerifyOnly {
+		return
+	}
+	if step.ParamsRef != "" {
+		rcpMsg := DisableRecipeMsgFromRef(step.ParamsRef, t)
+
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, rcpMsg, rcpMsg.Sender.String(), true)
+		if err != nil {
+			TxBroadcastErrorCheck(err, txhash, step, t)
+			return
+		}
+
+		WaitForNextBlockWithErrorCheck(t)
+
+		TxErrorLogCheck(txhash, step.Output.TxResult.ErrorLog, t)
+		if len(step.Output.TxResult.ErrorLog) > 0 {
+			return
+		}
+
+		txHandleResBytes := GetTxHandleResult(txhash, t)
+		resp := handlers.DisableRecipeResponse{}
+		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
 	}
 }
 

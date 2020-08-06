@@ -1,0 +1,8 @@
+{
+    "NodeVersion": "0.0.1",
+    "Doubles": [{ "Key": "attack", "Value": "1" }],
+    "Longs": [{ "Key": "level", "Value": "1" }],
+    "Strings": [{ "Key": "Name","Value": "Sling"}, { "Key": "LastName", "Value": "????????"}],
+    "CookbookID": "recipe_flow_cookbook-1589853709",
+    "Sender": "rf_account2"
+}
