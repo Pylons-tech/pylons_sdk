@@ -327,7 +327,14 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 	t.Trace("tx_with_nonce.step.K")
 	err = ioutil.WriteFile(nonceFile, nonceOutput, 0644)
 	if err != nil {
-		return "error writing nonce output file", err
+		exPath := ""
+		ex, err := os.Executable()
+		if err == nil {
+			exPath = filepath.Dir(ex)
+		} else {
+			exPath = "UNDEFINED_EXPATH"
+		}
+		return fmt.Sprintf("error writing nonce output file at %s", exPath), err
 	}
 	t.Trace("tx_with_nonce.step.L")
 
