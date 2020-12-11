@@ -6,6 +6,13 @@ import (
 	"regexp"
 )
 
+// ConditionList is a struct for describing  ItemInput expression conditions
+type ConditionList struct {
+	Doubles DoubleInputParamList
+	Longs   LongInputParamList
+	Strings StringInputParamList
+}
+
 // ItemInput is a wrapper struct for Item for recipes
 type ItemInput struct {
 	ID          string
@@ -13,6 +20,7 @@ type ItemInput struct {
 	Longs       LongInputParamList
 	Strings     StringInputParamList
 	TransferFee FeeInputParam
+	Conditions  ConditionList
 }
 
 // MatchError checks if all the constraint match the given item
