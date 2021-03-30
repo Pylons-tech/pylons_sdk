@@ -13,7 +13,7 @@ func NewRecipe(recipeName, cookbookID, description string,
 	blockInterval int64, // The amount of time to wait to finish running the recipe
 	sender sdk.AccAddress) Recipe {
 	rcp := Recipe{
-		NodeVersion:   SemVer("0.0.1"),
+		NodeVersion:   "0.0.1",
 		Name:          recipeName,
 		CookbookID:    cookbookID,
 		CoinInputs:    coinInputs,
@@ -22,7 +22,7 @@ func NewRecipe(recipeName, cookbookID, description string,
 		Outputs:       outputs,
 		BlockInterval: blockInterval,
 		Description:   description,
-		Sender:        sender,
+		Sender:        sender.String(),
 	}
 
 	rcp.ID = KeyGen(sender)
@@ -31,7 +31,7 @@ func NewRecipe(recipeName, cookbookID, description string,
 
 // GetItemInputRefIndex get item input index from ref string
 func (rcp Recipe) GetItemInputRefIndex(inputRef string) int {
-	for idx, input := range rcp.ItemInputs {
+	for idx, input := range rcp.ItemInputs.List {
 		if input.ID == inputRef {
 			return idx
 		}
