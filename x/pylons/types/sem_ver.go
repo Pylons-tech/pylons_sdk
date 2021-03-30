@@ -5,13 +5,10 @@ import (
 	"regexp"
 )
 
-// SemVer is semantic versioning
-type SemVer string
-
-// Validate validates the SemVer
-func (s SemVer) Validate() error {
+// ValidateVersion validates the SemVer
+func ValidateVersion(s string) error {
 	regex := regexp.MustCompile(`^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$`)
-	if regex.MatchString(string(s)) {
+	if regex.MatchString(s) {
 		return nil
 	}
 

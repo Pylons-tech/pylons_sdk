@@ -9,21 +9,6 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// MsgCreateRecipe defines a CreateRecipe message
-type MsgCreateRecipe struct {
-	// optional RecipeID if someone
-	RecipeID      string `json:",omitempty"`
-	Name          string
-	CookbookID    string // the cookbook guid
-	CoinInputs    types.CoinInputList
-	ItemInputs    types.ItemInputList
-	Entries       types.EntriesList
-	Outputs       types.WeightedOutputsList
-	BlockInterval int64
-	Sender        sdk.AccAddress
-	Description   string
-}
-
 // NewMsgCreateRecipe a constructor for CreateRecipe msg
 func NewMsgCreateRecipe(recipeName, cookbookID, recipeID, description string,
 	coinInputs types.CoinInputList,
@@ -31,18 +16,18 @@ func NewMsgCreateRecipe(recipeName, cookbookID, recipeID, description string,
 	entries types.EntriesList,
 	outputs types.WeightedOutputsList,
 	blockInterval int64,
-	sender sdk.AccAddress) MsgCreateRecipe {
+	sender string) MsgCreateRecipe {
 	return MsgCreateRecipe{
+		RecipeID:      recipeID,
 		Name:          recipeName,
 		CookbookID:    cookbookID,
-		RecipeID:      recipeID,
-		Description:   description,
 		CoinInputs:    coinInputs,
 		ItemInputs:    itemInputs,
-		Entries:       entries,
 		Outputs:       outputs,
-		BlockInterval: int64(blockInterval),
+		BlockInterval: blockInterval,
 		Sender:        sender,
+		Description:   description,
+		Entries:       entries,
 	}
 }
 
@@ -57,7 +42,7 @@ func (msg MsgCreateRecipe) ValidateBasic() error {
 
 	itemInputRefsMap := map[string]bool{}
 	entryIDsMap := map[string]bool{}
-	for _, ii := range msg.ItemInputs {
+	for _, ii := range msg.ItemInputs.List {
 		if ii.ID == "" {
 			continue
 		}
@@ -69,9 +54,9 @@ func (msg MsgCreateRecipe) ValidateBasic() error {
 		}
 		itemInputRefsMap[ii.ID] = true
 	}
-	// validation for the invalid item input reference on entries
-	for _, entry := range msg.Entries {
 
+	// validation for the invalid item input reference on a coins outputs
+	for _, entry := range msg.Entries.CoinOutputs {
 		if err := types.EntryIDValidationError(entry.GetID()); err != nil {
 			return err
 		}
@@ -79,30 +64,34 @@ func (msg MsgCreateRecipe) ValidateBasic() error {
 			return fmt.Errorf("entry with same ID available: ID=%s", entry.GetID())
 		}
 		entryIDsMap[entry.GetID()] = true
-		switch entry := entry.(type) {
-		case types.CoinOutput:
-			coinOutput := entry
-			if err := types.ProgramValidateBasic(coinOutput.Count); err != nil {
-				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "CoinOuput: "+err.Error())
-			}
-			if coinOutput.Coin == types.Pylon {
-				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "There should not be a recipe which generate pylon denom as an output")
-			}
-			if err := sdk.ValidateDenom(coinOutput.Coin); err != nil {
-				return err
-			}
-		case types.ItemModifyOutput:
-			if !itemInputRefsMap[entry.ItemInputRef] {
-				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid item input ref found that does not exist in item inputs")
-			}
-		case types.ItemOutput:
-			// do nothing for now
-		default:
-			return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "invalid entry type available")
+		coinOutput := entry
+		if err := types.ProgramValidateBasic(coinOutput.Count); err != nil {
+			return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "CoinOuput: "+err.Error())
+		}
+		if coinOutput.Coin == types.Pylon {
+			return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "There should not be a recipe which generate pylon denom as an output")
+		}
+		if err := sdk.ValidateDenom(coinOutput.Coin); err != nil {
+			return err
 		}
 	}
 
-	for _, output := range msg.Outputs {
+	// validation for the invalid item input reference on a items with modified outputs
+	for _, entry := range msg.Entries.ItemModifyOutputs {
+		if err := types.EntryIDValidationError(entry.GetID()); err != nil {
+			return err
+		}
+		if entryIDsMap[entry.GetID()] {
+			return fmt.Errorf("entry with same ID available: ID=%s", entry.GetID())
+		}
+		entryIDsMap[entry.GetID()] = true
+		if !itemInputRefsMap[entry.ItemInputRef] {
+			return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Invalid item input ref found that does not exist in item inputs")
+		}
+	}
+	// do nothing for now for items outputs
+
+	for _, output := range msg.Outputs.List {
 		// validation for same ItemInputRef on output
 		usedItemInputRefs := make(map[string]bool)
 		usedEntries := make(map[string]bool)
@@ -116,7 +105,7 @@ func (msg MsgCreateRecipe) ValidateBasic() error {
 			}
 			usedEntries[entryID] = true
 			switch entry := entry.(type) {
-			case types.ItemModifyOutput:
+			case *types.ItemModifyOutput:
 				if usedItemInputRefs[entry.ItemInputRef] {
 					return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "double use of item input within single output result")
 				}
@@ -129,8 +118,8 @@ func (msg MsgCreateRecipe) ValidateBasic() error {
 		}
 	}
 
-	if msg.Sender.Empty() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Sender.String())
+	if msg.Sender == "" {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Sender)
 	}
 
 	if len(msg.Description) < 20 {
@@ -151,5 +140,9 @@ func (msg MsgCreateRecipe) GetSignBytes() []byte {
 
 // GetSigners gets the signer who should have signed the message
 func (msg MsgCreateRecipe) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{msg.Sender}
+	from, err := sdk.AccAddressFromBech32(msg.Sender)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{from}
 }

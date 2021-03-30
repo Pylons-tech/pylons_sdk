@@ -4,26 +4,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// Trade is a construct to perform exchange of items and coins between users. Initiated by the sender and completed by
-// the FulFiller.
-type Trade struct {
-	NodeVersion SemVer
-	ID          string             // the trade guid
-	CoinInputs  CoinInputList      // coins that the fulfiller should send to creator
-	ItemInputs  TradeItemInputList // items that the fulfiller should send to creator
-	CoinOutputs sdk.Coins          // coins that the creator should send to fulfiller
-	ItemOutputs ItemList           // items that the creator should send to fulfiller
-	ExtraInfo   string             // custom trade info text
-	Sender      sdk.AccAddress     // trade creator address
-	FulFiller   sdk.AccAddress     // trade fulfiller address (acceptor)
-	Disabled    bool               // disabled flag
-	Completed   bool               // completed flag
-}
-
-// TradeList is a list of trades
-type TradeList struct {
-	Trades []Trade
-}
+// TypeTrade is a store key for trade
+const TypeTrade = "trade"
 
 // NewTrade creates a new trade
 func NewTrade(extraInfo string,
@@ -33,13 +15,13 @@ func NewTrade(extraInfo string,
 	itemOutputs ItemList,
 	sender sdk.AccAddress) Trade {
 	trd := Trade{
-		NodeVersion: SemVer("0.0.1"),
+		NodeVersion: "0.0.1",
 		CoinInputs:  coinInputs,
 		ItemInputs:  itemInputs,
 		CoinOutputs: coinOutputs,
 		ItemOutputs: itemOutputs,
 		ExtraInfo:   extraInfo,
-		Sender:      sender,
+		Sender:      sender.String(),
 	}
 
 	trd.ID = KeyGen(sender)

@@ -8,22 +8,8 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// MsgUpdateRecipe defines a UpdateRecipe message
-type MsgUpdateRecipe struct {
-	Name          string
-	CookbookID    string // the cookbook guid
-	ID            string // the recipe guid
-	CoinInputs    types.CoinInputList
-	ItemInputs    types.ItemInputList
-	Entries       types.EntriesList
-	Outputs       types.WeightedOutputsList
-	BlockInterval int64
-	Sender        sdk.AccAddress
-	Description   string
-}
-
 // NewMsgUpdateRecipe a constructor for UpdateRecipe msg
-func NewMsgUpdateRecipe(recipeName, cookbookID, id, description string,
+func NewMsgUpdateRecipe(id, recipeName, cookbookID, description string,
 	coinInputs types.CoinInputList,
 	itemInputs types.ItemInputList,
 	entries types.EntriesList,
@@ -31,8 +17,8 @@ func NewMsgUpdateRecipe(recipeName, cookbookID, id, description string,
 	blockInterval int64,
 	sender sdk.AccAddress) MsgUpdateRecipe {
 	return MsgUpdateRecipe{
-		Name:          recipeName,
 		ID:            id,
+		Name:          recipeName,
 		CookbookID:    cookbookID,
 		Description:   description,
 		CoinInputs:    coinInputs,
@@ -40,7 +26,7 @@ func NewMsgUpdateRecipe(recipeName, cookbookID, id, description string,
 		Entries:       entries,
 		Outputs:       outputs,
 		BlockInterval: blockInterval,
-		Sender:        sender,
+		Sender:        sender.String(),
 	}
 }
 
@@ -83,5 +69,9 @@ func (msg MsgUpdateRecipe) GetSignBytes() []byte {
 
 // GetSigners gets the signer who should have signed the message
 func (msg MsgUpdateRecipe) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{msg.Sender}
+	from, err := sdk.AccAddressFromBech32(msg.Sender)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{from}
 }

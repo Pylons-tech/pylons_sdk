@@ -11,23 +11,8 @@ import (
 // DefaultCostPerBlock the amount of pylons to be charged by default
 const DefaultCostPerBlock = 50 // Pylons
 
-// MsgCreateCookbook defines a CreateCookbook message
-type MsgCreateCookbook struct {
-	// optinal id which can be provided by the developer
-	CookbookID   string
-	Name         string
-	Description  string
-	Version      types.SemVer
-	Developer    string
-	SupportEmail types.Email
-	Level        types.Level
-	Sender       sdk.AccAddress
-	// Pylons per block to be charged across this cookbook for delayed execution early completion
-	CostPerBlock *int `json:",omitempty"`
-}
-
 // NewMsgCreateCookbook a constructor for CreateCookbook msg
-func NewMsgCreateCookbook(name, cookbookID, desc, developer string, version types.SemVer, sEmail types.Email, level types.Level, cpb int, sender sdk.AccAddress) MsgCreateCookbook {
+func NewMsgCreateCookbook(name, cookbookID, desc, developer string, version string, sEmail string, level int64, cpb int64, sender sdk.AccAddress) MsgCreateCookbook {
 	return MsgCreateCookbook{
 		CookbookID:   cookbookID,
 		Name:         name,
@@ -36,8 +21,8 @@ func NewMsgCreateCookbook(name, cookbookID, desc, developer string, version type
 		Version:      version,
 		SupportEmail: sEmail,
 		Level:        level,
-		Sender:       sender,
-		CostPerBlock: &cpb,
+		Sender:       sender.String(),
+		CostPerBlock: cpb,
 	}
 }
 
@@ -50,9 +35,8 @@ func (msg MsgCreateCookbook) Type() string { return "create_cookbook" }
 // ValidateBasic validates the Msg
 func (msg MsgCreateCookbook) ValidateBasic() error {
 
-	if msg.Sender.Empty() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Sender.String())
-
+	if msg.Sender == "" {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Sender)
 	}
 
 	if len(msg.Name) < 8 {
@@ -63,15 +47,15 @@ func (msg MsgCreateCookbook) ValidateBasic() error {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "the description should have more than 20 characters")
 	}
 
-	if err := msg.SupportEmail.Validate(); err != nil {
+	if err := types.ValidateEmail(msg.SupportEmail); err != nil {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, err.Error())
 	}
 
-	if err := msg.Level.Validate(); err != nil {
+	if err := types.ValidateLevel(msg.Level); err != nil {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, err.Error())
 	}
 
-	if err := msg.Version.Validate(); err != nil {
+	if err := types.ValidateVersion(msg.Version); err != nil {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, err.Error())
 	}
 
@@ -89,5 +73,9 @@ func (msg MsgCreateCookbook) GetSignBytes() []byte {
 
 // GetSigners gets the signer who should have signed the message
 func (msg MsgCreateCookbook) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{msg.Sender}
+	from, err := sdk.AccAddressFromBech32(msg.Sender)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{from}
 }

@@ -4,19 +4,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// Execution is a recipe execution used for tracking the execution - specifically a
-// scheduled execution
-type Execution struct {
-	NodeVersion SemVer
-	ID          string
-	RecipeID    string // the recipe guid
-	CookbookID  string
-	CoinInputs  sdk.Coins
-	ItemInputs  []Item
-	BlockHeight int64
-	Sender      sdk.AccAddress
-	Completed   bool
-}
+// TypeExecution is a store key for execution
+const TypeExecution = "execution"
 
 // ExecutionList describes executions list
 type ExecutionList struct {
@@ -30,13 +19,13 @@ func NewExecution(recipeID string, cookbookID string, ci sdk.Coins,
 	completed bool) Execution {
 
 	exec := Execution{
-		NodeVersion: SemVer("0.0.1"),
+		NodeVersion: "0.0.1",
 		RecipeID:    recipeID,
 		CookbookID:  cookbookID,
 		CoinInputs:  ci,
 		ItemInputs:  itemInputs,
 		BlockHeight: blockHeight,
-		Sender:      sender,
+		Sender:      sender.String(),
 		Completed:   completed,
 	}
 

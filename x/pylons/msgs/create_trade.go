@@ -4,21 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/Pylons-tech/pylons_sdk/x/pylons/config"
+	"github.com/Pylons-tech/pylons/x/pylons/config"
 	"github.com/Pylons-tech/pylons_sdk/x/pylons/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
-
-// MsgCreateTrade defines a CreateTrade message
-type MsgCreateTrade struct {
-	CoinInputs  types.CoinInputList
-	ItemInputs  types.TradeItemInputList
-	CoinOutputs sdk.Coins
-	ItemOutputs types.ItemList
-	ExtraInfo   string
-	Sender      sdk.AccAddress
-}
 
 // NewMsgCreateTrade a constructor for CreateTrade msg
 func NewMsgCreateTrade(
@@ -34,7 +24,7 @@ func NewMsgCreateTrade(
 		CoinOutputs: coinOutputs,
 		ItemOutputs: itemOutputs,
 		ExtraInfo:   extraInfo,
-		Sender:      sender,
+		Sender:      sender.String(),
 	}
 }
 
@@ -48,11 +38,11 @@ func (msg MsgCreateTrade) Type() string { return "create_trade" }
 func (msg MsgCreateTrade) ValidateBasic() error {
 	tradePylonAmount := int64(0)
 
-	if msg.Sender.Empty() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Sender.String())
+	if msg.Sender == "" {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Sender)
 
 	}
-	if msg.CoinOutputs == nil && msg.ItemOutputs == nil {
+	if msg.CoinOutputs == nil && msg.ItemOutputs.List == nil {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "sender not providing anything in exchange of the trade: empty outputs")
 	}
 
@@ -65,12 +55,12 @@ func (msg MsgCreateTrade) ValidateBasic() error {
 		tradePylonAmount += msg.CoinOutputs.AmountOf(types.Pylon).Int64()
 	}
 
-	if msg.ItemInputs == nil && msg.CoinInputs == nil {
+	if msg.ItemInputs.List == nil && msg.CoinInputs.Coins == nil {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "sender not receiving anything for the trade: empty inputs")
 	}
 
-	if msg.CoinInputs != nil {
-		for _, coinInput := range msg.CoinInputs {
+	if msg.CoinInputs.Coins != nil {
+		for _, coinInput := range msg.CoinInputs.Coins {
 			if coinInput.Count == 0 {
 				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "there should be no 0 amount denom on coin inputs")
 			}
@@ -82,7 +72,7 @@ func (msg MsgCreateTrade) ValidateBasic() error {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("there should be more than %d amount of pylon per trade", config.Config.Fee.MinTradePrice))
 	}
 
-	if msg.ItemInputs != nil {
+	if msg.ItemInputs.List != nil {
 		err := msg.ItemInputs.Validate()
 		if err != nil {
 			return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, err.Error())
@@ -103,5 +93,9 @@ func (msg MsgCreateTrade) GetSignBytes() []byte {
 
 // GetSigners gets the signer who should have signed the message
 func (msg MsgCreateTrade) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{msg.Sender}
+	from, err := sdk.AccAddressFromBech32(msg.Sender)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{from}
 }
