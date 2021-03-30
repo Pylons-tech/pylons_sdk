@@ -19,6 +19,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
+	authsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -38,11 +39,11 @@ func fileExists(filename string) bool {
 }
 
 // GenTxWithMsg is a function to generate transaction from msg
-func GenTxWithMsg(messages []sdk.Msg) (auth.StdTx, error) {
+func GenTxWithMsg(messages []sdk.Msg) (authsigning.Tx, error) {
 	var err error
 	for i, msg := range messages {
 		if err = msg.ValidateBasic(); err != nil {
-			return auth.StdTx{}, fmt.Errorf("%dth msg does not pass basic validation for %s", i, err.Error())
+			return nil, fmt.Errorf("%dth msg does not pass basic validation for %s", i, err.Error())
 		}
 	}
 	cdc := GetAminoCdc()
@@ -51,17 +52,17 @@ func GenTxWithMsg(messages []sdk.Msg) (auth.StdTx, error) {
 	viper.Set("keyring-backend", "test")
 	viper.Set("chain-id", "pylonschain")
 
-	txBldr := auth.NewTxBuilderFromCLI(&bytes.Buffer{}).WithTxEncoder(utils.GetTxEncoder(cdc)).WithChainID("pylonschain")
+	txBldr := app.MakeEncodingConfig()
 	if txBldr.SimulateAndExecute() {
 		txBldr, err = utils.EnrichWithGas(txBldr, cliCtx, messages)
 		if err != nil {
-			return auth.StdTx{}, err
+			return nil, err
 		}
 	}
 
 	stdSignMsg, err := txBldr.BuildSignMsg(messages)
 	if err != nil {
-		return auth.StdTx{}, err
+		return nil, err
 	}
 	stdSignMsg.Fee.Gas = 10000000
 

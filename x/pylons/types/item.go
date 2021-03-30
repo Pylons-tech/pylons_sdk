@@ -4,7 +4,7 @@ import (
 	"errors"
 	"reflect"
 
-	"github.com/Pylons-tech/pylons/x/pylons/config"
+	"github.com/Pylons-tech/pylons_sdk/x/pylons/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

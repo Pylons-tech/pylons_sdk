@@ -10,7 +10,7 @@ import (
 	math "math"
 	math_bits "math/bits"
 
-	types "github.com/Pylons-tech/pylons/x/pylons/types"
+	types "github.com/Pylons-tech/pylons_sdk/x/pylons/types"
 	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
 	types1 "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/gogo/protobuf/gogoproto"
