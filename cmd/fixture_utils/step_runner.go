@@ -1,6 +1,7 @@
 package fixturetest
 
 import (
+	"encoding/base64"
 	"encoding/json"
 
 	testing "github.com/Pylons-tech/pylons_sdk/cmd/evtesting"
@@ -126,28 +127,6 @@ func GetPylonsMsgFromRef(ref string, t *testing.T) msgs.MsgGetPylons {
 	)
 }
 
-// SendCoinsMsgFromRef is a function to SendCoins message from reference
-func SendCoinsMsgFromRef(ref string, t *testing.T) msgs.MsgSendCoins {
-	byteValue := ReadFile(ref, t)
-	// translate sender from account name to account address
-	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
-	newByteValue = UpdateReceiverKeyToAddress(newByteValue, t)
-
-	var siType struct {
-		Sender   sdk.AccAddress
-		Receiver sdk.AccAddress
-		Amount   sdk.Coins
-	}
-
-	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &siType)
-	t.WithFields(testing.Fields{
-		"siType":    inttest.AminoCodecFormatter(siType),
-		"new_bytes": string(newByteValue),
-	}).MustNil(err, "error reading using GetAminoCdc")
-
-	return msgs.NewMsgSendCoins(siType.Amount, siType.Sender, siType.Receiver)
-}
-
 // RunGetPylons is a function to run GetPylos message
 func RunGetPylons(step FixtureStep, t *testing.T) {
 	if FixtureTestOpts.VerifyOnly {
@@ -169,6 +148,82 @@ func RunGetPylons(step FixtureStep, t *testing.T) {
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
 	}
+}
+
+// GoogleIAPGetPylonsMsgFromRef is a function to get GoogleIAPGetPylons message from reference
+func GoogleIAPGetPylonsMsgFromRef(ref string, t *testing.T) msgs.MsgGoogleIAPGetPylons {
+	byteValue := ReadFile(ref, t)
+	// translate requester from account name to account address
+	newByteValue := UpdateRequesterKeyToAddress(byteValue, t)
+
+	var gigpType struct {
+		ProductID     string
+		PurchaseToken string
+		ReceiptData   string
+		Signature     string
+		Requester     sdk.AccAddress
+	}
+
+	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &gigpType)
+	t.WithFields(testing.Fields{
+		"gigpType":  inttest.AminoCodecFormatter(gigpType),
+		"new_bytes": string(newByteValue),
+	}).MustNil(err, "error reading using GetAminoCdc")
+
+	receiptDataBase64 := base64.StdEncoding.EncodeToString([]byte(gigpType.ReceiptData))
+
+	return msgs.NewMsgGoogleIAPGetPylons(
+		gigpType.ProductID,
+		gigpType.PurchaseToken,
+		receiptDataBase64,
+		gigpType.Signature,
+		gigpType.Requester,
+	)
+}
+
+// RunGoogleIAPGetPylons is a function to run GoogleIAPGetPylons message
+func RunGoogleIAPGetPylons(step FixtureStep, t *testing.T) {
+	if FixtureTestOpts.VerifyOnly {
+		return
+	}
+	if step.ParamsRef != "" {
+		gigpMsg := GoogleIAPGetPylonsMsgFromRef(step.ParamsRef, t)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, gigpMsg, gigpMsg.Requester.String(), true)
+		if err != nil {
+			TxBroadcastErrorCheck(err, txhash, step, t)
+			return
+		}
+
+		WaitForNextBlockWithErrorCheck(t)
+
+		txHandleResBytes := GetTxHandleResult(txhash, t)
+		resp := handlers.GoogleIAPGetPylonsResponse{}
+		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
+	}
+}
+
+// SendCoinsMsgFromRef is a function to SendCoins message from reference
+func SendCoinsMsgFromRef(ref string, t *testing.T) msgs.MsgSendCoins {
+	byteValue := ReadFile(ref, t)
+	// translate sender from account name to account address
+	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
+	newByteValue = UpdateReceiverKeyToAddress(newByteValue, t)
+
+	var siType struct {
+		Sender   sdk.AccAddress
+		Receiver sdk.AccAddress
+		Amount   sdk.Coins
+	}
+
+	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &siType)
+	t.WithFields(testing.Fields{
+		"siType":    inttest.AminoCodecFormatter(siType),
+		"new_bytes": string(newByteValue),
+	}).MustNil(err, "error reading using GetAminoCdc")
+
+	return msgs.NewMsgSendCoins(siType.Amount, siType.Sender, siType.Receiver)
 }
 
 // RunSendCoins is a function to send coins from one address to another
@@ -232,8 +287,20 @@ func RunMultiMsgTx(step FixtureStep, t *testing.T) {
 			case "create_cookbook":
 				msg := CreateCookbookMsgFromRef(ref.ParamsRef, t)
 				newMsg, sender = msg, msg.Sender
+			case "update_cookbook":
+				msg := UpdateCookbookMsgFromRef(ref.ParamsRef, t)
+				newMsg, sender = msg, msg.Sender
 			case "create_recipe":
 				msg := CreateRecipeMsgFromRef(ref.ParamsRef, t)
+				newMsg, sender = msg, msg.Sender
+			case "update_recipe":
+				msg := UpdateRecipeMsgFromRef(ref.ParamsRef, t)
+				newMsg, sender = msg, msg.Sender
+			case "enable_recipe":
+				msg := EnableRecipeMsgFromRef(ref.ParamsRef, t)
+				newMsg, sender = msg, msg.Sender
+			case "disable_recipe":
+				msg := DisableRecipeMsgFromRef(ref.ParamsRef, t)
 				newMsg, sender = msg, msg.Sender
 			case "execute_recipe":
 				msg := ExecuteRecipeMsgFromRef(ref.ParamsRef, t)
@@ -249,6 +316,9 @@ func RunMultiMsgTx(step FixtureStep, t *testing.T) {
 				newMsg, sender = msg, msg.Sender
 			case "disable_trade":
 				msg := DisableTradeMsgFromRef(ref.ParamsRef, t)
+				newMsg, sender = msg, msg.Sender
+			case "enable_trade":
+				msg := EnableTradeMsgFromRef(ref.ParamsRef, t)
 				newMsg, sender = msg, msg.Sender
 			}
 			msgs = append(msgs, newMsg)
@@ -530,6 +600,58 @@ func RunCreateCookbook(step FixtureStep, t *testing.T) {
 	}
 }
 
+// UpdateCookbookMsgFromRef is a function to get update cookbook message from reference
+func UpdateCookbookMsgFromRef(ref string, t *testing.T) msgs.MsgUpdateCookbook {
+	byteValue := ReadFile(ref, t)
+	// translate sender from account name to account address
+	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
+
+	var cbType types.Cookbook
+	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &cbType)
+	t.WithFields(testing.Fields{
+		"cbType":    inttest.AminoCodecFormatter(cbType),
+		"new_bytes": string(newByteValue),
+	}).MustNil(err, "error reading using GetAminoCdc")
+
+	return msgs.NewMsgUpdateCookbook(
+		cbType.ID,
+		cbType.Description,
+		cbType.Developer,
+		cbType.Version,
+		cbType.SupportEmail,
+		cbType.Sender,
+	)
+}
+
+// RunUpdateCookbook is a function to update cookbook
+func RunUpdateCookbook(step FixtureStep, t *testing.T) {
+	if FixtureTestOpts.VerifyOnly {
+		return
+	}
+	if step.ParamsRef != "" {
+		cbMsg := UpdateCookbookMsgFromRef(step.ParamsRef, t)
+
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, cbMsg, cbMsg.Sender.String(), true)
+		if err != nil {
+			TxBroadcastErrorCheck(err, txhash, step, t)
+			return
+		}
+
+		WaitForNextBlockWithErrorCheck(t)
+
+		TxErrorLogCheck(txhash, step.Output.TxResult.ErrorLog, t)
+		if len(step.Output.TxResult.ErrorLog) > 0 {
+			return
+		}
+
+		txHandleResBytes := GetTxHandleResult(txhash, t)
+		resp := handlers.UpdateCookbookResponse{}
+		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		t.MustTrue(resp.CookbookID != "", "coookbook id shouldn't be empty")
+	}
+}
+
 // RunMockCookbook = RunMockAccount + RunCreateCookbook
 func RunMockCookbook(step FixtureStep, t *testing.T) {
 	if !FixtureTestOpts.CreateNewCookbook || FixtureTestOpts.VerifyOnly {
@@ -604,6 +726,170 @@ func RunCreateRecipe(step FixtureStep, t *testing.T) {
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(resp.RecipeID != "", "recipe id shouldn't be empty")
+	}
+}
+
+// UpdateRecipeMsgFromRef is a function to get update recipe message from reference
+func UpdateRecipeMsgFromRef(ref string, t *testing.T) msgs.MsgUpdateRecipe {
+	byteValue := ReadFile(ref, t)
+	// translate sender from account name to account address
+	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
+	// translate cookbook name to cookbook id
+	newByteValue = UpdateCBNameToID(newByteValue, t)
+	// get item inputs from fileNames
+	itemInputs := GetItemInputsFromBytes(newByteValue, t)
+	// get entries from fileNames
+	entries := GetEntriesFromBytes(newByteValue, t)
+
+	var rcpTempl types.Recipe
+	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &rcpTempl)
+	t.WithFields(testing.Fields{
+		"rcpTempl":  inttest.AminoCodecFormatter(rcpTempl),
+		"new_bytes": string(newByteValue),
+	}).MustNil(err, "error reading using GetAminoCdc")
+
+	return msgs.NewMsgUpdateRecipe(
+		rcpTempl.ID,
+		rcpTempl.Name,
+		rcpTempl.CookbookID,
+		rcpTempl.Description,
+		rcpTempl.CoinInputs,
+		itemInputs,
+		entries,
+		rcpTempl.Outputs,
+		rcpTempl.BlockInterval,
+		rcpTempl.Sender,
+	)
+}
+
+// RunUpdateRecipe is a function to update recipe
+func RunUpdateRecipe(step FixtureStep, t *testing.T) {
+	if FixtureTestOpts.VerifyOnly {
+		return
+	}
+	if step.ParamsRef != "" {
+		rcpMsg := UpdateRecipeMsgFromRef(step.ParamsRef, t)
+
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, rcpMsg, rcpMsg.Sender.String(), true)
+		if err != nil {
+			TxBroadcastErrorCheck(err, txhash, step, t)
+			return
+		}
+
+		WaitForNextBlockWithErrorCheck(t)
+
+		TxErrorLogCheck(txhash, step.Output.TxResult.ErrorLog, t)
+		if len(step.Output.TxResult.ErrorLog) > 0 {
+			return
+		}
+
+		txHandleResBytes := GetTxHandleResult(txhash, t)
+		resp := handlers.UpdateRecipeResponse{}
+		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		t.MustTrue(resp.RecipeID != "", "recipe id shouldn't be empty")
+	}
+}
+
+// EnableRecipeMsgFromRef is a function to get enable recipe message from reference
+func EnableRecipeMsgFromRef(ref string, t *testing.T) msgs.MsgEnableRecipe {
+	byteValue := ReadFile(ref, t)
+	// translate sender from account name to account address
+	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
+	// translate recipe name to recipe id
+	newByteValue = UpdateRecipeName(newByteValue, t)
+
+	var recipeType struct {
+		RecipeID string
+		Sender   sdk.AccAddress
+	}
+
+	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &recipeType)
+	t.WithFields(testing.Fields{
+		"rcpTempl":  inttest.AminoCodecFormatter(recipeType),
+		"new_bytes": string(newByteValue),
+	}).MustNil(err, "error reading using GetAminoCdc")
+
+	return msgs.NewMsgEnableRecipe(recipeType.RecipeID, recipeType.Sender)
+}
+
+// RunEnableRecipe is a function to enable recipe
+func RunEnableRecipe(step FixtureStep, t *testing.T) {
+	if FixtureTestOpts.VerifyOnly {
+		return
+	}
+	if step.ParamsRef != "" {
+		rcpMsg := EnableRecipeMsgFromRef(step.ParamsRef, t)
+
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, rcpMsg, rcpMsg.Sender.String(), true)
+		if err != nil {
+			TxBroadcastErrorCheck(err, txhash, step, t)
+			return
+		}
+
+		WaitForNextBlockWithErrorCheck(t)
+
+		TxErrorLogCheck(txhash, step.Output.TxResult.ErrorLog, t)
+		if len(step.Output.TxResult.ErrorLog) > 0 {
+			return
+		}
+
+		txHandleResBytes := GetTxHandleResult(txhash, t)
+		resp := handlers.EnableRecipeResponse{}
+		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
+	}
+}
+
+// DisableRecipeMsgFromRef is a function to get disable recipe message from reference
+func DisableRecipeMsgFromRef(ref string, t *testing.T) msgs.MsgDisableRecipe {
+	byteValue := ReadFile(ref, t)
+	// translate sender from account name to account address
+	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
+	// translate recipe name to recipe id
+	newByteValue = UpdateRecipeName(newByteValue, t)
+
+	var recipeType struct {
+		RecipeID string
+		Sender   sdk.AccAddress
+	}
+
+	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &recipeType)
+	t.WithFields(testing.Fields{
+		"rcpTempl":  inttest.AminoCodecFormatter(recipeType),
+		"new_bytes": string(newByteValue),
+	}).MustNil(err, "error reading using GetAminoCdc")
+
+	return msgs.NewMsgDisableRecipe(recipeType.RecipeID, recipeType.Sender)
+}
+
+// RunDisableRecipe is a function to disable recipe
+func RunDisableRecipe(step FixtureStep, t *testing.T) {
+	if FixtureTestOpts.VerifyOnly {
+		return
+	}
+	if step.ParamsRef != "" {
+		rcpMsg := DisableRecipeMsgFromRef(step.ParamsRef, t)
+
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, rcpMsg, rcpMsg.Sender.String(), true)
+		if err != nil {
+			TxBroadcastErrorCheck(err, txhash, step, t)
+			return
+		}
+
+		WaitForNextBlockWithErrorCheck(t)
+
+		TxErrorLogCheck(txhash, step.Output.TxResult.ErrorLog, t)
+		if len(step.Output.TxResult.ErrorLog) > 0 {
+			return
+		}
+
+		txHandleResBytes := GetTxHandleResult(txhash, t)
+		resp := handlers.DisableRecipeResponse{}
+		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
 	}
 }
 
@@ -847,6 +1133,57 @@ func RunDisableTrade(step FixtureStep, t *testing.T) {
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
 		resp := handlers.DisableTradeResponse{}
+		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
+	}
+}
+
+// EnableTradeMsgFromRef collect enable trade msg from reference string
+func EnableTradeMsgFromRef(ref string, t *testing.T) msgs.MsgEnableTrade {
+	byteValue := ReadFile(ref, t)
+	// translate sender from account name to account address
+	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
+	// translate extra info to trade id
+	newByteValue = UpdateTradeExtraInfoToID(newByteValue, t)
+
+	var trdType struct {
+		TradeID string
+		Sender  sdk.AccAddress
+	}
+
+	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &trdType)
+	t.WithFields(testing.Fields{
+		"trdType":   inttest.AminoCodecFormatter(trdType),
+		"new_bytes": string(newByteValue),
+	}).MustNil(err, "error reading using GetAminoCdc")
+
+	return msgs.NewMsgEnableTrade(trdType.TradeID, trdType.Sender)
+}
+
+// RunEnableTrade is a function to enable trade
+func RunEnableTrade(step FixtureStep, t *testing.T) {
+
+	if FixtureTestOpts.VerifyOnly {
+		return
+	}
+	if step.ParamsRef != "" {
+		dsTrdMsg := EnableTradeMsgFromRef(step.ParamsRef, t)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, dsTrdMsg, dsTrdMsg.Sender.String(), true)
+		if err != nil {
+			TxBroadcastErrorCheck(err, txhash, step, t)
+			return
+		}
+
+		WaitForNextBlockWithErrorCheck(t)
+
+		TxErrorLogCheck(txhash, step.Output.TxResult.ErrorLog, t)
+		if len(step.Output.TxResult.ErrorLog) > 0 {
+			return
+		}
+
+		txHandleResBytes := GetTxHandleResult(txhash, t)
+		resp := handlers.EnableTradeResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)

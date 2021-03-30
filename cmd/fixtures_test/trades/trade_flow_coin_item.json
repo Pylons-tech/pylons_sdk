@@ -1,0 +1,14 @@
+{
+    "NodeVersion": "0.0.1",
+    "CoinInputs":[
+        {
+            "Coin": "pylon",
+            "Count": "100"
+        }
+    ],
+    "ItemInputRefs": null,
+    "CoinOutputs": null,
+    "ItemOutputNames": ["Trade Flow Sword v1"],
+    "ExtraInfo":"trade flow coin to item trading",
+    "Sender":"trade_flow_account2"
+}
