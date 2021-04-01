@@ -123,7 +123,7 @@ func GetPylonsMsgFromRef(ref string, t *testing.T) msgs.MsgGetPylons {
 	}).MustNil(err, "error converting key to address")
 	return msgs.NewMsgGetPylons(
 		types.NewPylon(55000),
-		sdkAddr,
+		sdkAddr.String(),
 	)
 }
 
@@ -177,7 +177,7 @@ func GoogleIAPGetPylonsMsgFromRef(ref string, t *testing.T) msgs.MsgGoogleIAPGet
 		gigpType.PurchaseToken,
 		receiptDataBase64,
 		gigpType.Signature,
-		gigpType.Requester,
+		gigpType.Requester.String(),
 	)
 }
 
@@ -223,7 +223,7 @@ func SendCoinsMsgFromRef(ref string, t *testing.T) msgs.MsgSendCoins {
 		"new_bytes": string(newByteValue),
 	}).MustNil(err, "error reading using GetAminoCdc")
 
-	return msgs.NewMsgSendCoins(siType.Amount, siType.Sender, siType.Receiver)
+	return msgs.NewMsgSendCoins(siType.Amount, siType.Sender, siType.Receiver.String())
 }
 
 // RunSendCoins is a function to send coins from one address to another
@@ -361,7 +361,7 @@ func CheckExecutionMsgFromRef(ref string, t *testing.T) msgs.MsgCheckExecution {
 	return msgs.NewMsgCheckExecution(
 		execType.ExecID,
 		execType.PayToComplete,
-		execType.Sender,
+		execType.Sender.String(),
 	)
 }
 
@@ -469,7 +469,7 @@ func SendItemsMsgFromRef(ref string, t *testing.T) msgs.MsgSendItems {
 	// translate itemNames to itemIDs
 	ItemIDs := GetItemIDsFromNames(newByteValue, siType.Sender.String(), false, false, t)
 
-	return msgs.NewMsgSendItems(ItemIDs, siType.Sender, siType.Receiver)
+	return msgs.NewMsgSendItems(ItemIDs, siType.Sender.String(), siType.Receiver.String())
 }
 
 // RunSendItems is a function to send items to another user
@@ -810,7 +810,7 @@ func EnableRecipeMsgFromRef(ref string, t *testing.T) msgs.MsgEnableRecipe {
 		"new_bytes": string(newByteValue),
 	}).MustNil(err, "error reading using GetAminoCdc")
 
-	return msgs.NewMsgEnableRecipe(recipeType.RecipeID, recipeType.Sender)
+	return msgs.NewMsgEnableRecipe(recipeType.RecipeID, recipeType.Sender.String())
 }
 
 // RunEnableRecipe is a function to enable recipe
@@ -861,7 +861,7 @@ func DisableRecipeMsgFromRef(ref string, t *testing.T) msgs.MsgDisableRecipe {
 		"new_bytes": string(newByteValue),
 	}).MustNil(err, "error reading using GetAminoCdc")
 
-	return msgs.NewMsgDisableRecipe(recipeType.RecipeID, recipeType.Sender)
+	return msgs.NewMsgDisableRecipe(recipeType.RecipeID, recipeType.Sender.String())
 }
 
 // RunDisableRecipe is a function to disable recipe
@@ -915,7 +915,7 @@ func ExecuteRecipeMsgFromRef(ref string, t *testing.T) msgs.MsgExecuteRecipe {
 	// translate itemNames to itemIDs
 	ItemIDs := GetItemIDsFromNames(newByteValue, execType.Sender.String(), false, false, t)
 
-	return msgs.NewMsgExecuteRecipe(execType.RecipeID, execType.Sender, ItemIDs)
+	return msgs.NewMsgExecuteRecipe(execType.RecipeID, execType.Sender.String(), ItemIDs)
 }
 
 // RunExecuteRecipe is executed when an action "execute_recipe" is called
@@ -1056,7 +1056,7 @@ func FulfillTradeMsgFromRef(ref string, t *testing.T) msgs.MsgFulfillTrade {
 	// translate itemNames to itemIDs
 	ItemIDs := GetItemIDsFromNames(newByteValue, trdType.Sender.String(), false, false, t)
 
-	return msgs.NewMsgFulfillTrade(trdType.TradeID, trdType.Sender, ItemIDs)
+	return msgs.NewMsgFulfillTrade(trdType.TradeID, trdType.Sender.String(), ItemIDs)
 }
 
 // RunFulfillTrade is a function to fulfill trade
@@ -1107,7 +1107,7 @@ func DisableTradeMsgFromRef(ref string, t *testing.T) msgs.MsgDisableTrade {
 		"new_bytes": string(newByteValue),
 	}).MustNil(err, "error reading using GetAminoCdc")
 
-	return msgs.NewMsgDisableTrade(trdType.TradeID, trdType.Sender)
+	return msgs.NewMsgDisableTrade(trdType.TradeID, trdType.Sender.String())
 }
 
 // RunDisableTrade is a function to disable trade
@@ -1158,7 +1158,7 @@ func EnableTradeMsgFromRef(ref string, t *testing.T) msgs.MsgEnableTrade {
 		"new_bytes": string(newByteValue),
 	}).MustNil(err, "error reading using GetAminoCdc")
 
-	return msgs.NewMsgEnableTrade(trdType.TradeID, trdType.Sender)
+	return msgs.NewMsgEnableTrade(trdType.TradeID, trdType.Sender.String())
 }
 
 // RunEnableTrade is a function to enable trade

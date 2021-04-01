@@ -49,7 +49,7 @@ func MockAccount(key string, t *testing.T) {
 	// get initial balance
 	sdkAddr, err := sdk.AccAddressFromBech32(addr)
 	t.MustNil(err, "error converting string cosmos address to sdk struct")
-	getPylonsMsg := msgs.NewMsgGetPylons(types.PremiumTier.Fee, sdkAddr)
+	getPylonsMsg := msgs.NewMsgGetPylons(types.PremiumTier.Fee, sdkAddr.String())
 	txhash, err := inttestSDK.TestTxWithMsgWithNonce(t, &getPylonsMsg, key, false)
 	t.WithFields(testing.Fields{
 		"txhash": txhash,

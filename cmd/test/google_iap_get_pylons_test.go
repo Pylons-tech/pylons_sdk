@@ -85,7 +85,7 @@ func TestGoogleIAPGetPylonsViaCLI(originT *originT.T) {
 
 			receiptDataBase64 := base64.StdEncoding.EncodeToString([]byte(tc.receiptData))
 
-			msgGoogleIAPGetPylons := msgs.NewMsgGoogleIAPGetPylons(tc.productID, tc.purchaseToken, receiptDataBase64, tc.signature, getPylonsSdkAddr)
+			msgGoogleIAPGetPylons := msgs.NewMsgGoogleIAPGetPylons(tc.productID, tc.purchaseToken, receiptDataBase64, tc.signature, getPylonsSdkAddr.String())
 			txhash, err := inttestSDK.TestTxWithMsgWithNonce(t,
 				&msgGoogleIAPGetPylons,
 				getPylonsKey,

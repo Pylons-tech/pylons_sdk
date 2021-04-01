@@ -9,7 +9,7 @@ import (
 )
 
 // NewMsgUpdateCookbook a constructor for UpdateCookbook msg
-func NewMsgUpdateCookbook(ID, desc, developer, version, sEmail string, sender string) MsgUpdateCookbook {
+func NewMsgUpdateCookbook(ID, desc, developer, version, sEmail, sender string) MsgUpdateCookbook {
 	return MsgUpdateCookbook{
 		ID:           ID,
 		Description:  desc,
