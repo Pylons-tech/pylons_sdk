@@ -99,7 +99,7 @@ func MockCookbook(ownerKey string, createNew bool, t *testing.T) string {
 		"example@example.com",
 		0,
 		msgs.DefaultCostPerBlock,
-		cbOwnerSdkAddr)
+		cbOwnerSdkAddr.String())
 	txhash, err := inttestSDK.TestTxWithMsgWithNonce(t, &cbMsg, ownerKey, false)
 	if err != nil {
 		TxBroadcastErrorCheck(txhash, err, t)
@@ -243,7 +243,7 @@ func MockItemGUID(cbID, sender, name string, t *testing.T) string {
 				},
 			},
 		},
-		sdkAddr,
+		sdkAddr.String(),
 		0,
 	)
 	txhash, err := inttestSDK.TestTxWithMsgWithNonce(t, &fiatItemMsg, sender, false)
@@ -278,7 +278,7 @@ func MockItemGUIDWithFee(cbID, sender, name string, transferFee int64, t *testin
 				},
 			},
 		},
-		itemOwnerSdkAddr,
+		itemOwnerSdkAddr.String(),
 		0,
 	)
 	txhash, err := inttestSDK.TestTxWithMsgWithNonce(t, &fiatItemMsg, sender, false)
@@ -330,7 +330,7 @@ func MockDetailedTradeGUID(
 		outputCoins,
 		outputItems,
 		extraInfo,
-		sdkAddr,
+		sdkAddr.String(),
 	)
 	txhash, err := inttestSDK.TestTxWithMsgWithNonce(t,
 		&createTradeMsg,

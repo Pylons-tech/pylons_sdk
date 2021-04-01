@@ -134,7 +134,7 @@ func RunGetPylons(step FixtureStep, t *testing.T) {
 	}
 	if step.ParamsRef != "" {
 		gpMsg := GetPylonsMsgFromRef(step.ParamsRef, t)
-		txhash, err := inttest.TestTxWithMsgWithNonce(t, gpMsg, gpMsg.Requester.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, &gpMsg, gpMsg.Requester, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -143,7 +143,7 @@ func RunGetPylons(step FixtureStep, t *testing.T) {
 		WaitForNextBlockWithErrorCheck(t)
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
-		resp := handlers.GetPylonsResponse{}
+		resp := msgs.MsgGetPylonsResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
@@ -188,7 +188,7 @@ func RunGoogleIAPGetPylons(step FixtureStep, t *testing.T) {
 	}
 	if step.ParamsRef != "" {
 		gigpMsg := GoogleIAPGetPylonsMsgFromRef(step.ParamsRef, t)
-		txhash, err := inttest.TestTxWithMsgWithNonce(t, gigpMsg, gigpMsg.Requester.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, &gigpMsg, gigpMsg.Requester, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -197,7 +197,7 @@ func RunGoogleIAPGetPylons(step FixtureStep, t *testing.T) {
 		WaitForNextBlockWithErrorCheck(t)
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
-		resp := handlers.GoogleIAPGetPylonsResponse{}
+		resp := msgs.MsgGoogleIAPGetPylonsResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
@@ -233,7 +233,7 @@ func RunSendCoins(step FixtureStep, t *testing.T) {
 	}
 	if step.ParamsRef != "" {
 		scMsg := SendCoinsMsgFromRef(step.ParamsRef, t)
-		txhash, err := inttest.TestTxWithMsgWithNonce(t, scMsg, scMsg.Sender.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, &scMsg, scMsg.Sender, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -247,7 +247,7 @@ func RunSendCoins(step FixtureStep, t *testing.T) {
 		}
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
-		resp := handlers.GetPylonsResponse{}
+		resp := msgs.MsgGetPylonsResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
@@ -274,62 +274,62 @@ func RunMultiMsgTx(step FixtureStep, t *testing.T) {
 	}
 	if len(step.MsgRefs) != 0 {
 		var msgs []sdk.Msg
-		var sender sdk.AccAddress
+		var sender string
 		for _, ref := range step.MsgRefs {
 			var newMsg sdk.Msg
 			switch ref.Action {
 			case "fiat_item":
 				msg := FiatItemMsgFromRef(ref.ParamsRef, t)
-				newMsg, sender = msg, msg.Sender
+				newMsg, sender = &msg, msg.Sender
 			case "update_item_string":
 				msg := UpdateItemStringMsgFromRef(ref.ParamsRef, t)
-				newMsg, sender = msg, msg.Sender
+				newMsg, sender = &msg, msg.Sender
 			case "create_cookbook":
 				msg := CreateCookbookMsgFromRef(ref.ParamsRef, t)
-				newMsg, sender = msg, msg.Sender
+				newMsg, sender = &msg, msg.Sender
 			case "update_cookbook":
 				msg := UpdateCookbookMsgFromRef(ref.ParamsRef, t)
-				newMsg, sender = msg, msg.Sender
+				newMsg, sender = &msg, msg.Sender
 			case "create_recipe":
 				msg := CreateRecipeMsgFromRef(ref.ParamsRef, t)
-				newMsg, sender = msg, msg.Sender
+				newMsg, sender = &msg, msg.Sender
 			case "update_recipe":
 				msg := UpdateRecipeMsgFromRef(ref.ParamsRef, t)
-				newMsg, sender = msg, msg.Sender
+				newMsg, sender = &msg, msg.Sender
 			case "enable_recipe":
 				msg := EnableRecipeMsgFromRef(ref.ParamsRef, t)
-				newMsg, sender = msg, msg.Sender
+				newMsg, sender = &msg, msg.Sender
 			case "disable_recipe":
 				msg := DisableRecipeMsgFromRef(ref.ParamsRef, t)
-				newMsg, sender = msg, msg.Sender
+				newMsg, sender = &msg, msg.Sender
 			case "execute_recipe":
 				msg := ExecuteRecipeMsgFromRef(ref.ParamsRef, t)
-				newMsg, sender = msg, msg.Sender
+				newMsg, sender = &msg, msg.Sender
 			case "check_execution":
 				msg := CheckExecutionMsgFromRef(ref.ParamsRef, t)
-				newMsg, sender = msg, msg.Sender
+				newMsg, sender = &msg, msg.Sender
 			case "create_trade":
 				msg := CreateTradeMsgFromRef(ref.ParamsRef, t)
-				newMsg, sender = msg, msg.Sender
+				newMsg, sender = &msg, msg.Sender
 			case "fulfill_trade":
 				msg := FulfillTradeMsgFromRef(ref.ParamsRef, t)
-				newMsg, sender = msg, msg.Sender
+				newMsg, sender = &msg, msg.Sender
 			case "disable_trade":
 				msg := DisableTradeMsgFromRef(ref.ParamsRef, t)
-				newMsg, sender = msg, msg.Sender
+				newMsg, sender = &msg, msg.Sender
 			case "enable_trade":
 				msg := EnableTradeMsgFromRef(ref.ParamsRef, t)
-				newMsg, sender = msg, msg.Sender
+				newMsg, sender = &msg, msg.Sender
 			}
 			msgs = append(msgs, newMsg)
 		}
 		t.WithFields(testing.Fields{
-			"sender":   sender.String(),
+			"sender":   sender,
 			"len_msgs": len(msgs),
 			"tx_msgs":  inttest.AminoCodecFormatter(msgs),
 			"msg_refs": step.MsgRefs,
 		}).AddFields(inttest.GetLogFieldsFromMsgs(msgs)).Debug("debug log")
-		txhash, err := inttest.SendMultiMsgTxWithNonce(t, msgs, sender.String(), true)
+		txhash, err := inttest.SendMultiMsgTxWithNonce(t, msgs, sender, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -373,7 +373,7 @@ func RunCheckExecution(step FixtureStep, t *testing.T) {
 	}
 	if step.ParamsRef != "" {
 		chkExecMsg := CheckExecutionMsgFromRef(step.ParamsRef, t)
-		txhash, err := inttest.TestTxWithMsgWithNonce(t, chkExecMsg, chkExecMsg.Sender.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, &chkExecMsg, chkExecMsg.Sender, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -387,7 +387,7 @@ func RunCheckExecution(step FixtureStep, t *testing.T) {
 		}
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
-		resp := handlers.CheckExecutionResponse{}
+		resp := msgs.MsgCheckExecutionResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
@@ -426,7 +426,7 @@ func RunFiatItem(step FixtureStep, t *testing.T) {
 	}
 	if step.ParamsRef != "" {
 		itmMsg := FiatItemMsgFromRef(step.ParamsRef, t)
-		txhash, err := inttest.TestTxWithMsgWithNonce(t, itmMsg, itmMsg.Sender.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, &itmMsg, itmMsg.Sender, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -440,7 +440,7 @@ func RunFiatItem(step FixtureStep, t *testing.T) {
 		}
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
-		resp := handlers.FiatItemResponse{}
+		resp := msgs.MsgFiatItemResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(resp.ItemID != "", "item id shouldn't be empty")
@@ -480,7 +480,7 @@ func RunSendItems(step FixtureStep, t *testing.T) {
 	}
 	if step.ParamsRef != "" {
 		siMsg := SendItemsMsgFromRef(step.ParamsRef, t)
-		txhash, err := inttest.TestTxWithMsgWithNonce(t, siMsg, siMsg.Sender.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, &siMsg, siMsg.Sender, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -494,7 +494,7 @@ func RunSendItems(step FixtureStep, t *testing.T) {
 		}
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
-		resp := handlers.SendItemsResponse{}
+		resp := msgs.MsgSendItemsResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
@@ -526,7 +526,7 @@ func RunUpdateItemString(step FixtureStep, t *testing.T) {
 	}
 	if step.ParamsRef != "" {
 		sTypeMsg := UpdateItemStringMsgFromRef(step.ParamsRef, t)
-		txhash, err := inttest.TestTxWithMsgWithNonce(t, sTypeMsg, sTypeMsg.Sender.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, &sTypeMsg, sTypeMsg.Sender, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -539,7 +539,7 @@ func RunUpdateItemString(step FixtureStep, t *testing.T) {
 		}
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
-		resp := handlers.UpdateItemStringResponse{}
+		resp := msgs.MsgUpdateItemStringResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 	}
@@ -579,7 +579,7 @@ func RunCreateCookbook(step FixtureStep, t *testing.T) {
 	if step.ParamsRef != "" {
 		cbMsg := CreateCookbookMsgFromRef(step.ParamsRef, t)
 
-		txhash, err := inttest.TestTxWithMsgWithNonce(t, cbMsg, cbMsg.Sender.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, &cbMsg, cbMsg.Sender, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -593,7 +593,7 @@ func RunCreateCookbook(step FixtureStep, t *testing.T) {
 		}
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
-		resp := handlers.CreateCookbookResponse{}
+		resp := msgs.MsgCreateCookbookResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(resp.CookbookID != "", "coookbook id shouldn't be empty")
@@ -631,7 +631,7 @@ func RunUpdateCookbook(step FixtureStep, t *testing.T) {
 	if step.ParamsRef != "" {
 		cbMsg := UpdateCookbookMsgFromRef(step.ParamsRef, t)
 
-		txhash, err := inttest.TestTxWithMsgWithNonce(t, cbMsg, cbMsg.Sender.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, &cbMsg, cbMsg.Sender, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -645,7 +645,7 @@ func RunUpdateCookbook(step FixtureStep, t *testing.T) {
 		}
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
-		resp := handlers.UpdateCookbookResponse{}
+		resp := msgs.MsgUpdateCookbookResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(resp.CookbookID != "", "coookbook id shouldn't be empty")
@@ -708,7 +708,7 @@ func RunCreateRecipe(step FixtureStep, t *testing.T) {
 			"parsed_recipe": string(inttest.GetAminoCdc().MustMarshalJSON(rcpMsg)),
 		}).Info("recipe info")
 
-		txhash, err := inttest.TestTxWithMsgWithNonce(t, rcpMsg, rcpMsg.Sender.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, &rcpMsg, rcpMsg.Sender, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -722,7 +722,7 @@ func RunCreateRecipe(step FixtureStep, t *testing.T) {
 		}
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
-		resp := handlers.CreateRecipeResponse{}
+		resp := msgs.MsgCreateRecipeResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(resp.RecipeID != "", "recipe id shouldn't be empty")
@@ -770,7 +770,7 @@ func RunUpdateRecipe(step FixtureStep, t *testing.T) {
 	if step.ParamsRef != "" {
 		rcpMsg := UpdateRecipeMsgFromRef(step.ParamsRef, t)
 
-		txhash, err := inttest.TestTxWithMsgWithNonce(t, rcpMsg, rcpMsg.Sender.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, &rcpMsg, rcpMsg.Sender, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -784,7 +784,7 @@ func RunUpdateRecipe(step FixtureStep, t *testing.T) {
 		}
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
-		resp := handlers.UpdateRecipeResponse{}
+		resp := msgs.MsgUpdateRecipeResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(resp.RecipeID != "", "recipe id shouldn't be empty")
@@ -821,7 +821,7 @@ func RunEnableRecipe(step FixtureStep, t *testing.T) {
 	if step.ParamsRef != "" {
 		rcpMsg := EnableRecipeMsgFromRef(step.ParamsRef, t)
 
-		txhash, err := inttest.TestTxWithMsgWithNonce(t, rcpMsg, rcpMsg.Sender.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, &rcpMsg, rcpMsg.Sender, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -835,7 +835,7 @@ func RunEnableRecipe(step FixtureStep, t *testing.T) {
 		}
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
-		resp := handlers.EnableRecipeResponse{}
+		resp := msgs.MsgEnableRecipeResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
@@ -872,7 +872,7 @@ func RunDisableRecipe(step FixtureStep, t *testing.T) {
 	if step.ParamsRef != "" {
 		rcpMsg := DisableRecipeMsgFromRef(step.ParamsRef, t)
 
-		txhash, err := inttest.TestTxWithMsgWithNonce(t, rcpMsg, rcpMsg.Sender.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, &rcpMsg, rcpMsg.Sender, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -886,7 +886,7 @@ func RunDisableRecipe(step FixtureStep, t *testing.T) {
 		}
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
-		resp := handlers.DisableRecipeResponse{}
+		resp := msgs.MsgDisableRecipeResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
@@ -928,7 +928,7 @@ func RunExecuteRecipe(step FixtureStep, t *testing.T) {
 	}
 	if step.ParamsRef != "" {
 		execMsg := ExecuteRecipeMsgFromRef(step.ParamsRef, t)
-		txhash, err := inttest.TestTxWithMsgWithNonce(t, execMsg, execMsg.Sender.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, &execMsg, execMsg.Sender, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -942,7 +942,7 @@ func RunExecuteRecipe(step FixtureStep, t *testing.T) {
 		}
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
-		resp := handlers.ExecuteRecipeResponse{}
+		resp := msgs.MsgExecuteRecipeResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
@@ -991,7 +991,7 @@ func CreateTradeMsgFromRef(ref string, t *testing.T) msgs.MsgCreateTrade {
 	}).MustNil(err, "error reading using GetAminoCdc")
 
 	// get ItemOutputs from ItemOutputNames
-	itemOutputs := GetItemOutputsFromBytes(newByteValue, trdType.Sender.String(), t)
+	itemOutputs := GetItemOutputsFromBytes(newByteValue, trdType.Sender, t)
 
 	return msgs.NewMsgCreateTrade(
 		trdType.CoinInputs,
@@ -1012,8 +1012,8 @@ func RunCreateTrade(step FixtureStep, t *testing.T) {
 		createTrd := CreateTradeMsgFromRef(step.ParamsRef, t)
 		t.WithFields(testing.Fields{
 			"tx_msgs": inttest.AminoCodecFormatter(createTrd),
-		}).AddFields(inttest.GetLogFieldsFromMsgs([]sdk.Msg{createTrd})).Debug("createTrd")
-		txhash, err := inttest.TestTxWithMsgWithNonce(t, createTrd, createTrd.Sender.String(), true)
+		}).AddFields(inttest.GetLogFieldsFromMsgs([]sdk.Msg{&createTrd})).Debug("createTrd")
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, &createTrd, createTrd.Sender, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -1027,7 +1027,7 @@ func RunCreateTrade(step FixtureStep, t *testing.T) {
 		}
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
-		resp := handlers.CreateTradeResponse{}
+		resp := msgs.MsgCreateTradeResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(resp.TradeID != "", "trade id shouldn't be empty")
@@ -1067,7 +1067,7 @@ func RunFulfillTrade(step FixtureStep, t *testing.T) {
 	}
 	if step.ParamsRef != "" {
 		ffTrdMsg := FulfillTradeMsgFromRef(step.ParamsRef, t)
-		txhash, err := inttest.TestTxWithMsgWithNonce(t, ffTrdMsg, ffTrdMsg.Sender.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, &ffTrdMsg, ffTrdMsg.Sender, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -1081,7 +1081,7 @@ func RunFulfillTrade(step FixtureStep, t *testing.T) {
 		}
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
-		resp := handlers.FulfillTradeResponse{}
+		resp := msgs.MsgFulfillTradeResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
@@ -1118,7 +1118,7 @@ func RunDisableTrade(step FixtureStep, t *testing.T) {
 	}
 	if step.ParamsRef != "" {
 		dsTrdMsg := DisableTradeMsgFromRef(step.ParamsRef, t)
-		txhash, err := inttest.TestTxWithMsgWithNonce(t, dsTrdMsg, dsTrdMsg.Sender.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, &dsTrdMsg, dsTrdMsg.Sender, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -1132,7 +1132,7 @@ func RunDisableTrade(step FixtureStep, t *testing.T) {
 		}
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
-		resp := handlers.DisableTradeResponse{}
+		resp := msgs.MsgDisableTradeResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
@@ -1169,7 +1169,7 @@ func RunEnableTrade(step FixtureStep, t *testing.T) {
 	}
 	if step.ParamsRef != "" {
 		dsTrdMsg := EnableTradeMsgFromRef(step.ParamsRef, t)
-		txhash, err := inttest.TestTxWithMsgWithNonce(t, dsTrdMsg, dsTrdMsg.Sender.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, &dsTrdMsg, dsTrdMsg.Sender, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -1183,7 +1183,7 @@ func RunEnableTrade(step FixtureStep, t *testing.T) {
 		}
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
-		resp := handlers.EnableTradeResponse{}
+		resp := msgs.MsgEnableTradeResponse{}
 		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
