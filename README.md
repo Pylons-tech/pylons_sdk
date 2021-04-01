@@ -88,7 +88,7 @@ github.com/Pylons-tech/pylons_sdk/cmd/fixtures_test
 github.com/Pylons-tech/pylons_sdk/cmd/test
 | No | Type | Name                            | Description                                                                                                                                         |
 |----|------|---------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
-| 1  | Config   | CLIOpts                         | CLIOpts is a variable to manage pylonscli options.`CustomNode` is for custom node tcp endpoint and `RestEndpoint` is for custom node http endpoint. |
+| 1  | Config   | CLIOpts                         | CLIOpts is a variable to manage pylonsd options.`CustomNode` is for custom node tcp endpoint and `RestEndpoint` is for custom node http endpoint. |
 | 2  | Fn   | CleanFile                       | CleanFile is a function to remove file                                                                                                              |
 | 3  | Fn   | GenTxWithMsg                    | GenTxWithMsg is a function to generate transaction from msg                                                                                         |
 | 4  | Fn   | GetAccountAddr                  | GetAccountAddr is a function to get account address from key                                                                                        |
@@ -103,7 +103,7 @@ github.com/Pylons-tech/pylons_sdk/cmd/test
 | 13 | Fn   | RegisterActionRunner            | RegisterActionRunner registers action runner function                                                                                               |
 | 14 | Fn   | RegisterDefaultActionRunners    | RegisterDefaultActionRunners register default test functions.                                                                                       |
 | 15 | Fn   | RunActionRunner                 | RunActionRunner execute registered action runner function                                                                                           |
-| 16 | Fn   | RunPylonsCli                    | RunPylonsCli is a function to run pylonscli                                                                                                         |
+| 16 | Fn   | RunPylonsd                    | RunPylonsd is a function to run pylonsd                                                                                                         |
 | 17 | Fn   | SendMultiMsgTxWithNonce         | SendMultiMsgTxWithNonce is an integration test utility to send multiple message transaction from a single sender, single signed transaction.        |
 | 18 | Fn   | TestTxWithMsgWithNonce          | TestTxWithMsgWithNonce is a function to send transaction with message and nonce                                                                     |
 | 19 | Fn   | WaitAndGetTxData                | WaitAndGetTxData is a function to get transaction data after transaction is processed                                                               |
@@ -213,9 +213,6 @@ github.com/Pylons-tech/pylons_sdk/app
 
 #### MakeCodec  
 MakeCodec make codec for message marshal/unmarshal
-
-## Queriers package
-github.com/Pylons-tech/pylons_sdk/x/pylons/queriers
 
 #### ExecResponse  
 ExecResponse is the response for ListExecutions

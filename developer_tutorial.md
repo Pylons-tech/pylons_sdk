@@ -25,7 +25,7 @@ Configure GOPATH and put GOPATH into PATH.
 
 ## Start pylons daemon
 
-You need to start pylons daemon to make the sdk work. Download binary files for `pylonsd` and `pylonscli` and copy this into GOPATH/bin.
+You need to start pylons daemon to make the sdk work. Download binary files for `pylonsd` and copy this into GOPATH/bin.
 And run the following command.
 
 ```
@@ -34,23 +34,23 @@ sh init_accounts.local.sh
 pylonsd start
 ```
 
-`init_accounts.local.sh` will create initial test accounts named `node0`, `michael`, `eugen`. These accounts will be used in the pylonscli tests.
+`init_accounts.local.sh` will create initial test accounts named `node0`, `michael`, `eugen`. These accounts will be used in cli tests.
 
-# Pylonscli
+# CLI commands
 
-Now you are ready to use pylonscli. Open a new terminal window other than the pylons daemon terminal window. Try to run the pylonscli command.
+Now you are ready to use cli commands. Open a new terminal window other than the pylons daemon terminal window. Try to run the pylonsd command.
 
 ```
-pylonscli
+pylonsd
 ```
-This command will give you the overall help for all available commands in pylonscli.
+This command will give you the overall help for all available commands in pylonsd.
 The result should be like the following.
 
 ```
 The Pylons Client
 
 Usage:
-  pylonscli [command]
+  pylonsd [command]
 
 Available Commands:
   status      Query remote node for status
@@ -67,27 +67,27 @@ Available Commands:
 Flags:
       --chain-id string          Chain ID of tendermint node
   -e, --encoding string          Binary encoding (hex|b64|btc) (default "hex")
-  -h, --help                     help for pylonscli
-      --home string              directory for config and data (default "/Users/ghostprince/.pylonscli")
+  -h, --help                     help for pylonsd
+      --home string              directory for config and data (default "/Users/ghostprince/.pylonsd")
       --keyring-backend string   keyring backend of tendermint node
   -o, --output string            Output format (text|json) (default "text")
       --trace                    print out full stack trace on errors
 
-Use "pylonscli [command] --help" for more information about a command.
+Use "pylonsd [command] --help" for more information about a command.
 ```
 
 Now let's move forward with some important cli commands one by one.
 
-All the pylonscli commands require user password for keyring-backend. 
+All the pylpylonsdonscli commands require user password for keyring-backend. 
 If you set `--keyring-backend=test` flag, it use testing keyring and which does not require password, on our tutorial, we will be using test keyring for most of the commands.
 
 ### Local keys
 
-`pylonscli keys` command will let you add or view local keys in the chain.
+`pylonsd keys` command will let you add or view local keys in the chain.
 
 - Add your first local key
   ```
-  pylonscli keys add jack --keyring-backend=test
+  pylonsd keys add jack --keyring-backend=test
   ```
 
   You can replace the local key that is set `jack` in the example with any key you want.
@@ -108,7 +108,7 @@ If you set `--keyring-backend=test` flag, it use testing keyring and which does 
 
 - Show the local key
   ```
-  pylonscli keys show jack --keyring-backend=test
+  pylonsd keys show jack --keyring-backend=test
   ```
   This will show the info of the local key `jack` that is just added.
   The result will be like following.
@@ -121,11 +121,11 @@ If you set `--keyring-backend=test` flag, it use testing keyring and which does 
   }
   ```
   **Warn**  
-  If you don't set keyring backend like `pylonscli keys show jack` it will default keyring as `os` and will require your computer password. But in the end, keys are not stored in os backend, it will not show you the same key that is created right now.
+  If you don't set keyring backend like `pylonsd keys show jack` it will default keyring as `os` and will require your computer password. But in the end, keys are not stored in os backend, it will not show you the same key that is created right now.
 
 - List all the keys available
   ```
-  pylonscli keys list --keyring-backend=test
+  pylonsd keys list --keyring-backend=test
   ```
   This command will list all the local keys that are available in the chain.
   The result will be like the following.
@@ -162,10 +162,10 @@ If you set `--keyring-backend=test` flag, it use testing keyring and which does 
 
 We already added key on local. But this does not mean that this account is registerd on pylons chain. Now we can register an account with the key added.
 
-We can use `pylonscli tx pylons create-account` command for this.
+We can use `pylonsd tx pylons create-account` command for this.
 
 ```
-pylonscli tx pylons create-account --from cosmos1fun8le2dxrclr633psv7gke6wtlycunnm8dlm7 --keyring-backend=test
+pylonsd tx pylons create-account --from cosmos1fun8le2dxrclr633psv7gke6wtlycunnm8dlm7 --keyring-backend=test
 ```
 
 For the `from` flag, you should give the address of the key genereated. We used the address of `jack` key.
@@ -206,11 +206,11 @@ confirm transaction before signing and broadcasting [y/N]: y
 
 `pylon` is basic token on pylons ecosystem and the account should have some amount of `pylon`. 
 
-We can use `pylonscli tx pylons get-pylons` command to get some `pylon`. 
+We can use `pylonsd tx pylons get-pylons` command to get some `pylon`. 
 This is for test and on mainnet, this feature will not be available. Instead there's a method called Google IAP get pylons that buy pylons by paying from google play account.
 
 ```
-pylonscli tx pylons get-pylons --amount 500000 --from cosmos1fun8le2dxrclr633psv7gke6wtlycunnm8dlm7 --keyring-backend=test
+pylonsd tx pylons get-pylons --amount 500000 --from cosmos1fun8le2dxrclr633psv7gke6wtlycunnm8dlm7 --keyring-backend=test
 ```
 `from` flag sets the address of the account to get pylons and `amount` flag sets the amount of `pylon` to get. In this command, we are getting 500 pylons for the account `jack`. You should press `y` to the confirmation line.
 
@@ -254,7 +254,7 @@ confirm transaction before signing and broadcasting [y/N]: y
 
 A cookbook is a game. And to build recipes and items, you need to have cookbooks.
 
-`pylonscli tx sign` command will be used to create signature for cookbook. This command let you sign transactions before broadcast.
+`pylonsd tx sign` command will be used to create signature for cookbook. This command let you sign transactions before broadcast.
 
 Create a new json file in your local folder and name it `tx_cook.json`. Write cookbook information in the json file. Sample cookbook json is like the following.
 
@@ -293,7 +293,7 @@ The address of the `jack` account is `cosmos1fun8le2dxrclr633psv7gke6wtlycunnm8d
 So let's replace `<Address for the sender account>` with `cosmos1fun8le2dxrclr633psv7gke6wtlycunnm8dlm7`.
 
 ```
-pylonscli tx sign tx_cook.json --from jack --keyring-backend=test > tx_cook_signed.json
+pylonsd tx sign tx_cook.json --from jack --keyring-backend=test > tx_cook_signed.json
 ```
 This command signs the transaction written in the `tx_cook.json` file and creates `tx_cook_signed.json` file with the signed transaction result. It will include `signature` field.
 
@@ -339,7 +339,7 @@ The content of `tx_cook_signed.json` will be like the following.
 
 After the signature is created, you should broadcast this transaction to the chain.
 ```
-pylonscli tx broadcast tx_cook_signed.json 
+pylonsd tx broadcast tx_cook_signed.json 
 ```
 The result will be like the following.
 ```
@@ -352,10 +352,10 @@ The result will be like the following.
 
 You need to wait more than 1 block until this transaction to be confirmed.
 
-To check the created cookbook we can use `pylonscli query pylons list_cookbook` command.
+To check the created cookbook we can use `pylonsd query pylons list_cookbook` command.
 
 ```
-pylonscli query pylons list_cookbook
+pylonsd query pylons list_cookbook
 ```
 
 You can check if your cookbook is listed in the result.
@@ -464,8 +464,8 @@ Sample transaction is similar to the following.
 The progress to create recipe is similar to cookbook.
 
 ```
-pylonscli tx sign tx_recipe.json --from jack --keyring-backend=test > tx_recipe_signed.json
-pylonscli tx broadcast tx_recipe_signed.json 
+pylonsd tx sign tx_recipe.json --from jack --keyring-backend=test > tx_recipe_signed.json
+pylonsd tx broadcast tx_recipe_signed.json 
 ```
 
 The content of the `tx_recipe_signed.json` will be like the following.
@@ -565,7 +565,7 @@ The result of the broadcast command will be like the following.
 You can check the created recipe with `list_recipe` command.
 
 ```
-pylonscli query pylons list_recipe
+pylonsd query pylons list_recipe
 ```
 
 The result of this command will be like the following:
@@ -667,8 +667,8 @@ To execute recipe, we need to sign execute transaction. Create `tx_execte.json`
 The signature and broadcast commands are the same.
 
 ```
-pylonscli tx sign tx_execute.json --from jack --keyring-backend=test > tx_execute_signed.json
-pylonscli tx broadcast tx_execute_signed.json
+pylonsd tx sign tx_execute.json --from jack --keyring-backend=test > tx_execute_signed.json
+pylonsd tx broadcast tx_execute_signed.json
 ```
 
 The content of `tx_execute_signed.json` will be like the following:
@@ -707,7 +707,7 @@ The content of `tx_execute_signed.json` will be like the following:
 Check the created execute with `list_executions` command.
 
 ```
-pylonscli query pylons list_executions
+pylonsd query pylons list_executions
 ```
 
 The result will be like the following:
@@ -768,8 +768,8 @@ Create `tx_check.json` file and write check execution transaction.
 Run commands to sign and broadcast the transaction.
 
 ```
-pylonscli tx sign tx_check.json --from jack --keyring-backend=test > tx_check_signed.json
-pylonscli tx broadcast tx_check_signed.json
+pylonsd tx sign tx_check.json --from jack --keyring-backend=test > tx_check_signed.json
+pylonsd tx broadcast tx_check_signed.json
 ```
 
 The content of `tx_check_signed.json` will be like the following:
@@ -818,7 +818,7 @@ The result of the broadcast command will be like the following:
 You can check if the execution's already completed with `list_executions` command .
 
 ```
-pylonscli query pylons list_executions
+pylonsd query pylons list_executions
 ```
 
 The result will be like the following:
@@ -847,11 +847,11 @@ The result will be like the following:
 
 Check if the `Completed` field is updated to `true`.
 
-To get the result of executed transaction, you can use `pylonscli query tx <txHash>` command.
+To get the result of executed transaction, you can use `pylonsd query tx <txHash>` command.
 Set the `txHash` arg as the txHash field you get from the broadcast command.
 
 ```
-pylonscli query tx 581D71778742BFE506F65222AA712749FA1FEBCE2265DF2F65F60509736D866A
+pylonsd query tx 581D71778742BFE506F65222AA712749FA1FEBCE2265DF2F65F60509736D866A
 ```
 
 The result will be like the following:
@@ -982,8 +982,8 @@ In this example, the trade creator will send 200 pylon to the fulfiller and get 
 Run the same commands to sign and broadcast transactions.
 
 ```
-pylonscli tx sign tx_trade.json --from jack --keyring-backend=test > tx_trade_signed.json
-pylonscli tx broadcast tx_trade_signed.json 
+pylonsd tx sign tx_trade.json --from jack --keyring-backend=test > tx_trade_signed.json
+pylonsd tx broadcast tx_trade_signed.json 
 ```
 
 The content of the `tx_trade_signed.json` file will be like the following:
@@ -1035,7 +1035,7 @@ The content of the `tx_trade_signed.json` file will be like the following:
 You can check the created trade with `list_trade` cli command.
 
 ```
-pylonscli query pylons list_trade
+pylonsd query pylons list_trade
 ```
 
 The result will be like the following: 
@@ -1112,8 +1112,8 @@ We don't trade items in this example, so `ItemIDs` is set empty.
 Run the commands to sign and broadcast the transaction.
 
 ```
-pylonscli tx sign tx_fulfill_trade.json --from eugen --keyring-backend=test > tx_fulfill_trade_signed.json
-pylonscli tx broadcast tx_fulfill_trade_signed.json 
+pylonsd tx sign tx_fulfill_trade.json --from eugen --keyring-backend=test > tx_fulfill_trade_signed.json
+pylonsd tx broadcast tx_fulfill_trade_signed.json 
 ```
 
 The content of the `tx_fulfill_trade_signed.json` file will be like the following:

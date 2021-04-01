@@ -14,17 +14,12 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Pylons-tech/pylons_sdk/app"
 	testing "github.com/Pylons-tech/pylons_sdk/cmd/evtesting"
-	log "github.com/sirupsen/logrus"
-
-	"github.com/cosmos/cosmos-sdk/client/context"
-	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
-	authsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/auth"
-
+	authsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
@@ -46,35 +41,26 @@ func GenTxWithMsg(messages []sdk.Msg) (authsigning.Tx, error) {
 			return nil, fmt.Errorf("%dth msg does not pass basic validation for %s", i, err.Error())
 		}
 	}
-	cdc := GetAminoCdc()
-	cliCtx := context.NewCLIContext().WithCodec(cdc)
 
 	viper.Set("keyring-backend", "test")
 	viper.Set("chain-id", "pylonschain")
 
-	txBldr := app.MakeEncodingConfig()
-	if txBldr.SimulateAndExecute() {
-		txBldr, err = utils.EnrichWithGas(txBldr, cliCtx, messages)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	stdSignMsg, err := txBldr.BuildSignMsg(messages)
+	txBldr := app.MakeEncodingConfig().TxConfig.NewTxBuilder()
+	err = txBldr.SetMsgs(messages...)
 	if err != nil {
 		return nil, err
 	}
-	stdSignMsg.Fee.Gas = 10000000
 
-	return auth.NewStdTx(stdSignMsg.Msgs, stdSignMsg.Fee, nil, stdSignMsg.Memo), nil
+	txBldr.SetGasLimit(10000000)
+	return txBldr.GetTx(), nil
 }
 
 func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) (string, error) {
 	if len(CLIOpts.RestEndpoint) == 0 { // broadcast using cli
-		// pylonscli tx broadcast signedCreateCookbookTx.json
+		// pylonsd tx broadcast signedCreateCookbookTx.json
 		txBroadcastArgs := []string{"tx", "broadcast", signedTxFile}
-		output, logstr, err := RunPylonsCli(txBroadcastArgs, "")
-		// output2, logstr2, err := RunPylonsCli([]string{"query", "account", "cosmos10xgn8t2auxskrf2qjcht0hwq2h5chnrpx87dus"}, "")
+		output, logstr, err := RunPylonsd(txBroadcastArgs, "")
+		// output2, logstr2, err := RunPylonsd([]string{"query", "account", "cosmos10xgn8t2auxskrf2qjcht0hwq2h5chnrpx87dus"}, "")
 		// t.WithFields(testing.Fields{
 		// 	"query_account": logstr2,
 		// 	"output2":       string(output2),
@@ -84,11 +70,11 @@ func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) (string, e
 			"broadcast_args":   txBroadcastArgs,
 			"broadcast_output": string(output),
 			"broadcast_log":    logstr,
-		}).MustNil(err, "error running pylonscli broadcast command")
+		}).MustNil(err, "error running pylonsd broadcast command")
 		txResponse := sdk.TxResponse{}
 
 		err = GetAminoCdc().UnmarshalJSON(output, &txResponse)
-		// This can happen when "pylonscli config output json" is not set or when real issue is available
+		// This can happen when "pylonsd config output json" is not set or when real issue is available
 		t.WithFields(testing.Fields{
 			"broadcast_output":  string(output),
 			"possible_solution": "You can set cli config output as json to solve this issue",
@@ -176,12 +162,12 @@ func TestTxWithMsg(t *testing.T, msgValue sdk.Msg, signer string) string {
 		return ""
 	}
 
-	// pylonscli tx sign raw_tx.json --from eugen --chain-id pylonschain > signed_tx.json
+	// pylonsd tx sign raw_tx.json --from eugen --chain-id pylonschain > signed_tx.json
 	txSignArgs := []string{"tx", "sign", rawTxFile,
 		"--from", signer,
 		"--chain-id", "pylonschain",
 	}
-	output, _, err = RunPylonsCli(txSignArgs, "")
+	output, _, err = RunPylonsd(txSignArgs, "")
 	if err != nil {
 		t.WithFields(testing.Fields{
 			"signed_tx_json": string(output),
@@ -281,7 +267,7 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 	}
 
 	t.Trace("tx_with_nonce.step.G")
-	// pylonscli tx sign sample_transaction.json --account-number 2 --sequence 10 --offline --from eugen
+	// pylonsd tx sign sample_transaction.json --account-number 2 --sequence 10 --offline --from eugen
 	txSignArgs := []string{"tx", "sign", rawTxFile,
 		"--from", signer,
 		"--offline",
@@ -289,8 +275,8 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 		"--sequence", strconv.FormatUint(nonce, 10),
 		"--account-number", strconv.FormatUint(accInfo.GetAccountNumber(), 10),
 	}
-	output, _, err = RunPylonsCli(txSignArgs, "")
-	// output, logstr, err := RunPylonsCli(txSignArgs, "")
+	output, _, err = RunPylonsd(txSignArgs, "")
+	// output, logstr, err := RunPylonsd(txSignArgs, "")
 	// t.WithFields(testing.Fields{
 	// 	"error": err,
 	// 	"log": logstr,

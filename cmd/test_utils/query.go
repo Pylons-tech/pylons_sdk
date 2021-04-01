@@ -7,7 +7,6 @@ import (
 	"fmt"
 
 	testing "github.com/Pylons-tech/pylons_sdk/cmd/evtesting"
-	"github.com/Pylons-tech/pylons_sdk/x/pylons/queriers"
 	"github.com/Pylons-tech/pylons_sdk/x/pylons/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -18,11 +17,11 @@ func ListTradeViaCLI(account string) ([]types.Trade, error) {
 	if len(account) != 0 {
 		queryParams = append(queryParams, "--account", account)
 	}
-	output, logstr, err := RunPylonsCli(queryParams, "")
+	output, logstr, err := RunPylonsd(queryParams, "")
 	if err != nil {
 		return []types.Trade{}, fmt.Errorf("%s: %s", logstr, err.Error())
 	}
-	listTradesResp := types.TradeList{}
+	listTradesResp := types.ListTradeResponse{}
 	err = GetAminoCdc().UnmarshalJSON(output, &listTradesResp)
 	return listTradesResp.Trades, err
 }
@@ -39,12 +38,12 @@ func GetTradeIDFromExtraInfo(tradeExtraInfo string) (string, bool, error) {
 
 // ListCookbookViaCLI is a function to list cookbooks via cli
 func ListCookbookViaCLI(account string) ([]types.Cookbook, error) {
-	listCBResp := types.CookbookList{}
+	listCBResp := types.ListCookbookResponse{}
 	queryParams := []string{"query", "pylons", "list_cookbook"}
 	if len(account) != 0 {
 		queryParams = append(queryParams, "--account", account)
 	}
-	output, logstr, err := RunPylonsCli(queryParams, "")
+	output, logstr, err := RunPylonsd(queryParams, "")
 	if err != nil {
 		return listCBResp.Cookbooks, fmt.Errorf("%s: %s", logstr, err.Error())
 	}
@@ -59,7 +58,7 @@ func GetLockedCoinsViaCLI(account string) (types.LockedCoin, error) {
 	if len(account) != 0 {
 		queryParams = append(queryParams, "--account", account)
 	}
-	output, logstr, err := RunPylonsCli(queryParams, "")
+	output, logstr, err := RunPylonsd(queryParams, "")
 	if err != nil {
 		return lcResp, fmt.Errorf("%s: %s", logstr, err.Error())
 	}
@@ -74,7 +73,7 @@ func GetLockedCoinDetailsViaCLI(account string) (types.LockedCoinDetails, error)
 	if len(account) != 0 {
 		queryParams = append(queryParams, "--account", account)
 	}
-	output, logstr, err := RunPylonsCli(queryParams, "")
+	output, logstr, err := RunPylonsd(queryParams, "")
 	if err != nil {
 		return lcdResp, fmt.Errorf("%s: %s", logstr, err.Error())
 	}
@@ -88,11 +87,11 @@ func ListRecipesViaCLI(account string) ([]types.Recipe, error) {
 	if len(account) != 0 {
 		queryParams = append(queryParams, "--account", account)
 	}
-	output, _, err := RunPylonsCli(queryParams, "")
+	output, _, err := RunPylonsd(queryParams, "")
 	if err != nil {
 		return []types.Recipe{}, err
 	}
-	listRCPResp := types.RecipeList{}
+	listRCPResp := types.ListRecipeResponse{}
 	err = GetAminoCdc().UnmarshalJSON(output, &listRCPResp)
 	return listRCPResp.Recipes, err
 }
@@ -103,12 +102,12 @@ func ListExecutionsViaCLI(account string, t *testing.T) ([]types.Execution, erro
 	if len(account) != 0 {
 		queryParams = append(queryParams, "--account", account)
 	}
-	output, _, err := RunPylonsCli(queryParams, "")
+	output, _, err := RunPylonsd(queryParams, "")
 	if err != nil {
 		t.MustNil(err, "error running list_executions cli command")
 		return []types.Execution{}, err
 	}
-	var listExecutionsResp queriers.ExecResponse
+	var listExecutionsResp types.ListExecutionsResponse
 	err = GetAminoCdc().UnmarshalJSON(output, &listExecutionsResp)
 	t.WithFields(testing.Fields{
 		"list_executions_output": string(output),
@@ -122,11 +121,11 @@ func ListItemsViaCLI(account string) ([]types.Item, error) {
 	if len(account) != 0 {
 		queryParams = append(queryParams, "--account", account)
 	}
-	output, logstr, err := RunPylonsCli(queryParams, "")
+	output, logstr, err := RunPylonsd(queryParams, "")
 	if err != nil {
-		return types.ItemList{}, fmt.Errorf("%s: %s", logstr, err.Error())
+		return []types.Item{}, fmt.Errorf("%s: %s", logstr, err.Error())
 	}
-	var ItemResponse queriers.ItemResponse
+	var ItemResponse types.ItemsBySenderResponse
 	err = GetAminoCdc().UnmarshalJSON(output, &ItemResponse)
 	return ItemResponse.Items, err
 }
@@ -158,7 +157,7 @@ func IsJSON(str string) bool {
 
 // GetTxError is a function to get transaction error from txhash
 func GetTxError(txhash string, t *testing.T) ([]byte, error) {
-	output, logstr, err := RunPylonsCli([]string{"query", "tx", txhash}, "")
+	output, logstr, err := RunPylonsd([]string{"query", "tx", txhash}, "")
 	if err != nil {
 		return []byte{}, fmt.Errorf("%s: %s", logstr, err.Error())
 	}
@@ -185,7 +184,7 @@ func GetHumanReadableErrorFromTxHash(txhash string, t *testing.T) string {
 
 // GetTxData is a function to get transaction result data by txhash
 func GetTxData(txhash string, t *testing.T) ([]byte, error) {
-	output, _, err := RunPylonsCli([]string{"query", "tx", txhash}, "")
+	output, _, err := RunPylonsd([]string{"query", "tx", txhash}, "")
 	if err != nil {
 		t.WithFields(testing.Fields{
 			"output": string(output),
@@ -283,7 +282,7 @@ func FindItemFromArrayByName(
 
 // GetCookbookByGUID is to get Cookbook from ID
 func GetCookbookByGUID(guid string) (types.Cookbook, error) {
-	output, _, err := RunPylonsCli([]string{"query", "pylons", "get_cookbook", guid}, "")
+	output, _, err := RunPylonsd([]string{"query", "pylons", "get_cookbook", guid}, "")
 	if err != nil {
 		return types.Cookbook{}, err
 	}
@@ -325,7 +324,7 @@ func GetItemIDFromName(sender string, itemName string, includeLockedByRecipe boo
 
 // GetRecipeByGUID is to get Recipe from ID
 func GetRecipeByGUID(guid string) (types.Recipe, error) {
-	output, _, err := RunPylonsCli([]string{"query", "pylons", "get_recipe", guid}, "")
+	output, _, err := RunPylonsd([]string{"query", "pylons", "get_recipe", guid}, "")
 	if err != nil {
 		return types.Recipe{}, err
 	}
@@ -336,7 +335,7 @@ func GetRecipeByGUID(guid string) (types.Recipe, error) {
 
 // GetExecutionByGUID is to get Execution from ID
 func GetExecutionByGUID(guid string) (types.Execution, error) {
-	output, _, err := RunPylonsCli([]string{"query", "pylons", "get_execution", guid}, "")
+	output, _, err := RunPylonsd([]string{"query", "pylons", "get_execution", guid}, "")
 	if err != nil {
 		return types.Execution{}, err
 	}
@@ -347,7 +346,7 @@ func GetExecutionByGUID(guid string) (types.Execution, error) {
 
 // GetItemByGUID is to get Item from ID
 func GetItemByGUID(guid string) (types.Item, error) {
-	output, _, err := RunPylonsCli([]string{"query", "pylons", "get_item", guid}, "")
+	output, _, err := RunPylonsd([]string{"query", "pylons", "get_item", guid}, "")
 	if err != nil {
 		return types.Item{}, err
 	}

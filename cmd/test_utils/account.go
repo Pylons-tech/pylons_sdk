@@ -12,7 +12,7 @@ func AddNewLocalKey(key string) (map[string]string, error) {
 		return result, errors.New("key is empty")
 	}
 	params := []string{"keys", "add", key}
-	output, logstr, err := RunPylonsCli(params, "")
+	output, logstr, err := RunPylonsd(params, "")
 	if err != nil {
 		result["logstr"] = logstr
 		result["output"] = string(output)
@@ -28,6 +28,6 @@ func CreateChainAccount(key string) (string, string, error) {
 		return "", "", errors.New("key is empty")
 	}
 	params := []string{"tx", "pylons", "create-account", "--from", key}
-	output, logstr, err := RunPylonsCli(params, "y\n")
+	output, logstr, err := RunPylonsd(params, "y\n")
 	return string(output), logstr, err
 }

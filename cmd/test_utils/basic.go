@@ -18,14 +18,15 @@ import (
 	"github.com/Pylons-tech/pylons_sdk/app"
 	testing "github.com/Pylons-tech/pylons_sdk/cmd/evtesting"
 	"github.com/Pylons-tech/pylons_sdk/x/pylons/msgs"
+	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/auth"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	log "github.com/sirupsen/logrus"
-	amino "github.com/tendermint/go-amino"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 )
 
-// CLIOptions is a struct to manage pylonscli options
+// CLIOptions is a struct to manage pylonsd options
 type CLIOptions struct {
 	CustomNode   string
 	RestEndpoint string
@@ -33,7 +34,7 @@ type CLIOptions struct {
 	MaxBroadcast int
 }
 
-// CLIOpts is a variable to manage pylonscli options
+// CLIOpts is a variable to manage pylonsd options
 var CLIOpts CLIOptions
 var cliMux sync.Mutex
 
@@ -72,11 +73,11 @@ func ReadFile(fileURL string, t *testing.T) []byte {
 }
 
 // GetAminoCdc is a utility function to get amino codec
-func GetAminoCdc() *amino.Codec {
-	return app.MakeCodec()
+func GetAminoCdc() *codec.LegacyAmino {
+	return app.MakeEncodingConfig().Amino
 }
 
-// KeyringBackendSetup is a utility function to setup keyring backend for pylonscli command
+// KeyringBackendSetup is a utility function to setup keyring backend for pylonsd command
 func KeyringBackendSetup(args []string) []string {
 	if len(args) == 0 {
 		return args
@@ -111,21 +112,21 @@ func NodeFlagSetup(args []string) []string {
 	return args
 }
 
-// RunPylonsCli is a function to run pylonscli
-func RunPylonsCli(args []string, stdinInput string) ([]byte, string, error) {
+// RunPylonsd is a function to run pylonsd
+func RunPylonsd(args []string, stdinInput string) ([]byte, string, error) {
 	args = NodeFlagSetup(args)
 	args = KeyringBackendSetup(args)
 	cliMux.Lock()
-	cmd := exec.Command(path.Join(os.Getenv("GOPATH"), "/bin/pylonscli"), args...)
+	cmd := exec.Command(path.Join(os.Getenv("GOPATH"), "/bin/pylonsd"), args...)
 	cmd.Stdin = strings.NewReader(stdinInput)
 	res, err := cmd.CombinedOutput()
 	cliMux.Unlock()
-	return res, fmt.Sprintf("\"pylonscli %s\" ==>\n%s\n", strings.Join(args, " "), string(res)), err
+	return res, fmt.Sprintf("\"pylonsd %s\" ==>\n%s\n", strings.Join(args, " "), string(res)), err
 }
 
 // GetAccountAddr is a function to get account address from key
 func GetAccountAddr(account string, t *testing.T) string {
-	addrBytes, logstr, err := RunPylonsCli([]string{"keys", "show", account, "-a"}, "")
+	addrBytes, logstr, err := RunPylonsd([]string{"keys", "show", account, "-a"}, "")
 	addr := strings.Trim(string(addrBytes), "\n ")
 	t.WithFields(testing.Fields{
 		"account": account,
@@ -135,9 +136,9 @@ func GetAccountAddr(account string, t *testing.T) string {
 }
 
 // GetAccountInfoFromAddr is a function to get account information from address
-func GetAccountInfoFromAddr(addr string, t *testing.T) auth.BaseAccount {
-	var accInfo auth.BaseAccount
-	accBytes, logstr, err := RunPylonsCli([]string{"query", "account", addr}, "")
+func GetAccountInfoFromAddr(addr string, t *testing.T) authtypes.BaseAccount {
+	var accInfo authtypes.BaseAccount
+	accBytes, logstr, err := RunPylonsd([]string{"query", "account", addr}, "")
 	t.WithFields(testing.Fields{
 		"address": addr,
 		"log":     logstr,
@@ -155,8 +156,29 @@ func GetAccountInfoFromAddr(addr string, t *testing.T) auth.BaseAccount {
 	return accInfo
 }
 
+// GetAccountInfoFromAddr is a function to get account information from address
+func GetAccountBalanceFromAddr(addr string, t *testing.T) banktypes.Balance {
+	var balance banktypes.Balance
+	accBytes, logstr, err := RunPylonsd([]string{"query", "bank", "balances", addr}, "")
+	t.WithFields(testing.Fields{
+		"address": addr,
+		"log":     logstr,
+	}).MustNil(err, "error getting account balance")
+	if err != nil {
+		return balance
+	}
+	err = GetAminoCdc().UnmarshalJSON(accBytes, &balance)
+	t.WithFields(testing.Fields{
+		"acc_bytes": string(accBytes),
+	}).MustNil(err, "error decoding raw json")
+	// t.WithFields(testing.Fields{
+	// 	"account_info": accInfo,
+	// }).Debug("debug log")
+	return balance
+}
+
 // GetAccountInfoFromName is a function to get account information from account key
-func GetAccountInfoFromName(account string, t *testing.T) auth.BaseAccount {
+func GetAccountInfoFromName(account string, t *testing.T) authtypes.BaseAccount {
 	addr := GetAccountAddr(account, t)
 	return GetAccountInfoFromAddr(addr, t)
 }
@@ -165,7 +187,7 @@ func GetAccountInfoFromName(account string, t *testing.T) auth.BaseAccount {
 func GetDaemonStatus() (*ctypes.ResultStatus, string, error) {
 	var ds ctypes.ResultStatus
 
-	dsBytes, logstr, err := RunPylonsCli([]string{"status"}, "")
+	dsBytes, logstr, err := RunPylonsd([]string{"status"}, "")
 
 	if err != nil {
 		return nil, logstr, err
@@ -236,53 +258,53 @@ func GetLogFieldsFromMsgs(txMsgs []sdk.Msg) log.Fields {
 			ikeypref = "tx_msg_"
 		}
 		switch msg := msg.(type) {
-		case msgs.MsgCreateCookbook:
+		case *msgs.MsgCreateCookbook:
 			fields[ikeypref+"type"] = "MsgCreateCookbook"
 			fields[ikeypref+"cb_name"] = msg.Name
-			fields[ikeypref+"sender"] = msg.Sender.String()
-		case msgs.MsgUpdateCookbook:
+			fields[ikeypref+"sender"] = msg.Sender
+		case *msgs.MsgUpdateCookbook:
 			fields[ikeypref+"type"] = "MsgUpdateCookbook"
 			fields[ikeypref+"cb_ID"] = msg.ID
-			fields[ikeypref+"sender"] = msg.Sender.String()
-		case msgs.MsgCreateRecipe:
+			fields[ikeypref+"sender"] = msg.Sender
+		case *msgs.MsgCreateRecipe:
 			fields[ikeypref+"type"] = "MsgCreateRecipe"
 			fields[ikeypref+"rcp_name"] = msg.Name
-			fields[ikeypref+"sender"] = msg.Sender.String()
-		case msgs.MsgUpdateRecipe:
+			fields[ikeypref+"sender"] = msg.Sender
+		case *msgs.MsgUpdateRecipe:
 			fields[ikeypref+"type"] = "MsgUpdateRecipe"
 			fields[ikeypref+"rcp_name"] = msg.Name
-			fields[ikeypref+"sender"] = msg.Sender.String()
-		case msgs.MsgExecuteRecipe:
+			fields[ikeypref+"sender"] = msg.Sender
+		case *msgs.MsgExecuteRecipe:
 			fields[ikeypref+"type"] = "MsgExecuteRecipe"
 			fields[ikeypref+"rcp_id"] = msg.RecipeID
 			fields[ikeypref+"sender"] = msg.Sender
-		case msgs.MsgEnableRecipe:
+		case *msgs.MsgEnableRecipe:
 			fields[ikeypref+"type"] = "MsgEnableRecipe"
 			fields[ikeypref+"rcp_id"] = msg.RecipeID
 			fields[ikeypref+"sender"] = msg.Sender
-		case msgs.MsgDisableRecipe:
+		case *msgs.MsgDisableRecipe:
 			fields[ikeypref+"type"] = "MsgDisableRecipe"
 			fields[ikeypref+"rcp_id"] = msg.RecipeID
 			fields[ikeypref+"sender"] = msg.Sender
-		case msgs.MsgCheckExecution:
+		case *msgs.MsgCheckExecution:
 			fields[ikeypref+"type"] = "MsgCheckExecution"
 			fields[ikeypref+"exec_id"] = msg.ExecID
-			fields[ikeypref+"sender"] = msg.Sender.String()
-		case msgs.MsgCreateTrade:
+			fields[ikeypref+"sender"] = msg.Sender
+		case *msgs.MsgCreateTrade:
 			fields[ikeypref+"type"] = "MsgCreateTrade"
 			fields[ikeypref+"trade_info"] = msg.ExtraInfo
-			fields[ikeypref+"sender"] = msg.Sender.String()
-		case msgs.MsgFulfillTrade:
+			fields[ikeypref+"sender"] = msg.Sender
+		case *msgs.MsgFulfillTrade:
 			fields[ikeypref+"type"] = "MsgFulfillTrade"
 			fields[ikeypref+"trade_id"] = msg.TradeID
-			fields[ikeypref+"sender"] = msg.Sender.String()
-		case msgs.MsgFiatItem:
+			fields[ikeypref+"sender"] = msg.Sender
+		case *msgs.MsgFiatItem:
 			fields[ikeypref+"type"] = "MsgFiatItem"
-			fields[ikeypref+"sender"] = msg.Sender.String()
-		case msgs.MsgUpdateItemString:
+			fields[ikeypref+"sender"] = msg.Sender
+		case *msgs.MsgUpdateItemString:
 			fields[ikeypref+"type"] = "MsgUpdateItemString"
 			fields[ikeypref+"item_id"] = msg.ItemID
-			fields[ikeypref+"sender"] = msg.Sender.String()
+			fields[ikeypref+"sender"] = msg.Sender
 		}
 	}
 	return fields

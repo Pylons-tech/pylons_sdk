@@ -80,13 +80,14 @@ func TestGoogleIAPGetPylonsViaCLI(originT *originT.T) {
 			getPylonsKey := fmt.Sprintf("TestGoogleIAPGetPylonsViaCLI%d_%d", tcNum, time.Now().Unix())
 			MockAccount(getPylonsKey, t) // mock account with initial balance
 
-			getPylonsSdkAddr, getPylonsAccInfo := GetAccountAddressAndInfo(getPylonsKey, t)
+			getPylonsSdkAddr := GetAccountAddress(getPylonsKey, t)
+			originBalance := inttestSDK.GetAccountBalanceFromAddr(getPylonsSdkAddr.String(), t)
 
 			receiptDataBase64 := base64.StdEncoding.EncodeToString([]byte(tc.receiptData))
 
 			msgGoogleIAPGetPylons := msgs.NewMsgGoogleIAPGetPylons(tc.productID, tc.purchaseToken, receiptDataBase64, tc.signature, getPylonsSdkAddr)
 			txhash, err := inttestSDK.TestTxWithMsgWithNonce(t,
-				msgGoogleIAPGetPylons,
+				&msgGoogleIAPGetPylons,
 				getPylonsKey,
 				false,
 			)
@@ -98,18 +99,18 @@ func TestGoogleIAPGetPylonsViaCLI(originT *originT.T) {
 			GetTxHandleResult(txhash, t)
 			if tc.showError {
 			} else {
-				accInfo := inttestSDK.GetAccountInfoFromAddr(getPylonsSdkAddr.String(), t)
-				balanceOk := accInfo.Coins.AmountOf(types.Pylon).Equal(sdk.NewInt(getPylonsAccInfo.Coins.AmountOf(types.Pylon).Int64() + tc.reqAmount))
+				accBalance := inttestSDK.GetAccountBalanceFromAddr(getPylonsSdkAddr.String(), t)
+				balanceOk := accBalance.Coins.AmountOf(types.Pylon).Equal(sdk.NewInt(originBalance.Coins.AmountOf(types.Pylon).Int64() + tc.reqAmount))
 				t.WithFields(testing.Fields{
 					"get_pylons_address": getPylonsSdkAddr.String(),
 					"target_amount":      tc.reqAmount,
-					"actual_amount":      accInfo.Coins.AmountOf(types.Pylon).Int64(),
+					"actual_amount":      accBalance.Coins.AmountOf(types.Pylon).Int64(),
 				}).MustTrue(balanceOk, "pylons requestor should get correct revenue")
 			}
 
 			if tc.tryReuseOrderID {
 				txhash, err := inttestSDK.TestTxWithMsgWithNonce(t,
-					msgGoogleIAPGetPylons,
+					&msgGoogleIAPGetPylons,
 					getPylonsKey,
 					false,
 				)

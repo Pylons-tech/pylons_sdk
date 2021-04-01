@@ -78,6 +78,14 @@ func WaitOneBlockWithErrorCheck(t *testing.T) {
 	t.MustNil(err, "error waiting for next block")
 }
 
+// GetAccountAddress returns SDK address and account info from key
+func GetAccountAddress(key string, t *testing.T) sdk.AccAddress {
+	address := inttestSDK.GetAccountAddr(key, t)
+	sdkAddress, err := sdk.AccAddressFromBech32(address)
+	t.MustNil(err, "error converting string address to AccAddress struct")
+	return sdkAddress
+}
+
 // GetAccountAddressAndInfo returns SDK address and account info from key
 func GetAccountAddressAndInfo(key string, t *testing.T) (sdk.AccAddress, types.BaseAccount) {
 	address := inttestSDK.GetAccountAddr(key, t)
