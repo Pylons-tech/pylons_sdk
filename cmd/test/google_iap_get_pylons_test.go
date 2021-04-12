@@ -103,20 +103,20 @@ func TestGoogleIAPGetPylonsViaCLI(originT *originT.T) {
 				balanceOk := accBalance.Coins.AmountOf(types.Pylon).Equal(sdk.NewInt(originBalance.Coins.AmountOf(types.Pylon).Int64() + tc.reqAmount))
 				t.WithFields(testing.Fields{
 					"get_pylons_address": getPylonsSdkAddr.String(),
-					"target_amount":      tc.reqAmount,
+					"target_increase":    tc.reqAmount,
 					"actual_amount":      accBalance.Coins.AmountOf(types.Pylon).Int64(),
+					"origin_amount":      originBalance.Coins.AmountOf(types.Pylon).Int64(),
 				}).MustTrue(balanceOk, "pylons requestor should get correct revenue")
 			}
 
 			if tc.tryReuseOrderID {
-				txhash, err := inttestSDK.TestTxWithMsgWithNonce(t,
+				_, err := inttestSDK.TestTxWithMsgWithNonce(t,
 					&msgGoogleIAPGetPylons,
 					getPylonsKey,
 					false,
 				)
-				t.MustNil(err)
-				txHandleErr := GetTxHandleError(txhash, t)
-				t.MustContain(string(txHandleErr), tc.tryReuseErr)
+				t.MustTrue(err != nil, err)
+				t.MustContain(err.Error(), tc.tryReuseErr)
 			}
 		})
 	}

@@ -250,7 +250,7 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 		return "error generating transaction with messages", err
 	}
 	t.Trace("tx_with_nonce.step.E")
-	output, err := GetAminoCdc().MarshalJSON(txModel)
+	output, err := app.MakeEncodingConfig().TxConfig.TxJSONEncoder()(txModel)
 	if err != nil {
 		return "error marshaling transaction into json", err
 	}
@@ -279,8 +279,8 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 	// output, logstr, err := RunPylonsd(txSignArgs, "")
 	// t.WithFields(testing.Fields{
 	// 	"error": err,
-	// 	"log": logstr,
-	// })("TX sign result")
+	// 	"log":   logstr,
+	// }).Debug("TX sign result")
 	if err != nil {
 		return "error signing transaction", fmt.Errorf("%s; %s", err.Error(), string(output))
 	}
@@ -345,7 +345,6 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 
 // TestTxWithMsgWithNonce is a function to send transaction with message and nonce
 func TestTxWithMsgWithNonce(t *testing.T, msgValue sdk.Msg, signer string, isBech32Addr bool) (string, error) {
-	// TODO: fix integration test here
 	output, err := SendMultiMsgTxWithNonce(t, []sdk.Msg{msgValue}, signer, isBech32Addr)
 	if err != nil {
 		// output is txhash if it's a success transaction, if fail, it's output log

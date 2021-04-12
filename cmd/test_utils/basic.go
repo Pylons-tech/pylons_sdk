@@ -196,23 +196,30 @@ func GetAccountInfoFromAddr(addr string, t *testing.T) authtypes.AccountI {
 
 // GetAccountInfoFromAddr is a function to get account information from address
 func GetAccountBalanceFromAddr(addr string, t *testing.T) banktypes.Balance {
-	var balance banktypes.Balance
+	var queryRes banktypes.QueryAllBalancesResponse
 	accBytes, logstr, err := RunPylonsd([]string{"query", "bank", "balances", addr}, "")
 	t.WithFields(testing.Fields{
 		"address": addr,
 		"log":     logstr,
 	}).MustNil(err, "error getting account balance")
 	if err != nil {
-		return balance
+		return banktypes.Balance{
+			Address: addr,
+			Coins:   queryRes.Balances,
+		}
 	}
-	err = GetAminoCdc().UnmarshalJSON(accBytes, &balance)
+	err = GetJSONMarshaler().UnmarshalJSON(accBytes, &queryRes)
 	t.WithFields(testing.Fields{
 		"acc_bytes": string(accBytes),
 	}).MustNil(err, "error decoding raw json")
 	// t.WithFields(testing.Fields{
-	// 	"account_info": accInfo,
+	// 	"address":      addr,
+	// 	"account_info": queryRes.Balances,
 	// }).Debug("debug log")
-	return balance
+	return banktypes.Balance{
+		Address: addr,
+		Coins:   queryRes.Balances,
+	}
 }
 
 // GetAccountInfoFromName is a function to get account information from account key
