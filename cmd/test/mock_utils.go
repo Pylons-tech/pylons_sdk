@@ -33,7 +33,8 @@ func MockAccount(key string, t *testing.T) {
 	}).MustNil(err, "error creating account on chain")
 
 	// fetch txhash from result log
-	caTxHash := inttestSDK.GetTxHashFromLog(result)
+	caTxHash, err := inttestSDK.GetTxHashFromJson(result)
+	t.MustNil(err, "error code detected parsing result json")
 	t.MustTrue(caTxHash != "", "error fetching txhash from result")
 	t.WithFields(testing.Fields{
 		"txhash": caTxHash,

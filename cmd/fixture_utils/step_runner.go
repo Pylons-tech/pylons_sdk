@@ -101,7 +101,8 @@ func RunCreateAccount(step FixtureStep, t *testing.T) {
 			"logstr": logstr,
 		}).MustNil(err, "error creating account on chain")
 
-		caTxHash := inttest.GetTxHashFromLog(result)
+		caTxHash, err := inttest.GetTxHashFromJson(result)
+		t.MustNil(err, "error code detected parsing result json")
 		t.MustTrue(caTxHash != "", "error fetching txhash from result")
 		t.WithFields(testing.Fields{
 			"txhash": caTxHash,

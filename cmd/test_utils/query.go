@@ -193,7 +193,7 @@ func GetTxData(txhash string, t *testing.T) ([]byte, error) {
 		return output, err
 	}
 	var tx sdk.TxResponse
-	err = GetAminoCdc().UnmarshalJSON([]byte(output), &tx)
+	err = GetJSONMarshaler().UnmarshalJSON([]byte(output), &tx)
 	if err != nil {
 		return []byte{}, err
 	}
@@ -204,6 +204,10 @@ func GetTxData(txhash string, t *testing.T) ([]byte, error) {
 // WaitAndGetTxData is a function to get transaction data after transaction is processed
 func WaitAndGetTxData(txhash string, maxWaitBlock int64, t *testing.T) ([]byte, error) {
 	txHandleResBytes, err := GetTxData(txhash, t)
+	t.WithFields(testing.Fields{
+		"action": "GetTxData",
+		"error":  err,
+	}).Debug(string(txHandleResBytes))
 	if err != nil { // maybe transaction is not contained in block
 		if maxWaitBlock == 0 {
 			t.WithFields(testing.Fields{

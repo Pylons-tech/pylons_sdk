@@ -345,6 +345,7 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 
 // TestTxWithMsgWithNonce is a function to send transaction with message and nonce
 func TestTxWithMsgWithNonce(t *testing.T, msgValue sdk.Msg, signer string, isBech32Addr bool) (string, error) {
+	// TODO: fix integration test here
 	output, err := SendMultiMsgTxWithNonce(t, []sdk.Msg{msgValue}, signer, isBech32Addr)
 	if err != nil {
 		// output is txhash if it's a success transaction, if fail, it's output log
