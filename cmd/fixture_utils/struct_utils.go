@@ -279,7 +279,7 @@ func GetItemInputsFromBytes(bytes []byte, t *testing.T) types.ItemInputList {
 		"bytes": string(bytes),
 	}).MustNil(err, "error unmarshaling into item input refs")
 
-	err = inttest.GetAminoCdc().UnmarshalJSON(bytes, &itemInputDirectReader)
+	err = json.Unmarshal(bytes, &itemInputDirectReader)
 	t.WithFields(testing.Fields{
 		"bytes": string(bytes),
 	}).MustNil(err, "error unmarshaling into item input direct")
@@ -291,7 +291,7 @@ func GetItemInputsFromBytes(bytes []byte, t *testing.T) types.ItemInputList {
 		if len(iia.Ref) > 0 {
 			var ii types.ItemInput
 			iiBytes := ReadFile(iia.Ref, t)
-			err := inttest.GetAminoCdc().UnmarshalJSON(iiBytes, &ii)
+			err := inttest.GetJSONMarshaler().UnmarshalJSON(iiBytes, &ii)
 			if err != nil {
 				t.WithFields(testing.Fields{
 					"item_input_bytes": string(iiBytes),
@@ -321,7 +321,7 @@ func GetTradeItemInputsFromBytes(bytes []byte, t *testing.T) types.TradeItemInpu
 	for _, tiiRef := range tradeItemInputRefsReader.ItemInputRefs {
 		var tii types.TradeItemInput
 		tiiBytes := ReadFile(tiiRef, t)
-		err := inttest.GetAminoCdc().UnmarshalJSON(tiiBytes, &tii)
+		err := inttest.GetJSONMarshaler().UnmarshalJSON(tiiBytes, &tii)
 		t.WithFields(testing.Fields{
 			"trade_item_input_bytes": string(tiiBytes),
 		}).MustNil(err, "error unmarshaling trading item inputs")

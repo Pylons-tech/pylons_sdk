@@ -91,6 +91,14 @@ func GetInterfaceRegistry() codectypes.InterfaceRegistry {
 	return app.MakeEncodingConfig().InterfaceRegistry
 }
 
+func GetTxJSONEncoder() sdk.TxEncoder {
+	return app.MakeEncodingConfig().TxConfig.TxJSONEncoder()
+}
+
+func GetTxJSONDecoder() sdk.TxDecoder {
+	return app.MakeEncodingConfig().TxConfig.TxJSONDecoder()
+}
+
 // KeyringBackendSetup is a utility function to setup keyring backend for pylonsd command
 func KeyringBackendSetup(args []string) []string {
 	if len(args) == 0 {

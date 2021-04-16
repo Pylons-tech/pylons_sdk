@@ -22,7 +22,7 @@ func ListTradeViaCLI(account string) ([]types.Trade, error) {
 		return []types.Trade{}, fmt.Errorf("%s: %s", logstr, err.Error())
 	}
 	listTradesResp := types.ListTradeResponse{}
-	err = GetAminoCdc().UnmarshalJSON(output, &listTradesResp)
+	err = GetJSONMarshaler().UnmarshalJSON(output, &listTradesResp)
 	return listTradesResp.Trades, err
 }
 
@@ -47,13 +47,13 @@ func ListCookbookViaCLI(account string) ([]types.Cookbook, error) {
 	if err != nil {
 		return listCBResp.Cookbooks, fmt.Errorf("%s: %s", logstr, err.Error())
 	}
-	err = GetAminoCdc().UnmarshalJSON(output, &listCBResp)
+	err = GetJSONMarshaler().UnmarshalJSON(output, &listCBResp)
 	return listCBResp.Cookbooks, err
 }
 
 // GetLockedCoinsViaCLI is a function to list locked coins via cli
-func GetLockedCoinsViaCLI(account string) (types.LockedCoin, error) {
-	lcResp := types.LockedCoin{}
+func GetLockedCoinsViaCLI(account string) (types.GetLockedCoinsResponse, error) {
+	lcResp := types.GetLockedCoinsResponse{}
 	queryParams := []string{"query", "pylons", "get_locked_coins"}
 	if len(account) != 0 {
 		queryParams = append(queryParams, "--account", account)
@@ -62,13 +62,13 @@ func GetLockedCoinsViaCLI(account string) (types.LockedCoin, error) {
 	if err != nil {
 		return lcResp, fmt.Errorf("%s: %s", logstr, err.Error())
 	}
-	err = GetAminoCdc().UnmarshalJSON(output, &lcResp)
+	err = GetJSONMarshaler().UnmarshalJSON(output, &lcResp)
 	return lcResp, err
 }
 
 // GetLockedCoinDetailsViaCLI is a function to list locked coins via cli
-func GetLockedCoinDetailsViaCLI(account string) (types.LockedCoinDetails, error) {
-	lcdResp := types.LockedCoinDetails{}
+func GetLockedCoinDetailsViaCLI(account string) (types.GetLockedCoinDetailsResponse, error) {
+	lcdResp := types.GetLockedCoinDetailsResponse{}
 	queryParams := []string{"query", "pylons", "get_locked_coin_details"}
 	if len(account) != 0 {
 		queryParams = append(queryParams, "--account", account)
@@ -77,7 +77,7 @@ func GetLockedCoinDetailsViaCLI(account string) (types.LockedCoinDetails, error)
 	if err != nil {
 		return lcdResp, fmt.Errorf("%s: %s", logstr, err.Error())
 	}
-	err = GetAminoCdc().UnmarshalJSON(output, &lcdResp)
+	err = GetJSONMarshaler().UnmarshalJSON(output, &lcdResp)
 	return lcdResp, err
 }
 
@@ -92,7 +92,7 @@ func ListRecipesViaCLI(account string) ([]types.Recipe, error) {
 		return []types.Recipe{}, err
 	}
 	listRCPResp := types.ListRecipeResponse{}
-	err = GetAminoCdc().UnmarshalJSON(output, &listRCPResp)
+	err = GetJSONMarshaler().UnmarshalJSON(output, &listRCPResp)
 	return listRCPResp.Recipes, err
 }
 
@@ -108,7 +108,7 @@ func ListExecutionsViaCLI(account string, t *testing.T) ([]types.Execution, erro
 		return []types.Execution{}, err
 	}
 	var listExecutionsResp types.ListExecutionsResponse
-	err = GetAminoCdc().UnmarshalJSON(output, &listExecutionsResp)
+	err = GetJSONMarshaler().UnmarshalJSON(output, &listExecutionsResp)
 	t.WithFields(testing.Fields{
 		"list_executions_output": string(output),
 	}).MustNil(err, "error unmarshaling list executions")
@@ -126,7 +126,7 @@ func ListItemsViaCLI(account string) ([]types.Item, error) {
 		return []types.Item{}, fmt.Errorf("%s: %s", logstr, err.Error())
 	}
 	var ItemResponse types.ItemsBySenderResponse
-	err = GetAminoCdc().UnmarshalJSON(output, &ItemResponse)
+	err = GetJSONMarshaler().UnmarshalJSON(output, &ItemResponse)
 	return ItemResponse.Items, err
 }
 
@@ -162,7 +162,7 @@ func GetTxError(txhash string, t *testing.T) ([]byte, error) {
 		return []byte{}, fmt.Errorf("%s: %s", logstr, err.Error())
 	}
 	var tx sdk.TxResponse
-	err = GetAminoCdc().UnmarshalJSON([]byte(output), &tx)
+	err = GetJSONMarshaler().UnmarshalJSON([]byte(output), &tx)
 	if err != nil {
 		return []byte{}, err
 	}
@@ -291,7 +291,7 @@ func GetCookbookByGUID(guid string) (types.Cookbook, error) {
 		return types.Cookbook{}, err
 	}
 	var cookbook types.Cookbook
-	err = GetAminoCdc().UnmarshalJSON(output, &cookbook)
+	err = GetJSONMarshaler().UnmarshalJSON(output, &cookbook)
 	return cookbook, err
 }
 
@@ -333,7 +333,7 @@ func GetRecipeByGUID(guid string) (types.Recipe, error) {
 		return types.Recipe{}, err
 	}
 	var rcp types.Recipe
-	err = GetAminoCdc().UnmarshalJSON(output, &rcp)
+	err = GetJSONMarshaler().UnmarshalJSON(output, &rcp)
 	return rcp, err
 }
 
@@ -344,7 +344,7 @@ func GetExecutionByGUID(guid string) (types.Execution, error) {
 		return types.Execution{}, err
 	}
 	var exec types.Execution
-	err = GetAminoCdc().UnmarshalJSON(output, &exec)
+	err = GetJSONMarshaler().UnmarshalJSON(output, &exec)
 	return exec, err
 }
 
@@ -355,7 +355,7 @@ func GetItemByGUID(guid string) (types.Item, error) {
 		return types.Item{}, err
 	}
 	var item types.Item
-	err = GetAminoCdc().UnmarshalJSON(output, &item)
+	err = GetJSONMarshaler().UnmarshalJSON(output, &item)
 	return item, err
 }
 

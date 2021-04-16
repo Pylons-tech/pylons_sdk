@@ -111,7 +111,7 @@ func MockCookbook(ownerKey string, createNew bool, t *testing.T) string {
 
 	txHandleResBytes := GetTxHandleResult(txhash, t)
 	resp := msgs.MsgCreateCookbookResponse{}
-	err = inttestSDK.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+	err = inttestSDK.GetJSONMarshaler().UnmarshalJSON(txHandleResBytes, &resp)
 	TxResBytesUnmarshalErrorCheck(txhash, err, txHandleResBytes, t)
 	return resp.CookbookID
 }
@@ -221,7 +221,7 @@ func MockDetailedRecipeGUID(
 
 	txHandleResBytes := GetTxHandleResult(txhash, t)
 	resp := msgs.MsgCreateRecipeResponse{}
-	err = inttestSDK.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+	err = inttestSDK.GetJSONMarshaler().UnmarshalJSON(txHandleResBytes, &resp)
 	TxResBytesUnmarshalErrorCheck(txhash, err, txHandleResBytes, t)
 
 	return resp.RecipeID
@@ -257,7 +257,7 @@ func MockItemGUID(cbID, sender, name string, t *testing.T) string {
 
 	txHandleResBytes := GetTxHandleResult(txhash, t)
 	resp := msgs.MsgFiatItemResponse{}
-	err = inttestSDK.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+	err = inttestSDK.GetJSONMarshaler().UnmarshalJSON(txHandleResBytes, &resp)
 	TxResBytesUnmarshalErrorCheck(txhash, err, txHandleResBytes, t)
 
 	return resp.ItemID
@@ -292,7 +292,7 @@ func MockItemGUIDWithFee(cbID, sender, name string, transferFee int64, t *testin
 
 	txHandleResBytes := GetTxHandleResult(txhash, t)
 	resp := msgs.MsgFiatItemResponse{}
-	err = inttestSDK.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+	err = inttestSDK.GetJSONMarshaler().UnmarshalJSON(txHandleResBytes, &resp)
 	TxResBytesUnmarshalErrorCheck(txhash, err, txHandleResBytes, t)
 
 	return resp.ItemID

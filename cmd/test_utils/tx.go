@@ -151,7 +151,7 @@ func TestTxWithMsg(t *testing.T, msgValue sdk.Msg, signer string) string {
 
 	txModel, err := GenTxWithMsg([]sdk.Msg{msgValue})
 	t.MustNil(err, "error while building transaction model from messages")
-	output, err := GetAminoCdc().MarshalJSON(txModel)
+	output, err := GetTxJSONEncoder()(txModel)
 	t.MustNil(err, "error encoding transaction model")
 
 	err = ioutil.WriteFile(rawTxFile, output, 0644)
@@ -250,7 +250,7 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 		return "error generating transaction with messages", err
 	}
 	t.Trace("tx_with_nonce.step.E")
-	output, err := app.MakeEncodingConfig().TxConfig.TxJSONEncoder()(txModel)
+	output, err := GetTxJSONEncoder()(txModel)
 	if err != nil {
 		return "error marshaling transaction into json", err
 	}
