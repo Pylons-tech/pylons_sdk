@@ -58,7 +58,7 @@ func GenTxWithMsg(messages []sdk.Msg) (authsigning.Tx, error) {
 func broadcastTxFile(signedTxFile string, maxRetry int, t *testing.T) (string, error) {
 	if len(CLIOpts.RestEndpoint) == 0 { // broadcast using cli
 		// pylonsd tx broadcast signedCreateCookbookTx.json
-		txBroadcastArgs := []string{"tx", "broadcast", signedTxFile}
+		txBroadcastArgs := []string{"tx", "broadcast", signedTxFile, "--broadcast-mode=async"}
 		output, logstr, err := RunPylonsd(txBroadcastArgs, "")
 		// output2, logstr2, err := RunPylonsd([]string{"query", "account", "cosmos10xgn8t2auxskrf2qjcht0hwq2h5chnrpx87dus"}, "")
 		// t.WithFields(testing.Fields{
@@ -275,14 +275,14 @@ func SendMultiMsgTxWithNonce(t *testing.T, msgs []sdk.Msg, signer string, isBech
 		"--sequence", strconv.FormatUint(nonce, 10),
 		"--account-number", strconv.FormatUint(accInfo.GetAccountNumber(), 10),
 	}
-	output, _, err = RunPylonsd(txSignArgs, "")
+	output, logstr, err := RunPylonsd(txSignArgs, "")
 	// output, logstr, err := RunPylonsd(txSignArgs, "")
 	// t.WithFields(testing.Fields{
 	// 	"error": err,
 	// 	"log":   logstr,
 	// }).Debug("TX sign result")
 	if err != nil {
-		return "error signing transaction", fmt.Errorf("%s; %s", err.Error(), string(output))
+		return "error signing transaction", fmt.Errorf("%s; %s; %s", err.Error(), string(output), logstr)
 	}
 	t.Trace("tx_with_nonce.step.H")
 

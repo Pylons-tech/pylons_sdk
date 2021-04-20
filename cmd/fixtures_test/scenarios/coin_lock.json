@@ -82,7 +82,7 @@
         "paramsRef": "./recipes/coin_lock/executions/lock_100k_pylons.json",
         "output": {
             "txResult": {
-                "errLog": "invalid request: LockCoin: the sender does not have enough amount to lock"
+                "errLog": "LockCoin: the sender does not have enough amount to lock"
             }
         }
     },
@@ -110,7 +110,7 @@
         "paramsRef": "./send_coins/coin_lock/send_10k_pylons.json",
         "output": {
             "txResult": {
-                "errLog": "insufficient funds: Sender does not have enough coins"
+                "errLog": "Sender does not have enough coins: insufficient funds"
             }
         }
     }

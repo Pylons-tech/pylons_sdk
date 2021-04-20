@@ -314,7 +314,7 @@ func MockDetailedTradeGUID(
 
 	inputItemList := types.GenTradeItemInputList(cbID, []string{inputItemName})
 	if !hasInputItem {
-		inputItemList.List = []types.TradeItemInput{}
+		inputItemList = []types.TradeItemInput{}
 	}
 	var outputItems types.ItemList
 	if hasOutputItem {
@@ -322,7 +322,7 @@ func MockDetailedTradeGUID(
 		t.WithFields(testing.Fields{
 			"item_guid": outputItemID,
 		}).MustNil(err, "error getting item with target guid")
-		outputItems = types.ItemList{List: []types.Item{outputItem}}
+		outputItems = types.ItemList{outputItem}
 	}
 
 	createTradeMsg := msgs.NewMsgCreateTrade(
