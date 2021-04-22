@@ -566,7 +566,7 @@ Coin to coin trading
   "CoinInputs":[
       {
           "Coin": "pylon",
-          "Count": "1"
+          "Count": 1
       }
   ],
   "ItemInputs": [],
@@ -585,7 +585,7 @@ Coin to item trading
   "CoinInputs":[
       {
           "Coin": "pylon",
-          "Count": "1"
+          "Count": 1
       }
   ],
   "ItemInputs": null,

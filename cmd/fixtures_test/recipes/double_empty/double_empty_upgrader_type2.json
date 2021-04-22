@@ -3,7 +3,7 @@
     "ID": "DE-double-empty-upgrader-type2",
     "CoinInputs":[{
         "Coin": "loudcoin",
-        "Count": "250"
+        "Count":250
     }],    
     "ItemInputs":[
         {

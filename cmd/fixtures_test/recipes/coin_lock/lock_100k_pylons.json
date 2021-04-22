@@ -3,7 +3,7 @@
     "ID": "coinlock-100k-pylons-1589853709",
     "CoinInputs":[{
         "Coin": "pylon",
-        "Count": "100000"
+        "Count": 100000
     }],    
     "ExtraInfo":"",
     "Sender":"coinlock_account1",

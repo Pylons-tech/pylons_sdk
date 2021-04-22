@@ -401,7 +401,7 @@ Sample transaction is similar to the following.
           "CoinInputs": [
             {
               "Coin": "pylon",
-              "Count": "1"
+              "Count": 1
             }
           ],
           "ItemInputs": null,
@@ -484,7 +484,7 @@ The content of the `tx_recipe_signed.json` will be like the following.
           "CoinInputs": [
             {
               "Coin": "pylon",
-              "Count": "1"
+              "Count": 1
             }
           ],
           "ItemInputs": null,
@@ -581,7 +581,7 @@ The result of this command will be like the following:
       "CoinInputs": [
         {
           "Coin": "pylon",
-          "Count": "1"
+          "Count": 1
         }
       ],
       "ItemInputs": null,
@@ -951,7 +951,7 @@ Create `tx_trade.json` file and write create trade msg in the file.
           "CoinInputs":[
               {
                   "Coin": "pylon",
-                  "Count": "10"
+                  "Count": 10
               }
           ],
           "ItemInputRefs": [],
@@ -998,7 +998,7 @@ The content of the `tx_trade_signed.json` file will be like the following:
           "CoinInputs": [
             {
               "Coin": "pylon",
-              "Count": "10"
+              "Count": 10
             }
           ],
           "ItemInputs": null,
@@ -1048,7 +1048,7 @@ The result will be like the following:
       "CoinInputs": [
         {
           "Coin": "pylon",
-          "Count": "10"
+          "Count": 10
         }
       ],
       "ItemInputs": null,
@@ -1161,7 +1161,7 @@ After you run the commands, you can check the `list_trade` cli again to check if
       "CoinInputs": [
         {
           "Coin": "pylon",
-          "Count": "10"
+          "Count": 10
         }
       ],
       "ItemInputs": null,

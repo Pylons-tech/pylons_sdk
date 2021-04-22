@@ -3,7 +3,7 @@
     "ID": "LOUD-wooden-sword-lv1-buy-recipe-v0.0.0-1590029710",
     "CoinInputs":[{
         "Coin": "loudcoin",
-        "Count": "100"
+        "Count": 100
     }],
     "ItemInputs": [],
     "Entries":{

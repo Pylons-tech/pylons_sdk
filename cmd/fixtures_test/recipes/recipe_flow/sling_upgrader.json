@@ -2,7 +2,7 @@
     "NodeVersion": "0.0.1",
     "CoinInputs":[{
         "Coin": "pylon",
-        "Count": "5000"
+        "Count": 5000
     }],
     "ItemInputs": [
         {
