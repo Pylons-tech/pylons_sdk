@@ -291,7 +291,7 @@ func GetItemInputsFromBytes(bytes []byte, t *testing.T) types.ItemInputList {
 		if len(iia.Ref) > 0 {
 			var ii types.ItemInput
 			iiBytes := ReadFile(iia.Ref, t)
-			err := inttest.GetJSONMarshaler().UnmarshalJSON(iiBytes, &ii)
+			err := json.Unmarshal(iiBytes, &ii)
 			if err != nil {
 				t.WithFields(testing.Fields{
 					"item_input_bytes": string(iiBytes),

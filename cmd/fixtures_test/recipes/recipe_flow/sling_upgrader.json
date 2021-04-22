@@ -31,5 +31,5 @@
     "Name": "Sling Upgrade Recipe",
     "CookbookID": "recipe_flow_cookbook-1589853709",
     "Description": "this is sling upgrader recipe for recipe flow test.",
-    "BlockInterval":"2"
+    "BlockInterval":2
 }

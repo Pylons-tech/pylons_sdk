@@ -237,11 +237,9 @@ func MockItemGUID(cbID, sender, name string, t *testing.T) string {
 		types.DoubleKeyValueList{},
 		types.LongKeyValueList{},
 		types.StringKeyValueList{
-			List: []types.StringKeyValue{
-				{
-					Key:   "Name",
-					Value: name,
-				},
+			{
+				Key:   "Name",
+				Value: name,
 			},
 		},
 		sdkAddr.String(),
@@ -272,11 +270,9 @@ func MockItemGUIDWithFee(cbID, sender, name string, transferFee int64, t *testin
 		types.DoubleKeyValueList{},
 		types.LongKeyValueList{},
 		types.StringKeyValueList{
-			List: []types.StringKeyValue{
-				{
-					Key:   "Name",
-					Value: name,
-				},
+			{
+				Key:   "Name",
+				Value: name,
 			},
 		},
 		itemOwnerSdkAddr.String(),

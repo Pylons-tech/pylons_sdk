@@ -747,7 +747,7 @@ func CreateRecipeMsgFromRef(ref string, t *testing.T) msgs.MsgCreateRecipe {
 	entries := GetEntriesFromBytes(newByteValue, t)
 
 	var rcpTempl types.Recipe
-	err := inttest.GetJSONMarshaler().UnmarshalJSON(newByteValue, &rcpTempl)
+	err := json.Unmarshal(newByteValue, &rcpTempl)
 	t.WithFields(testing.Fields{
 		"rcpTempl":  inttest.AminoCodecFormatter(rcpTempl),
 		"new_bytes": string(newByteValue),

@@ -32,5 +32,5 @@
     "Name": "Original Boomerang Upgrade Recipe",
     "CookbookID": "update_recipe_cookbook-1589853709",
     "Description": "this is original boomerang upgrader recipe.",
-    "BlockInterval":"2"
+    "BlockInterval":2
 }
