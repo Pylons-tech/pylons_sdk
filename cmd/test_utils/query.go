@@ -356,7 +356,10 @@ func GetItemByGUID(guid string) (types.Item, error) {
 	}
 	var item types.Item
 	err = GetJSONMarshaler().UnmarshalJSON(output, &item)
-	return item, err
+	if err != nil {
+		return item, fmt.Errorf("%s: item_output %s", err.Error(), string(output))
+	}
+	return item, nil
 }
 
 // GetRecipeGUIDFromName is a function to get recipe id from name
