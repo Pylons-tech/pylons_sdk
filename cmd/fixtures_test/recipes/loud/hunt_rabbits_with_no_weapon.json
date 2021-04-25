@@ -37,5 +37,5 @@
     "Name": "LOUD's hunt rabbits without sword recipe",
     "CookbookID": "LOUD-v0.0.0-1579053457",
     "Description": "this recipe is used to hunt rabbits without sword.",
-    "BlockInterval":"0"
+    "BlockInterval":0
 }

@@ -3,7 +3,7 @@
     "ID": "LOUD-dev-get-test-items-recipe-v0.0.0-1590029710",
     "CoinInputs":[{
         "Coin": "pylon",
-        "Count": "1"
+        "Count": 1
     }],
     "ItemInputs": [],
     "Entries":{
@@ -49,5 +49,5 @@
     "Name": "LOUD's Dev Get Test Items recipe",
     "CookbookID": "LOUD-v0.0.0-1579053457",
     "Description": "this recipe is used to create character.",
-    "BlockInterval":"0"
+    "BlockInterval":0
 }

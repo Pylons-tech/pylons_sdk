@@ -10,7 +10,6 @@ import (
 	"os"
 	"os/exec"
 	"path"
-	"regexp"
 	"strings"
 	"sync"
 	"time"
@@ -18,14 +17,22 @@ import (
 	"github.com/Pylons-tech/pylons_sdk/app"
 	testing "github.com/Pylons-tech/pylons_sdk/cmd/evtesting"
 	"github.com/Pylons-tech/pylons_sdk/x/pylons/msgs"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/codec"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
+	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/auth"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	log "github.com/sirupsen/logrus"
-	amino "github.com/tendermint/go-amino"
+	"github.com/tendermint/tendermint/libs/bytes"
+	tmcli "github.com/tendermint/tendermint/libs/cli"
+	"github.com/tendermint/tendermint/p2p"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 )
 
-// CLIOptions is a struct to manage pylonscli options
+// CLIOptions is a struct to manage pylonsd options
 type CLIOptions struct {
 	CustomNode   string
 	RestEndpoint string
@@ -33,7 +40,7 @@ type CLIOptions struct {
 	MaxBroadcast int
 }
 
-// CLIOpts is a variable to manage pylonscli options
+// CLIOpts is a variable to manage pylonsd options
 var CLIOpts CLIOptions
 var cliMux sync.Mutex
 
@@ -72,25 +79,57 @@ func ReadFile(fileURL string, t *testing.T) []byte {
 }
 
 // GetAminoCdc is a utility function to get amino codec
-func GetAminoCdc() *amino.Codec {
-	return app.MakeCodec()
+func GetAminoCdc() *codec.LegacyAmino {
+	return app.MakeEncodingConfig().Amino
 }
 
-// KeyringBackendSetup is a utility function to setup keyring backend for pylonscli command
+func GetJSONMarshaler() codec.Marshaler {
+	return app.MakeEncodingConfig().Marshaler
+}
+
+func GetInterfaceRegistry() codectypes.InterfaceRegistry {
+	return app.MakeEncodingConfig().InterfaceRegistry
+}
+
+func GetTxJSONEncoder() sdk.TxEncoder {
+	return app.MakeEncodingConfig().TxConfig.TxJSONEncoder()
+}
+
+func GetTxJSONDecoder() sdk.TxDecoder {
+	return app.MakeEncodingConfig().TxConfig.TxJSONDecoder()
+}
+
+// KeyringBackendSetup is a utility function to setup keyring backend for pylonsd command
 func KeyringBackendSetup(args []string) []string {
 	if len(args) == 0 {
 		return args
 	}
-	newArgs := append(args, "--keyring-backend", "test")
 	switch args[0] {
 	case "keys":
-		return newArgs
+		if args[1] == "show" {
+			return append(args,
+				fmt.Sprintf("--%s=test", flags.FlagKeyringBackend),
+			)
+		}
+		return append(args,
+			fmt.Sprintf("--%s=test", flags.FlagKeyringBackend),
+			fmt.Sprintf("--%s=json", tmcli.OutputFlag),
+		)
+	case "query":
+		return append(args,
+			fmt.Sprintf("--%s=json", tmcli.OutputFlag),
+		)
 	case "tx":
+		argsWithTxCmd := append(args,
+			fmt.Sprintf("--%s=test", flags.FlagKeyringBackend),
+			fmt.Sprintf("--%s=pylonschain", flags.FlagChainID),
+			fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+		)
 		if args[1] == "sign" {
-			return newArgs
+			return argsWithTxCmd
 		}
 		if args[1] == "pylons" && args[2] == "create-account" {
-			return newArgs
+			return argsWithTxCmd
 		}
 		return args
 	default:
@@ -111,21 +150,21 @@ func NodeFlagSetup(args []string) []string {
 	return args
 }
 
-// RunPylonsCli is a function to run pylonscli
-func RunPylonsCli(args []string, stdinInput string) ([]byte, string, error) {
+// RunPylonsd is a function to run pylonsd
+func RunPylonsd(args []string, stdinInput string) ([]byte, string, error) {
 	args = NodeFlagSetup(args)
 	args = KeyringBackendSetup(args)
 	cliMux.Lock()
-	cmd := exec.Command(path.Join(os.Getenv("GOPATH"), "/bin/pylonscli"), args...)
+	cmd := exec.Command(path.Join(os.Getenv("GOPATH"), "/bin/pylonsd"), args...)
 	cmd.Stdin = strings.NewReader(stdinInput)
 	res, err := cmd.CombinedOutput()
 	cliMux.Unlock()
-	return res, fmt.Sprintf("\"pylonscli %s\" ==>\n%s\n", strings.Join(args, " "), string(res)), err
+	return res, fmt.Sprintf("\"pylonsd %s\" ==>\n%s\n", strings.Join(args, " "), string(res)), err
 }
 
 // GetAccountAddr is a function to get account address from key
 func GetAccountAddr(account string, t *testing.T) string {
-	addrBytes, logstr, err := RunPylonsCli([]string{"keys", "show", account, "-a"}, "")
+	addrBytes, logstr, err := RunPylonsd([]string{"keys", "show", account, "-a"}, "")
 	addr := strings.Trim(string(addrBytes), "\n ")
 	t.WithFields(testing.Fields{
 		"account": account,
@@ -135,37 +174,89 @@ func GetAccountAddr(account string, t *testing.T) string {
 }
 
 // GetAccountInfoFromAddr is a function to get account information from address
-func GetAccountInfoFromAddr(addr string, t *testing.T) auth.BaseAccount {
-	var accInfo auth.BaseAccount
-	accBytes, logstr, err := RunPylonsCli([]string{"query", "account", addr}, "")
+func GetAccountInfoFromAddr(addr string, t *testing.T) authtypes.AccountI {
+	var accountI authtypes.AccountI
+	accBytes, logstr, err := RunPylonsd([]string{"query", "account", addr}, "")
 	t.WithFields(testing.Fields{
 		"address": addr,
 		"log":     logstr,
 	}).MustNil(err, "error getting account info")
 	if err != nil {
-		return accInfo
+		return accountI
 	}
-	err = GetAminoCdc().UnmarshalJSON(accBytes, &accInfo)
+
+	var any codectypes.Any
+	cdc := codec.NewProtoCodec(GetInterfaceRegistry())
+	err = cdc.UnmarshalJSON(accBytes, &any)
+	t.WithFields(testing.Fields{
+		"acc_bytes": string(accBytes),
+	}).MustNil(err, "error decoding raw json")
+
+	err = cdc.UnpackAny(&any, &accountI)
+	// err = account.UnpackInterfaces(GetInterfaceRegistry())
+	t.MustNil(err, "error unpacking any")
+
+	// t.WithFields(testing.Fields{
+	// 	"account_info": accInfo,
+	// }).Debug("debug log")
+	return accountI
+}
+
+// GetAccountInfoFromAddr is a function to get account information from address
+func GetAccountBalanceFromAddr(addr string, t *testing.T) banktypes.Balance {
+	var queryRes banktypes.QueryAllBalancesResponse
+	accBytes, logstr, err := RunPylonsd([]string{"query", "bank", "balances", addr}, "")
+	t.WithFields(testing.Fields{
+		"address": addr,
+		"log":     logstr,
+	}).MustNil(err, "error getting account balance")
+	if err != nil {
+		return banktypes.Balance{
+			Address: addr,
+			Coins:   queryRes.Balances,
+		}
+	}
+	err = GetJSONMarshaler().UnmarshalJSON(accBytes, &queryRes)
 	t.WithFields(testing.Fields{
 		"acc_bytes": string(accBytes),
 	}).MustNil(err, "error decoding raw json")
 	// t.WithFields(testing.Fields{
-	// 	"account_info": accInfo,
+	// 	"address":      addr,
+	// 	"account_info": queryRes.Balances,
 	// }).Debug("debug log")
-	return accInfo
+	return banktypes.Balance{
+		Address: addr,
+		Coins:   queryRes.Balances,
+	}
 }
 
 // GetAccountInfoFromName is a function to get account information from account key
-func GetAccountInfoFromName(account string, t *testing.T) auth.BaseAccount {
+func GetAccountInfoFromName(account string, t *testing.T) authtypes.AccountI {
 	addr := GetAccountAddr(account, t)
 	return GetAccountInfoFromAddr(addr, t)
 }
 
+// ValidatorInfo is info about the node's validator, same as Tendermint,
+// except that we use our own PubKey.
+type validatorInfo struct {
+	Address     bytes.HexBytes
+	PubKey      cryptotypes.PubKey
+	VotingPower int64
+}
+
+// ResultStatus is node's info, same as Tendermint, except that we use our own
+// PubKey.
+type resultStatus struct {
+	NodeInfo      p2p.DefaultNodeInfo
+	SyncInfo      ctypes.SyncInfo
+	ValidatorInfo validatorInfo
+}
+
 // GetDaemonStatus is a function to get daemon status
 func GetDaemonStatus() (*ctypes.ResultStatus, string, error) {
-	var ds ctypes.ResultStatus
+	var ds resultStatus
 
-	dsBytes, logstr, err := RunPylonsCli([]string{"status"}, "")
+	dsBytes, logstr, err := RunPylonsd([]string{"status"}, "")
 
 	if err != nil {
 		return nil, logstr, err
@@ -175,7 +266,21 @@ func GetDaemonStatus() (*ctypes.ResultStatus, string, error) {
 	if err != nil {
 		return nil, logstr, err
 	}
-	return &ds, logstr, nil
+
+	pk, err := cryptocodec.ToTmPubKeyInterface(ds.ValidatorInfo.PubKey)
+	if err != nil {
+		return nil, logstr, err
+	}
+
+	return &ctypes.ResultStatus{
+		NodeInfo: ds.NodeInfo,
+		SyncInfo: ds.SyncInfo,
+		ValidatorInfo: ctypes.ValidatorInfo{
+			Address:     ds.ValidatorInfo.Address,
+			PubKey:      pk,
+			VotingPower: ds.ValidatorInfo.VotingPower,
+		},
+	}, logstr, nil
 }
 
 // WaitForNextBlock is a function to wait until next block
@@ -236,53 +341,53 @@ func GetLogFieldsFromMsgs(txMsgs []sdk.Msg) log.Fields {
 			ikeypref = "tx_msg_"
 		}
 		switch msg := msg.(type) {
-		case msgs.MsgCreateCookbook:
+		case *msgs.MsgCreateCookbook:
 			fields[ikeypref+"type"] = "MsgCreateCookbook"
 			fields[ikeypref+"cb_name"] = msg.Name
-			fields[ikeypref+"sender"] = msg.Sender.String()
-		case msgs.MsgUpdateCookbook:
+			fields[ikeypref+"sender"] = msg.Sender
+		case *msgs.MsgUpdateCookbook:
 			fields[ikeypref+"type"] = "MsgUpdateCookbook"
 			fields[ikeypref+"cb_ID"] = msg.ID
-			fields[ikeypref+"sender"] = msg.Sender.String()
-		case msgs.MsgCreateRecipe:
+			fields[ikeypref+"sender"] = msg.Sender
+		case *msgs.MsgCreateRecipe:
 			fields[ikeypref+"type"] = "MsgCreateRecipe"
 			fields[ikeypref+"rcp_name"] = msg.Name
-			fields[ikeypref+"sender"] = msg.Sender.String()
-		case msgs.MsgUpdateRecipe:
+			fields[ikeypref+"sender"] = msg.Sender
+		case *msgs.MsgUpdateRecipe:
 			fields[ikeypref+"type"] = "MsgUpdateRecipe"
 			fields[ikeypref+"rcp_name"] = msg.Name
-			fields[ikeypref+"sender"] = msg.Sender.String()
-		case msgs.MsgExecuteRecipe:
+			fields[ikeypref+"sender"] = msg.Sender
+		case *msgs.MsgExecuteRecipe:
 			fields[ikeypref+"type"] = "MsgExecuteRecipe"
 			fields[ikeypref+"rcp_id"] = msg.RecipeID
 			fields[ikeypref+"sender"] = msg.Sender
-		case msgs.MsgEnableRecipe:
+		case *msgs.MsgEnableRecipe:
 			fields[ikeypref+"type"] = "MsgEnableRecipe"
 			fields[ikeypref+"rcp_id"] = msg.RecipeID
 			fields[ikeypref+"sender"] = msg.Sender
-		case msgs.MsgDisableRecipe:
+		case *msgs.MsgDisableRecipe:
 			fields[ikeypref+"type"] = "MsgDisableRecipe"
 			fields[ikeypref+"rcp_id"] = msg.RecipeID
 			fields[ikeypref+"sender"] = msg.Sender
-		case msgs.MsgCheckExecution:
+		case *msgs.MsgCheckExecution:
 			fields[ikeypref+"type"] = "MsgCheckExecution"
 			fields[ikeypref+"exec_id"] = msg.ExecID
-			fields[ikeypref+"sender"] = msg.Sender.String()
-		case msgs.MsgCreateTrade:
+			fields[ikeypref+"sender"] = msg.Sender
+		case *msgs.MsgCreateTrade:
 			fields[ikeypref+"type"] = "MsgCreateTrade"
 			fields[ikeypref+"trade_info"] = msg.ExtraInfo
-			fields[ikeypref+"sender"] = msg.Sender.String()
-		case msgs.MsgFulfillTrade:
+			fields[ikeypref+"sender"] = msg.Sender
+		case *msgs.MsgFulfillTrade:
 			fields[ikeypref+"type"] = "MsgFulfillTrade"
 			fields[ikeypref+"trade_id"] = msg.TradeID
-			fields[ikeypref+"sender"] = msg.Sender.String()
-		case msgs.MsgFiatItem:
+			fields[ikeypref+"sender"] = msg.Sender
+		case *msgs.MsgFiatItem:
 			fields[ikeypref+"type"] = "MsgFiatItem"
-			fields[ikeypref+"sender"] = msg.Sender.String()
-		case msgs.MsgUpdateItemString:
+			fields[ikeypref+"sender"] = msg.Sender
+		case *msgs.MsgUpdateItemString:
 			fields[ikeypref+"type"] = "MsgUpdateItemString"
 			fields[ikeypref+"item_id"] = msg.ItemID
-			fields[ikeypref+"sender"] = msg.Sender.String()
+			fields[ikeypref+"sender"] = msg.Sender
 		}
 	}
 	return fields
@@ -307,14 +412,17 @@ func Exists(slice []string, val string) bool {
 	return false
 }
 
-// GetTxHashFromLog returns txhash from long list of transaction log
-func GetTxHashFromLog(result string) string {
-	// use regexp to find txhash from cli command response
-	re := regexp.MustCompile(`"txhash":.*"(.*)"`)
-	caTxHashSearch := re.FindSubmatch([]byte(result))
-	if len(caTxHashSearch) <= 1 {
-		return ""
+// GetTxHashFromJson parse txhash and error code from json format of transaction log
+func GetTxHashFromJson(result string) (string, error) {
+	jsonMap := make(map[string]interface{})
+	err := json.Unmarshal([]byte(result), &jsonMap)
+	if err != nil {
+		panic(err)
 	}
-	caTxHash := string(caTxHashSearch[1])
-	return caTxHash
+
+	if jsonMap["code"].(float64) != 0 {
+		return "", errors.New(jsonMap["raw_log"].(string))
+	}
+
+	return jsonMap["txhash"].(string), nil
 }

@@ -10,16 +10,6 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// MsgCreateTrade defines a CreateTrade message
-type MsgCreateTrade struct {
-	CoinInputs  types.CoinInputList
-	ItemInputs  types.TradeItemInputList
-	CoinOutputs sdk.Coins
-	ItemOutputs types.ItemList
-	ExtraInfo   string
-	Sender      sdk.AccAddress
-}
-
 // NewMsgCreateTrade a constructor for CreateTrade msg
 func NewMsgCreateTrade(
 	coinInputs types.CoinInputList,
@@ -27,7 +17,7 @@ func NewMsgCreateTrade(
 	coinOutputs sdk.Coins,
 	itemOutputs types.ItemList,
 	extraInfo string,
-	sender sdk.AccAddress) MsgCreateTrade {
+	sender string) MsgCreateTrade {
 	return MsgCreateTrade{
 		CoinInputs:  coinInputs,
 		ItemInputs:  tradeItemInputs,
@@ -48,8 +38,8 @@ func (msg MsgCreateTrade) Type() string { return "create_trade" }
 func (msg MsgCreateTrade) ValidateBasic() error {
 	tradePylonAmount := int64(0)
 
-	if msg.Sender.Empty() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Sender.String())
+	if msg.Sender == "" {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Sender)
 
 	}
 	if msg.CoinOutputs == nil && msg.ItemOutputs == nil {
@@ -75,7 +65,7 @@ func (msg MsgCreateTrade) ValidateBasic() error {
 				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "there should be no 0 amount denom on coin inputs")
 			}
 		}
-		tradePylonAmount += msg.CoinInputs.ToCoins().AmountOf(types.Pylon).Int64()
+		tradePylonAmount += types.CoinInputList(msg.CoinInputs).ToCoins().AmountOf(types.Pylon).Int64()
 	}
 
 	if tradePylonAmount < config.Config.Fee.MinTradePrice {
@@ -83,7 +73,7 @@ func (msg MsgCreateTrade) ValidateBasic() error {
 	}
 
 	if msg.ItemInputs != nil {
-		err := msg.ItemInputs.Validate()
+		err := types.TradeItemInputList(msg.ItemInputs).Validate()
 		if err != nil {
 			return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, err.Error())
 		}
@@ -103,5 +93,9 @@ func (msg MsgCreateTrade) GetSignBytes() []byte {
 
 // GetSigners gets the signer who should have signed the message
 func (msg MsgCreateTrade) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{msg.Sender}
+	from, err := sdk.AccAddressFromBech32(msg.Sender)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{from}
 }

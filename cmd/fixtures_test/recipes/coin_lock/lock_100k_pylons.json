@@ -3,12 +3,12 @@
     "ID": "coinlock-100k-pylons-1589853709",
     "CoinInputs":[{
         "Coin": "pylon",
-        "Count": "100000"
+        "Count": 100000
     }],    
     "ExtraInfo":"",
     "Sender":"coinlock_account1",
     "Name": "CoinLock's 100k pylons lock recipe",
     "CookbookID": "coinlock-1589853709",
     "Description": "this recipe is used to lock 100k pylons within a recipe.",
-    "BlockInterval":"2"
+    "BlockInterval":2
 }

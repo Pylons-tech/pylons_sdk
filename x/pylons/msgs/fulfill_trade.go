@@ -7,15 +7,8 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// MsgFulfillTrade defines a FulfillTrade message
-type MsgFulfillTrade struct {
-	TradeID string
-	Sender  sdk.AccAddress
-	ItemIDs []string
-}
-
 // NewMsgFulfillTrade a constructor for FulfillTrade msg
-func NewMsgFulfillTrade(TradeID string, sender sdk.AccAddress, itemIDs []string) MsgFulfillTrade {
+func NewMsgFulfillTrade(TradeID string, sender string, itemIDs []string) MsgFulfillTrade {
 	return MsgFulfillTrade{
 		TradeID: TradeID,
 		Sender:  sender,
@@ -32,8 +25,8 @@ func (msg MsgFulfillTrade) Type() string { return "fulfill_trade" }
 // ValidateBasic validates the Msg
 func (msg MsgFulfillTrade) ValidateBasic() error {
 
-	if msg.Sender.Empty() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Sender.String())
+	if msg.Sender == "" {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Sender)
 	}
 
 	return nil
@@ -50,5 +43,9 @@ func (msg MsgFulfillTrade) GetSignBytes() []byte {
 
 // GetSigners gets the signer who should have signed the message
 func (msg MsgFulfillTrade) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{msg.Sender}
+	from, err := sdk.AccAddressFromBech32(msg.Sender)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{from}
 }

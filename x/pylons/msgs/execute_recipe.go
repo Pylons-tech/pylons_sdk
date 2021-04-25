@@ -7,15 +7,8 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// MsgExecuteRecipe defines a SetName message
-type MsgExecuteRecipe struct {
-	RecipeID string
-	Sender   sdk.AccAddress
-	ItemIDs  []string
-}
-
 // NewMsgExecuteRecipe a constructor for ExecuteCookbook msg
-func NewMsgExecuteRecipe(recipeID string, sender sdk.AccAddress, itemIDs []string) MsgExecuteRecipe {
+func NewMsgExecuteRecipe(recipeID string, sender string, itemIDs []string) MsgExecuteRecipe {
 	msg := MsgExecuteRecipe{
 		RecipeID: recipeID,
 		Sender:   sender,
@@ -33,9 +26,8 @@ func (msg MsgExecuteRecipe) Type() string { return "execute_recipe" }
 // ValidateBasic validates the Msg
 func (msg MsgExecuteRecipe) ValidateBasic() error {
 
-	if msg.Sender.Empty() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Sender.String())
-
+	if msg.Sender == "" {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Sender)
 	}
 
 	return nil
@@ -52,5 +44,9 @@ func (msg MsgExecuteRecipe) GetSignBytes() []byte {
 
 // GetSigners gets the signer who should have signed the message
 func (msg MsgExecuteRecipe) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{msg.Sender}
+	from, err := sdk.AccAddressFromBech32(msg.Sender)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{from}
 }

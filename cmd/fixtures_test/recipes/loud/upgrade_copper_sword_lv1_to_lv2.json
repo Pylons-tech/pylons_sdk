@@ -3,7 +3,7 @@
     "ID": "LOUD-upgrade-copper-sword-lv1-to-lv2-recipe-v0.0.0-1590029710",
     "CoinInputs":[{
         "Coin": "loudcoin",
-        "Count": "250"
+        "Count":250
     }],    
     "ItemInputs":[
         {
@@ -32,5 +32,5 @@
     "Name": "LOUD's Copper sword lv1 to lv2 upgrade recipe",
     "CookbookID": "LOUD-v0.0.0-1579053457",
     "Description": "this recipe is used to upgrade copper sword level.",
-    "BlockInterval":"0"
+    "BlockInterval":0
 }

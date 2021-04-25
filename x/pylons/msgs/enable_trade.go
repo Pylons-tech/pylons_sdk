@@ -7,14 +7,8 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// MsgEnableTrade defines a EnableTrade message
-type MsgEnableTrade struct {
-	TradeID string
-	Sender  sdk.AccAddress
-}
-
 // NewMsgEnableTrade a constructor for EnableTrade msg
-func NewMsgEnableTrade(tradeID string, sender sdk.AccAddress) MsgEnableTrade {
+func NewMsgEnableTrade(tradeID string, sender string) MsgEnableTrade {
 	return MsgEnableTrade{
 		TradeID: tradeID,
 		Sender:  sender,
@@ -30,9 +24,8 @@ func (msg MsgEnableTrade) Type() string { return "enable_trade" }
 // ValidateBasic validates the Msg
 func (msg MsgEnableTrade) ValidateBasic() error {
 
-	if msg.Sender.Empty() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Sender.String())
-
+	if msg.Sender == "" {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Sender)
 	}
 
 	return nil
@@ -49,5 +42,9 @@ func (msg MsgEnableTrade) GetSignBytes() []byte {
 
 // GetSigners gets the signer who should have signed the message
 func (msg MsgEnableTrade) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{msg.Sender}
+	from, err := sdk.AccAddressFromBech32(msg.Sender)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{from}
 }

@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"github.com/Pylons-tech/pylons_sdk/x/pylons/types"
-	"github.com/cosmos/cosmos-sdk/crypto/keys/hd"
+	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/go-bip39"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
@@ -43,19 +43,19 @@ func GetParamsForPopularRecipe(hfrt PopularRecipeType) (types.CoinInputList, typ
 	case Rcp5xWoodcoinTo1xChaircoin: // 5 x woodcoin -> 1 x chair coin recipe
 		return types.GenCoinInputList("wood", 5),
 			types.ItemInputList{},
-			types.GenCoinOnlyEntry("chair"),
+			types.EntriesList{CoinOutputs: []types.CoinOutput{types.GenCoinOnlyEntry("chair")}},
 			types.GenOneOutput("chair"),
 			0
 	case Rcp5BlockDelayed5xWoodcoinTo1xChaircoin: // 5 x woodcoin -> 1 x chair coin recipe, 5 block delayed
 		return types.GenCoinInputList("wood", 5),
 			types.ItemInputList{},
-			types.GenCoinOnlyEntry("chair"),
+			types.EntriesList{CoinOutputs: []types.CoinOutput{types.GenCoinOnlyEntry("chair")}},
 			types.GenOneOutput("chair"),
 			5
 	case Rcp5xWoodcoinTo1xRaichuItemBuy:
 		return types.GenCoinInputList("wood", 5),
 			types.ItemInputList{},
-			types.GenItemOnlyEntry("Raichu"),
+			types.EntriesList{ItemOutputs: []types.ItemOutput{types.GenItemOnlyEntry("Raichu")}},
 			types.GenOneOutput("Raichu"),
 			0
 	case RcpRaichuNameUpgrade:
@@ -79,13 +79,13 @@ func GetParamsForPopularRecipe(hfrt PopularRecipeType) (types.CoinInputList, typ
 	case Rcp2BlockDelayedKnifeMerge:
 		return types.CoinInputList{},
 			types.GenItemInputList("Knife", "Knife"),
-			types.GenItemOnlyEntry("KnifeMRG"),
+			types.EntriesList{ItemOutputs: []types.ItemOutput{types.GenItemOnlyEntry("KnifeMRG")}},
 			types.GenOneOutput("KnifeMRG"),
 			2
 	case Rcp2BlockDelayedKnifeBuyer:
 		return types.GenCoinInputList("wood", 5),
 			types.ItemInputList{},
-			types.GenItemOnlyEntry("Knife"),
+			types.EntriesList{ItemOutputs: []types.ItemOutput{types.GenItemOnlyEntry("Knife")}},
 			types.GenOneOutput("Knife"),
 			2
 	default: // 5 x woodcoin -> 1 x chair coin recipe, no delay
@@ -98,29 +98,29 @@ func GetParamsForPopularRecipe(hfrt PopularRecipeType) (types.CoinInputList, typ
 }
 
 // GenAccount is a function to generate an account
-func GenAccount() (secp256k1.PrivKeySecp256k1, sdk.AccAddress, error) {
+func GenAccount() (secp256k1.PrivKey, sdk.AccAddress, error) {
 	entropySeed, err := bip39.NewEntropy(mnemonicEntropySize)
 	if err != nil {
-		return secp256k1.PrivKeySecp256k1{}, nil, err
+		return secp256k1.PrivKey{}, nil, err
 	}
 	mnemonic, err := bip39.NewMnemonic(entropySeed)
 	if err != nil {
-		return secp256k1.PrivKeySecp256k1{}, nil, err
+		return secp256k1.PrivKey{}, nil, err
 	}
 
 	// Generate a Bip32 HD wallet for the mnemonic and a user supplied password
 	seed, err := bip39.NewSeedWithErrorChecking(mnemonic, "")
 	if err != nil {
-		return secp256k1.PrivKeySecp256k1{}, nil, err
+		return secp256k1.PrivKey{}, nil, err
 	}
 
 	masterPriv, ch := hd.ComputeMastersFromSeed(seed)
 	derivedPriv, err := hd.DerivePrivateKeyForPath(masterPriv, ch, "44'/118'/0'/0/0")
 	if err != nil {
-		return secp256k1.PrivKeySecp256k1{}, nil, err
+		return secp256k1.PrivKey{}, nil, err
 	}
 
-	priv := secp256k1.PrivKeySecp256k1(derivedPriv)
+	priv := secp256k1.PrivKey(derivedPriv)
 	cosmosAddr := sdk.AccAddress(priv.PubKey().Address().Bytes())
 	return priv, cosmosAddr, nil
 }

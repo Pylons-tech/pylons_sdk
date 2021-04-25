@@ -78,8 +78,16 @@ func WaitOneBlockWithErrorCheck(t *testing.T) {
 	t.MustNil(err, "error waiting for next block")
 }
 
+// GetAccountAddress returns SDK address and account info from key
+func GetAccountAddress(key string, t *testing.T) sdk.AccAddress {
+	address := inttestSDK.GetAccountAddr(key, t)
+	sdkAddress, err := sdk.AccAddressFromBech32(address)
+	t.MustNil(err, "error converting string address to AccAddress struct")
+	return sdkAddress
+}
+
 // GetAccountAddressAndInfo returns SDK address and account info from key
-func GetAccountAddressAndInfo(key string, t *testing.T) (sdk.AccAddress, types.BaseAccount) {
+func GetAccountAddressAndInfo(key string, t *testing.T) (sdk.AccAddress, types.AccountI) {
 	address := inttestSDK.GetAccountAddr(key, t)
 	sdkAddress, err := sdk.AccAddressFromBech32(address)
 	t.MustNil(err, "error converting string address to AccAddress struct")
@@ -87,7 +95,7 @@ func GetAccountAddressAndInfo(key string, t *testing.T) (sdk.AccAddress, types.B
 }
 
 // GetPylonsLLCAddressAndInfo returns Pylons LLC SDK address and account info from key
-func GetPylonsLLCAddressAndInfo(t *testing.T) (sdk.Address, types.BaseAccount) {
+func GetPylonsLLCAddressAndInfo(t *testing.T) (sdk.Address, types.AccountI) {
 	pylonsLLCAddress, err := sdk.AccAddressFromBech32(config.Config.Validators.PylonsLLC)
 	t.MustNil(err, "error converting string address to AccAddress struct")
 	return pylonsLLCAddress, inttestSDK.GetAccountInfoFromAddr(pylonsLLCAddress.String(), t)

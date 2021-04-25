@@ -7,16 +7,8 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// MsgUpdateItemString defines a UpdateItemString message
-type MsgUpdateItemString struct {
-	Field  string
-	Value  string
-	Sender sdk.AccAddress
-	ItemID string
-}
-
 // NewMsgUpdateItemString is a function to get MsgUpdateItemString msg from required params
-func NewMsgUpdateItemString(ItemID, Field, Value string, Sender sdk.AccAddress) MsgUpdateItemString {
+func NewMsgUpdateItemString(ItemID, Field, Value, Sender string) MsgUpdateItemString {
 	return MsgUpdateItemString{
 		ItemID: ItemID,
 		Field:  Field,
@@ -34,8 +26,8 @@ func (msg MsgUpdateItemString) Type() string { return "update_item_string" }
 // ValidateBasic is a function to validate MsgUpdateItemString msg
 func (msg MsgUpdateItemString) ValidateBasic() error {
 
-	if msg.Sender.Empty() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Sender.String())
+	if msg.Sender == "" {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Sender)
 	}
 
 	if len(msg.ItemID) == 0 {
@@ -63,5 +55,9 @@ func (msg MsgUpdateItemString) GetSignBytes() []byte {
 
 // GetSigners is a function to get signers from MsgUpdateItemString msg
 func (msg MsgUpdateItemString) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{msg.Sender}
+	from, err := sdk.AccAddressFromBech32(msg.Sender)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{from}
 }

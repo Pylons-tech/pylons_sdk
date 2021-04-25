@@ -80,13 +80,14 @@ func TestGoogleIAPGetPylonsViaCLI(originT *originT.T) {
 			getPylonsKey := fmt.Sprintf("TestGoogleIAPGetPylonsViaCLI%d_%d", tcNum, time.Now().Unix())
 			MockAccount(getPylonsKey, t) // mock account with initial balance
 
-			getPylonsSdkAddr, getPylonsAccInfo := GetAccountAddressAndInfo(getPylonsKey, t)
+			getPylonsSdkAddr := GetAccountAddress(getPylonsKey, t)
+			originBalance := inttestSDK.GetAccountBalanceFromAddr(getPylonsSdkAddr.String(), t)
 
 			receiptDataBase64 := base64.StdEncoding.EncodeToString([]byte(tc.receiptData))
 
-			msgGoogleIAPGetPylons := msgs.NewMsgGoogleIAPGetPylons(tc.productID, tc.purchaseToken, receiptDataBase64, tc.signature, getPylonsSdkAddr)
+			msgGoogleIAPGetPylons := msgs.NewMsgGoogleIAPGetPylons(tc.productID, tc.purchaseToken, receiptDataBase64, tc.signature, getPylonsSdkAddr.String())
 			txhash, err := inttestSDK.TestTxWithMsgWithNonce(t,
-				msgGoogleIAPGetPylons,
+				&msgGoogleIAPGetPylons,
 				getPylonsKey,
 				false,
 			)
@@ -98,24 +99,26 @@ func TestGoogleIAPGetPylonsViaCLI(originT *originT.T) {
 			GetTxHandleResult(txhash, t)
 			if tc.showError {
 			} else {
-				accInfo := inttestSDK.GetAccountInfoFromAddr(getPylonsSdkAddr.String(), t)
-				balanceOk := accInfo.Coins.AmountOf(types.Pylon).Equal(sdk.NewInt(getPylonsAccInfo.Coins.AmountOf(types.Pylon).Int64() + tc.reqAmount))
+				accBalance := inttestSDK.GetAccountBalanceFromAddr(getPylonsSdkAddr.String(), t)
+				balanceOk := accBalance.Coins.AmountOf(types.Pylon).Equal(sdk.NewInt(originBalance.Coins.AmountOf(types.Pylon).Int64() + tc.reqAmount))
 				t.WithFields(testing.Fields{
 					"get_pylons_address": getPylonsSdkAddr.String(),
-					"target_amount":      tc.reqAmount,
-					"actual_amount":      accInfo.Coins.AmountOf(types.Pylon).Int64(),
+					"target_increase":    tc.reqAmount,
+					"actual_amount":      accBalance.Coins.AmountOf(types.Pylon).Int64(),
+					"origin_amount":      originBalance.Coins.AmountOf(types.Pylon).Int64(),
 				}).MustTrue(balanceOk, "pylons requestor should get correct revenue")
 			}
 
 			if tc.tryReuseOrderID {
-				txhash, err := inttestSDK.TestTxWithMsgWithNonce(t,
-					msgGoogleIAPGetPylons,
+				hash, err := inttestSDK.TestTxWithMsgWithNonce(t,
+					&msgGoogleIAPGetPylons,
 					getPylonsKey,
 					false,
 				)
-				t.MustNil(err)
-				txHandleErr := GetTxHandleError(txhash, t)
-				t.MustContain(string(txHandleErr), tc.tryReuseErr)
+				t.MustNil(err, hash)
+				errdata, err := inttestSDK.WaitAndGetTxError(hash, inttestSDK.GetMaxWaitBlock(), t)
+				t.MustNil(err, hash)
+				t.MustContain(string(errdata), tc.tryReuseErr)
 			}
 		})
 	}

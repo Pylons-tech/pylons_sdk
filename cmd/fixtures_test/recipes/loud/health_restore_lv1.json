@@ -3,7 +3,7 @@
     "ID": "LOUD-health-restore-recipe-v0.0.1-1590029710",
     "CoinInputs":[{
         "Coin": "loudcoin",
-        "Count": "10"
+        "Count": 10
     }],    
     "ItemInputs":[
         {
@@ -32,5 +32,5 @@
     "Name": "LOUD's health restore recipe",
     "CookbookID": "LOUD-v0.0.0-1579053457",
     "Description": "this recipe is used to get enough coins to test game.",
-    "BlockInterval":"0"
+    "BlockInterval":0
 }

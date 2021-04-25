@@ -45,13 +45,13 @@ type FixtureStep struct {
 			Cookbooks      []string `json:"cookbooks"`
 			Recipes        []string `json:"recipes"`
 			Items          []struct {
-				StringKeys   []string                     `json:"stringKeys"`
-				StringValues map[string]string            `json:"stringValues"`
-				DblKeys      []string                     `json:"dblKeys"`
-				DblValues    map[string]types.FloatString `json:"dblValues"`
-				LongKeys     []string                     `json:"longKeys"`
-				LongValues   map[string]int               `json:"longValues"`
-				TransferFee  string                       `json:"transferFee"`
+				StringKeys   []string           `json:"stringKeys"`
+				StringValues map[string]string  `json:"stringValues"`
+				DblKeys      []string           `json:"dblKeys"`
+				DblValues    map[string]sdk.Dec `json:"dblValues"`
+				LongKeys     []string           `json:"longKeys"`
+				LongValues   map[string]int64   `json:"longValues"`
+				TransferFee  string             `json:"transferFee"`
 			} `json:"items"`
 			Coins []struct {
 				Coin   string `json:"denom"`
@@ -128,11 +128,11 @@ func CheckItemWithDblKeys(item types.Item, dblKeys []string) bool {
 }
 
 // CheckItemWithDblValues checks if double key/values are all available
-func CheckItemWithDblValues(item types.Item, dblValues map[string]types.FloatString) bool {
+func CheckItemWithDblValues(item types.Item, dblValues map[string]sdk.Dec) bool {
 	for sK, sV := range dblValues {
 		keyExist := false
 		for _, sKV := range item.Doubles {
-			if sK == sKV.Key && sV.Float() == sKV.Value.Float() {
+			if sK == sKV.Key && sV.Equal(sKV.Value) {
 				keyExist = true
 			}
 		}
@@ -160,7 +160,7 @@ func CheckItemWithLongKeys(item types.Item, longKeys []string) bool {
 }
 
 // CheckItemWithLongValues checks if long key/values are all available
-func CheckItemWithLongValues(item types.Item, longValues map[string]int) bool {
+func CheckItemWithLongValues(item types.Item, longValues map[string]int64) bool {
 	for sK, sV := range longValues {
 		keyExist := false
 		for _, sKV := range item.Longs {
@@ -308,12 +308,12 @@ func PropertyExistCheck(step FixtureStep, t *testing.T) {
 		}
 		if len(pCheck.Coins) > 0 {
 			for _, coinCheck := range pCheck.Coins {
-				accInfo := inttest.GetAccountInfoFromAddr(pOwnerAddr, t)
+				accBalance := inttest.GetAccountBalanceFromAddr(pOwnerAddr, t)
 				// TODO should we have the case of using GTE, LTE, GT or LT ?
 				t.WithFields(testing.Fields{
 					"target_balance": coinCheck.Amount,
-					"actual_balance": accInfo.Coins.AmountOf(coinCheck.Coin).Int64(),
-				}).MustTrue(accInfo.Coins.AmountOf(coinCheck.Coin).Equal(sdk.NewInt(coinCheck.Amount)), "account balance is incorrect")
+					"actual_balance": accBalance.Coins.AmountOf(coinCheck.Coin).Int64(),
+				}).MustTrue(accBalance.Coins.AmountOf(coinCheck.Coin).Equal(sdk.NewInt(coinCheck.Amount)), "account balance is incorrect")
 			}
 		}
 	}

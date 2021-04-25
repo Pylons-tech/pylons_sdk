@@ -9,7 +9,7 @@ import (
 
 	inttestSDK "github.com/Pylons-tech/pylons_sdk/cmd/test_utils"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/bank"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 )
 
 ///////////ACCOUNT///////////////////////////////////////////////
@@ -33,7 +33,8 @@ func MockAccount(key string, t *testing.T) {
 	}).MustNil(err, "error creating account on chain")
 
 	// fetch txhash from result log
-	caTxHash := inttestSDK.GetTxHashFromLog(result)
+	caTxHash, err := inttestSDK.GetTxHashFromJson(result)
+	t.MustNil(err, "error code detected parsing result json")
 	t.MustTrue(caTxHash != "", "error fetching txhash from result")
 	t.WithFields(testing.Fields{
 		"txhash": caTxHash,
@@ -49,8 +50,8 @@ func MockAccount(key string, t *testing.T) {
 	// get initial balance
 	sdkAddr, err := sdk.AccAddressFromBech32(addr)
 	t.MustNil(err, "error converting string cosmos address to sdk struct")
-	getPylonsMsg := msgs.NewMsgGetPylons(types.PremiumTier.Fee, sdkAddr)
-	txhash, err := inttestSDK.TestTxWithMsgWithNonce(t, getPylonsMsg, key, false)
+	getPylonsMsg := msgs.NewMsgGetPylons(types.PremiumTier.Fee, sdkAddr.String())
+	txhash, err := inttestSDK.TestTxWithMsgWithNonce(t, &getPylonsMsg, key, false)
 	t.WithFields(testing.Fields{
 		"txhash": txhash,
 	}).MustNil(err, "error sending transaction")
@@ -66,7 +67,7 @@ func FaucetGameCoins(key string, amount sdk.Coins, t *testing.T) {
 	fromSdkAddr := GetSDKAddressFromKey("node0", t)
 	toSdkAddr := GetSDKAddressFromKey(key, t)
 
-	sendCoinsMsg := bank.NewMsgSend(fromSdkAddr, toSdkAddr, amount)
+	sendCoinsMsg := banktypes.NewMsgSend(fromSdkAddr, toSdkAddr, amount)
 	txhash, err := inttestSDK.TestTxWithMsgWithNonce(t, sendCoinsMsg, "node0", false)
 	t.WithFields(testing.Fields{
 		"txhash": txhash,
@@ -90,8 +91,7 @@ func MockCookbook(ownerKey string, createNew bool, t *testing.T) string {
 		return guid
 	}
 	cbOwnerSdkAddr := GetSDKAddressFromKey(ownerKey, t)
-
-	txhash, err := inttestSDK.TestTxWithMsgWithNonce(t, msgs.NewMsgCreateCookbook(
+	cbMsg := msgs.NewMsgCreateCookbook(
 		"COOKBOOK_MOCK_001_"+ownerKey,
 		"",
 		"this has to meet character limits lol",
@@ -100,10 +100,8 @@ func MockCookbook(ownerKey string, createNew bool, t *testing.T) string {
 		"example@example.com",
 		0,
 		msgs.DefaultCostPerBlock,
-		cbOwnerSdkAddr),
-		ownerKey,
-		false,
-	)
+		cbOwnerSdkAddr.String())
+	txhash, err := inttestSDK.TestTxWithMsgWithNonce(t, &cbMsg, ownerKey, false)
 	if err != nil {
 		TxBroadcastErrorCheck(txhash, err, t)
 		return ""
@@ -112,8 +110,8 @@ func MockCookbook(ownerKey string, createNew bool, t *testing.T) string {
 	WaitOneBlockWithErrorCheck(t)
 
 	txHandleResBytes := GetTxHandleResult(txhash, t)
-	resp := handlers.CreateCookbookResponse{}
-	err = inttestSDK.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+	resp := msgs.MsgCreateCookbookResponse{}
+	err = inttestSDK.GetJSONMarshaler().UnmarshalJSON(txHandleResBytes, &resp)
 	TxResBytesUnmarshalErrorCheck(txhash, err, txHandleResBytes, t)
 	return resp.CookbookID
 }
@@ -158,7 +156,7 @@ func MockRecipeGUID(
 			name,
 			types.GenCoinInputList("pylon", 5),
 			types.ItemInputList{},
-			types.GenItemOnlyEntry(desItemName),
+			types.EntriesList{ItemOutputs: []types.ItemOutput{types.GenItemOnlyEntry(desItemName)}},
 			types.GenOneOutput(desItemName),
 			interval,
 			t,
@@ -201,21 +199,19 @@ func MockDetailedRecipeGUID(
 	mCB := GetMockedCookbook(cbOwnerKey, false, t)
 
 	sdkAddr := GetSDKAddressFromKey(cbOwnerKey, t)
-	txhash, err := inttestSDK.TestTxWithMsgWithNonce(t,
-		msgs.NewMsgCreateRecipe(
-			rcpName,
-			mCB.ID,
-			"",
-			"this has to meet character limits lol",
-			ciL,
-			iiL,
-			entries,
-			outputs,
-			interval,
-			sdkAddr),
-		cbOwnerKey,
-		false,
+	createRecipeMsg := msgs.NewMsgCreateRecipe(
+		rcpName,
+		mCB.ID,
+		"",
+		"this has to meet character limits lol",
+		ciL,
+		iiL,
+		entries,
+		outputs,
+		interval,
+		sdkAddr.String(),
 	)
+	txhash, err := inttestSDK.TestTxWithMsgWithNonce(t, &createRecipeMsg, cbOwnerKey, false)
 	if err != nil {
 		TxBroadcastErrorCheck(txhash, err, t)
 		return ""
@@ -224,8 +220,8 @@ func MockDetailedRecipeGUID(
 	WaitOneBlockWithErrorCheck(t)
 
 	txHandleResBytes := GetTxHandleResult(txhash, t)
-	resp := handlers.CreateRecipeResponse{}
-	err = inttestSDK.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+	resp := msgs.MsgCreateRecipeResponse{}
+	err = inttestSDK.GetJSONMarshaler().UnmarshalJSON(txHandleResBytes, &resp)
 	TxResBytesUnmarshalErrorCheck(txhash, err, txHandleResBytes, t)
 
 	return resp.RecipeID
@@ -236,22 +232,20 @@ func MockItemGUID(cbID, sender, name string, t *testing.T) string {
 
 	sdkAddr := GetSDKAddressFromKey(sender, t)
 
-	txhash, err := inttestSDK.TestTxWithMsgWithNonce(t, msgs.NewMsgFiatItem(
+	fiatItemMsg := msgs.NewMsgFiatItem(
 		cbID,
-		[]types.DoubleKeyValue{},
-		[]types.LongKeyValue{},
-		[]types.StringKeyValue{
+		types.DoubleKeyValueList{},
+		types.LongKeyValueList{},
+		types.StringKeyValueList{
 			{
 				Key:   "Name",
 				Value: name,
 			},
 		},
-		sdkAddr,
+		sdkAddr.String(),
 		0,
-	),
-		sender,
-		false,
 	)
+	txhash, err := inttestSDK.TestTxWithMsgWithNonce(t, &fiatItemMsg, sender, false)
 	if err != nil {
 		TxBroadcastErrorCheck(txhash, err, t)
 		return ""
@@ -260,8 +254,8 @@ func MockItemGUID(cbID, sender, name string, t *testing.T) string {
 	WaitOneBlockWithErrorCheck(t)
 
 	txHandleResBytes := GetTxHandleResult(txhash, t)
-	resp := handlers.FiatItemResponse{}
-	err = inttestSDK.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+	resp := msgs.MsgFiatItemResponse{}
+	err = inttestSDK.GetJSONMarshaler().UnmarshalJSON(txHandleResBytes, &resp)
 	TxResBytesUnmarshalErrorCheck(txhash, err, txHandleResBytes, t)
 
 	return resp.ItemID
@@ -271,22 +265,20 @@ func MockItemGUID(cbID, sender, name string, t *testing.T) string {
 func MockItemGUIDWithFee(cbID, sender, name string, transferFee int64, t *testing.T) string {
 	itemOwnerSdkAddr := GetSDKAddressFromKey(sender, t)
 
-	txhash, err := inttestSDK.TestTxWithMsgWithNonce(t, msgs.NewMsgFiatItem(
+	fiatItemMsg := msgs.NewMsgFiatItem(
 		cbID,
-		[]types.DoubleKeyValue{},
-		[]types.LongKeyValue{},
-		[]types.StringKeyValue{
+		types.DoubleKeyValueList{},
+		types.LongKeyValueList{},
+		types.StringKeyValueList{
 			{
 				Key:   "Name",
 				Value: name,
 			},
 		},
-		itemOwnerSdkAddr,
-		transferFee,
-	),
-		sender,
-		false,
+		itemOwnerSdkAddr.String(),
+		0,
 	)
+	txhash, err := inttestSDK.TestTxWithMsgWithNonce(t, &fiatItemMsg, sender, false)
 	if err != nil {
 		TxBroadcastErrorCheck(txhash, err, t)
 		return ""
@@ -295,8 +287,8 @@ func MockItemGUIDWithFee(cbID, sender, name string, transferFee int64, t *testin
 	WaitOneBlockWithErrorCheck(t)
 
 	txHandleResBytes := GetTxHandleResult(txhash, t)
-	resp := handlers.FiatItemResponse{}
-	err = inttestSDK.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+	resp := msgs.MsgFiatItemResponse{}
+	err = inttestSDK.GetJSONMarshaler().UnmarshalJSON(txHandleResBytes, &resp)
 	TxResBytesUnmarshalErrorCheck(txhash, err, txHandleResBytes, t)
 
 	return resp.ItemID
@@ -318,7 +310,7 @@ func MockDetailedTradeGUID(
 
 	inputItemList := types.GenTradeItemInputList(cbID, []string{inputItemName})
 	if !hasInputItem {
-		inputItemList = nil
+		inputItemList = []types.TradeItemInput{}
 	}
 	var outputItems types.ItemList
 	if hasOutputItem {
@@ -329,14 +321,16 @@ func MockDetailedTradeGUID(
 		outputItems = types.ItemList{outputItem}
 	}
 
+	createTradeMsg := msgs.NewMsgCreateTrade(
+		inputCoinList,
+		inputItemList,
+		outputCoins,
+		outputItems,
+		extraInfo,
+		sdkAddr.String(),
+	)
 	txhash, err := inttestSDK.TestTxWithMsgWithNonce(t,
-		msgs.NewMsgCreateTrade(
-			inputCoinList,
-			inputItemList,
-			outputCoins,
-			outputItems,
-			extraInfo,
-			sdkAddr),
+		&createTradeMsg,
 		tradeCreatorKey,
 		false,
 	)

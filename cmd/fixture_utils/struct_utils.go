@@ -54,7 +54,7 @@ func GetAccountKeyFromTempName(tempName string, t *testing.T) string {
 	defer runtimeKeyGenMux.Unlock()
 	key, ok := runtimeAccountKeys[tempName]
 	if !ok {
-		key = fmt.Sprintf("FixtureRuntime_%s_%d", tempName, time.Now().Unix())
+		key = fmt.Sprintf("fixture_runtime_%s_%d", tempName, time.Now().Unix())
 		runtimeAccountKeys[tempName] = key
 	}
 	return key
@@ -279,7 +279,7 @@ func GetItemInputsFromBytes(bytes []byte, t *testing.T) types.ItemInputList {
 		"bytes": string(bytes),
 	}).MustNil(err, "error unmarshaling into item input refs")
 
-	err = inttest.GetAminoCdc().UnmarshalJSON(bytes, &itemInputDirectReader)
+	err = json.Unmarshal(bytes, &itemInputDirectReader)
 	t.WithFields(testing.Fields{
 		"bytes": string(bytes),
 	}).MustNil(err, "error unmarshaling into item input direct")
@@ -291,7 +291,7 @@ func GetItemInputsFromBytes(bytes []byte, t *testing.T) types.ItemInputList {
 		if len(iia.Ref) > 0 {
 			var ii types.ItemInput
 			iiBytes := ReadFile(iia.Ref, t)
-			err := inttest.GetAminoCdc().UnmarshalJSON(iiBytes, &ii)
+			err := json.Unmarshal(iiBytes, &ii)
 			if err != nil {
 				t.WithFields(testing.Fields{
 					"item_input_bytes": string(iiBytes),
@@ -321,7 +321,7 @@ func GetTradeItemInputsFromBytes(bytes []byte, t *testing.T) types.TradeItemInpu
 	for _, tiiRef := range tradeItemInputRefsReader.ItemInputRefs {
 		var tii types.TradeItemInput
 		tiiBytes := ReadFile(tiiRef, t)
-		err := inttest.GetAminoCdc().UnmarshalJSON(tiiBytes, &tii)
+		err := inttest.GetJSONMarshaler().UnmarshalJSON(tiiBytes, &tii)
 		t.WithFields(testing.Fields{
 			"trade_item_input_bytes": string(tiiBytes),
 		}).MustNil(err, "error unmarshaling trading item inputs")
@@ -397,7 +397,7 @@ func GetEntriesFromBytes(bytes []byte, t *testing.T) types.EntriesList {
 
 	var wpl types.EntriesList
 	for _, co := range entriesReader.Entries.CoinOutputs {
-		wpl = append(wpl, co)
+		wpl.CoinOutputs = append(wpl.CoinOutputs, co)
 	}
 
 	for ioidx, io := range entriesReader.Entries.ItemModifyOutputs {
@@ -415,9 +415,9 @@ func GetEntriesFromBytes(bytes []byte, t *testing.T) types.EntriesList {
 			if pio.Strings != nil && len(pio.Strings) == 0 {
 				pio.Strings = nil
 			}
-			wpl = append(wpl, pio)
+			wpl.ItemModifyOutputs = append(wpl.ItemModifyOutputs, pio)
 		} else {
-			wpl = append(wpl, entriesDirectReader.Entries.ItemModifyOutputs[ioidx])
+			wpl.ItemModifyOutputs = append(wpl.ItemModifyOutputs, entriesDirectReader.Entries.ItemModifyOutputs[ioidx])
 		}
 	}
 
@@ -443,7 +443,7 @@ func GetEntriesFromBytes(bytes []byte, t *testing.T) types.EntriesList {
 		if pio.Strings != nil && len(pio.Strings) == 0 {
 			pio.Strings = nil
 		}
-		wpl = append(wpl, pio)
+		wpl.ItemOutputs = append(wpl.ItemOutputs, pio)
 	}
 
 	return wpl

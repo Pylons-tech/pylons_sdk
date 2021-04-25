@@ -14,17 +14,8 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// MsgGoogleIAPGetPylons defines a GetPylons message
-type MsgGoogleIAPGetPylons struct {
-	ProductID         string
-	PurchaseToken     string
-	ReceiptDataBase64 string
-	Signature         string
-	Requester         sdk.AccAddress
-}
-
 // NewMsgGoogleIAPGetPylons is a function to get MsgGetPylons msg from required params
-func NewMsgGoogleIAPGetPylons(ProductID, PurchaseToken, ReceiptDataBase64, Signature string, requester sdk.AccAddress) MsgGoogleIAPGetPylons {
+func NewMsgGoogleIAPGetPylons(ProductID, PurchaseToken, ReceiptDataBase64, Signature string, requester string) MsgGoogleIAPGetPylons {
 	return MsgGoogleIAPGetPylons{
 		ProductID:         ProductID,
 		PurchaseToken:     PurchaseToken,
@@ -42,6 +33,13 @@ func (msg MsgGoogleIAPGetPylons) Type() string { return "google_iap_get_pylons" 
 
 // ValidateGoogleIAPSignature is function for testing signature on local
 func (msg MsgGoogleIAPGetPylons) ValidateGoogleIAPSignature() error {
+	// References
+	// offline verification JS module https://github.com/voltrue2/in-app-purchase/blob/e966ee1348bd4f67581779abeec59c4bbc2b2ebc/lib/google.js#L788
+	// Cordova Plugin code that check offline https://github.com/j3k0/cordova-plugin-purchase/blob/8861bd2392a48d643ffc754b8f59afc1e6afab60/src/android/cc/fovea/Security.java#L94
+	// https://stackoverflow.com/questions/31349710/google-play-billing-response-signature-verification
+
+	// We should contact google team to check if this is correct use
+
 	playStorePubKeyBytes, err := base64.StdEncoding.DecodeString(config.Config.GoogleIAPPubKey)
 	if err != nil {
 		return fmt.Errorf("play store base64 public key decoding failure: %s", err.Error())
@@ -74,8 +72,8 @@ func (msg MsgGoogleIAPGetPylons) ValidateGoogleIAPSignature() error {
 // ValidateBasic is a function to validate MsgGoogleIAPGetPylons msg
 func (msg MsgGoogleIAPGetPylons) ValidateBasic() error {
 
-	if msg.Requester.Empty() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Requester.String())
+	if msg.Requester == "" {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidAddress, msg.Requester)
 	}
 
 	var jsonData map[string]interface{}
@@ -109,5 +107,9 @@ func (msg MsgGoogleIAPGetPylons) GetSignBytes() []byte {
 
 // GetSigners encodes the message for signing
 func (msg MsgGoogleIAPGetPylons) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{msg.Requester}
+	from, err := sdk.AccAddressFromBech32(msg.Requester)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{from}
 }

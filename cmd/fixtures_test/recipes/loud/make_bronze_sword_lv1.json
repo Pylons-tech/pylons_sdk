@@ -3,7 +3,7 @@
     "ID": "LOUD-bronze-sword-lv1-make-recipe-v0.0.0-1590029710",
     "CoinInputs":[{
         "Coin": "loudcoin",
-        "Count": "250"
+        "Count":250
     }],
     "ItemInputs": [
         {
@@ -29,5 +29,5 @@
     "Name": "LOUD's Bronze sword lv1 make recipe",
     "CookbookID": "LOUD-v0.0.0-1579053457",
     "Description": "this recipe is used to make bronze sword lv1.",
-    "BlockInterval":"0"
+    "BlockInterval":0
 }

@@ -3,7 +3,7 @@
     "ID": "LOUD-angel-sword-lv1-make-recipe-v0.0.0-1590029710",
     "CoinInputs":[{
         "Coin": "loudcoin",
-        "Count": "20000"
+        "Count": 20000
     }],
     "ItemInputs": [
         {
@@ -37,5 +37,5 @@
     "Name": "LOUD's Angel sword lv1 make recipe",
     "CookbookID": "LOUD-v0.0.0-1579053457",
     "Description": "this recipe is used to make angel sword lv1.",
-    "BlockInterval":"0"
+    "BlockInterval":0
 }

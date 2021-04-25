@@ -5,14 +5,12 @@ import (
 	"encoding/json"
 
 	testing "github.com/Pylons-tech/pylons_sdk/cmd/evtesting"
-
 	inttest "github.com/Pylons-tech/pylons_sdk/cmd/test_utils"
-	"github.com/Pylons-tech/pylons_sdk/x/pylons/msgs"
-
 	"github.com/Pylons-tech/pylons_sdk/x/pylons/handlers"
+	"github.com/Pylons-tech/pylons_sdk/x/pylons/msgs"
 	"github.com/Pylons-tech/pylons_sdk/x/pylons/types"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/gogo/protobuf/proto"
 )
 
 // TxBroadcastErrorCheck check error is same as expected when it exist
@@ -101,7 +99,8 @@ func RunCreateAccount(step FixtureStep, t *testing.T) {
 			"logstr": logstr,
 		}).MustNil(err, "error creating account on chain")
 
-		caTxHash := inttest.GetTxHashFromLog(result)
+		caTxHash, err := inttest.GetTxHashFromJson(result)
+		t.MustNil(err, "error code detected parsing result json")
 		t.MustTrue(caTxHash != "", "error fetching txhash from result")
 		t.WithFields(testing.Fields{
 			"txhash": caTxHash,
@@ -123,7 +122,7 @@ func GetPylonsMsgFromRef(ref string, t *testing.T) msgs.MsgGetPylons {
 	}).MustNil(err, "error converting key to address")
 	return msgs.NewMsgGetPylons(
 		types.NewPylon(55000),
-		sdkAddr,
+		sdkAddr.String(),
 	)
 }
 
@@ -134,7 +133,7 @@ func RunGetPylons(step FixtureStep, t *testing.T) {
 	}
 	if step.ParamsRef != "" {
 		gpMsg := GetPylonsMsgFromRef(step.ParamsRef, t)
-		txhash, err := inttest.TestTxWithMsgWithNonce(t, gpMsg, gpMsg.Requester.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, &gpMsg, gpMsg.Requester, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -143,8 +142,15 @@ func RunGetPylons(step FixtureStep, t *testing.T) {
 		WaitForNextBlockWithErrorCheck(t)
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
-		resp := handlers.GetPylonsResponse{}
-		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		txMsgData := &sdk.TxMsgData{
+			Data: make([]*sdk.MsgData, 0, 1),
+		}
+		err = proto.Unmarshal(txHandleResBytes, txMsgData)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		t.MustTrue(len(txMsgData.Data) == 1, "number of msgs should be 1")
+		t.MustTrue(txMsgData.Data[0].MsgType == (msgs.MsgGetPylons{}).Type(), "MsgType should be accurate")
+		resp := msgs.MsgGetPylonsResponse{}
+		err = proto.Unmarshal(txMsgData.Data[0].Data, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
 	}
@@ -161,14 +167,14 @@ func GoogleIAPGetPylonsMsgFromRef(ref string, t *testing.T) msgs.MsgGoogleIAPGet
 		PurchaseToken string
 		ReceiptData   string
 		Signature     string
-		Requester     sdk.AccAddress
+		Requester     string
 	}
 
-	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &gigpType)
+	err := json.Unmarshal(newByteValue, &gigpType)
 	t.WithFields(testing.Fields{
 		"gigpType":  inttest.AminoCodecFormatter(gigpType),
 		"new_bytes": string(newByteValue),
-	}).MustNil(err, "error reading using GetAminoCdc")
+	}).MustNil(err, "error reading using GetJSONMarshaler")
 
 	receiptDataBase64 := base64.StdEncoding.EncodeToString([]byte(gigpType.ReceiptData))
 
@@ -188,7 +194,7 @@ func RunGoogleIAPGetPylons(step FixtureStep, t *testing.T) {
 	}
 	if step.ParamsRef != "" {
 		gigpMsg := GoogleIAPGetPylonsMsgFromRef(step.ParamsRef, t)
-		txhash, err := inttest.TestTxWithMsgWithNonce(t, gigpMsg, gigpMsg.Requester.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, &gigpMsg, gigpMsg.Requester, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -197,8 +203,15 @@ func RunGoogleIAPGetPylons(step FixtureStep, t *testing.T) {
 		WaitForNextBlockWithErrorCheck(t)
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
-		resp := handlers.GoogleIAPGetPylonsResponse{}
-		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		txMsgData := &sdk.TxMsgData{
+			Data: make([]*sdk.MsgData, 0, 1),
+		}
+		err = proto.Unmarshal(txHandleResBytes, txMsgData)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		t.MustTrue(len(txMsgData.Data) == 1, "number of msgs should be 1")
+		t.MustTrue(txMsgData.Data[0].MsgType == (msgs.MsgGoogleIAPGetPylons{}).Type(), "MsgType should be accurate")
+		resp := msgs.MsgGoogleIAPGetPylonsResponse{}
+		err = proto.Unmarshal(txMsgData.Data[0].Data, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
 	}
@@ -212,18 +225,26 @@ func SendCoinsMsgFromRef(ref string, t *testing.T) msgs.MsgSendCoins {
 	newByteValue = UpdateReceiverKeyToAddress(newByteValue, t)
 
 	var siType struct {
-		Sender   sdk.AccAddress
-		Receiver sdk.AccAddress
-		Amount   sdk.Coins
+		Sender   string
+		Receiver string
+		Amount   string
 	}
 
-	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &siType)
+	err := json.Unmarshal(newByteValue, &siType)
 	t.WithFields(testing.Fields{
-		"siType":    inttest.AminoCodecFormatter(siType),
 		"new_bytes": string(newByteValue),
-	}).MustNil(err, "error reading using GetAminoCdc")
+	}).MustNil(err, "error reading using json Unmarshaler")
 
-	return msgs.NewMsgSendCoins(siType.Amount, siType.Sender, siType.Receiver)
+	amount, err := sdk.ParseCoinsNormalized(siType.Amount)
+	t.WithFields(testing.Fields{
+		"amount": siType.Amount,
+	}).MustNil(err, "error parsing amount")
+	sender, err := sdk.AccAddressFromBech32(siType.Sender)
+	t.WithFields(testing.Fields{
+		"sender": siType.Sender,
+	}).MustNil(err, "error parsing sender")
+
+	return msgs.NewMsgSendCoins(amount, sender, siType.Receiver)
 }
 
 // RunSendCoins is a function to send coins from one address to another
@@ -233,7 +254,7 @@ func RunSendCoins(step FixtureStep, t *testing.T) {
 	}
 	if step.ParamsRef != "" {
 		scMsg := SendCoinsMsgFromRef(step.ParamsRef, t)
-		txhash, err := inttest.TestTxWithMsgWithNonce(t, scMsg, scMsg.Sender.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, &scMsg, scMsg.Sender, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -247,8 +268,15 @@ func RunSendCoins(step FixtureStep, t *testing.T) {
 		}
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
-		resp := handlers.GetPylonsResponse{}
-		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		txMsgData := &sdk.TxMsgData{
+			Data: make([]*sdk.MsgData, 0, 1),
+		}
+		err = proto.Unmarshal(txHandleResBytes, txMsgData)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		t.MustTrue(len(txMsgData.Data) == 1, "number of msgs should be 1")
+		t.MustTrue(txMsgData.Data[0].MsgType == (msgs.MsgSendCoins{}).Type(), "MsgType should be accurate")
+		resp := msgs.MsgGetPylonsResponse{}
+		err = proto.Unmarshal(txMsgData.Data[0].Data, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
 	}
@@ -274,62 +302,62 @@ func RunMultiMsgTx(step FixtureStep, t *testing.T) {
 	}
 	if len(step.MsgRefs) != 0 {
 		var msgs []sdk.Msg
-		var sender sdk.AccAddress
+		var sender string
 		for _, ref := range step.MsgRefs {
 			var newMsg sdk.Msg
 			switch ref.Action {
 			case "fiat_item":
 				msg := FiatItemMsgFromRef(ref.ParamsRef, t)
-				newMsg, sender = msg, msg.Sender
+				newMsg, sender = &msg, msg.Sender
 			case "update_item_string":
 				msg := UpdateItemStringMsgFromRef(ref.ParamsRef, t)
-				newMsg, sender = msg, msg.Sender
+				newMsg, sender = &msg, msg.Sender
 			case "create_cookbook":
 				msg := CreateCookbookMsgFromRef(ref.ParamsRef, t)
-				newMsg, sender = msg, msg.Sender
+				newMsg, sender = &msg, msg.Sender
 			case "update_cookbook":
 				msg := UpdateCookbookMsgFromRef(ref.ParamsRef, t)
-				newMsg, sender = msg, msg.Sender
+				newMsg, sender = &msg, msg.Sender
 			case "create_recipe":
 				msg := CreateRecipeMsgFromRef(ref.ParamsRef, t)
-				newMsg, sender = msg, msg.Sender
+				newMsg, sender = &msg, msg.Sender
 			case "update_recipe":
 				msg := UpdateRecipeMsgFromRef(ref.ParamsRef, t)
-				newMsg, sender = msg, msg.Sender
+				newMsg, sender = &msg, msg.Sender
 			case "enable_recipe":
 				msg := EnableRecipeMsgFromRef(ref.ParamsRef, t)
-				newMsg, sender = msg, msg.Sender
+				newMsg, sender = &msg, msg.Sender
 			case "disable_recipe":
 				msg := DisableRecipeMsgFromRef(ref.ParamsRef, t)
-				newMsg, sender = msg, msg.Sender
+				newMsg, sender = &msg, msg.Sender
 			case "execute_recipe":
 				msg := ExecuteRecipeMsgFromRef(ref.ParamsRef, t)
-				newMsg, sender = msg, msg.Sender
+				newMsg, sender = &msg, msg.Sender
 			case "check_execution":
 				msg := CheckExecutionMsgFromRef(ref.ParamsRef, t)
-				newMsg, sender = msg, msg.Sender
+				newMsg, sender = &msg, msg.Sender
 			case "create_trade":
 				msg := CreateTradeMsgFromRef(ref.ParamsRef, t)
-				newMsg, sender = msg, msg.Sender
+				newMsg, sender = &msg, msg.Sender
 			case "fulfill_trade":
 				msg := FulfillTradeMsgFromRef(ref.ParamsRef, t)
-				newMsg, sender = msg, msg.Sender
+				newMsg, sender = &msg, msg.Sender
 			case "disable_trade":
 				msg := DisableTradeMsgFromRef(ref.ParamsRef, t)
-				newMsg, sender = msg, msg.Sender
+				newMsg, sender = &msg, msg.Sender
 			case "enable_trade":
 				msg := EnableTradeMsgFromRef(ref.ParamsRef, t)
-				newMsg, sender = msg, msg.Sender
+				newMsg, sender = &msg, msg.Sender
 			}
 			msgs = append(msgs, newMsg)
 		}
 		t.WithFields(testing.Fields{
-			"sender":   sender.String(),
+			"sender":   sender,
 			"len_msgs": len(msgs),
 			"tx_msgs":  inttest.AminoCodecFormatter(msgs),
 			"msg_refs": step.MsgRefs,
 		}).AddFields(inttest.GetLogFieldsFromMsgs(msgs)).Debug("debug log")
-		txhash, err := inttest.SendMultiMsgTxWithNonce(t, msgs, sender.String(), true)
+		txhash, err := inttest.SendMultiMsgTxWithNonce(t, msgs, sender, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -351,12 +379,12 @@ func CheckExecutionMsgFromRef(ref string, t *testing.T) msgs.MsgCheckExecution {
 	var execType struct {
 		ExecID        string
 		PayToComplete bool
-		Sender        sdk.AccAddress
+		Sender        string
 	}
-	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &execType)
+	err := json.Unmarshal(newByteValue, &execType)
 	t.WithFields(testing.Fields{
-		"execType": inttest.AminoCodecFormatter(execType),
-	}).MustNil(err, "error reading using GetAminoCdc")
+		"bytes": string(newByteValue),
+	}).MustNil(err, "error reading using json Unmarshaler")
 
 	return msgs.NewMsgCheckExecution(
 		execType.ExecID,
@@ -373,7 +401,7 @@ func RunCheckExecution(step FixtureStep, t *testing.T) {
 	}
 	if step.ParamsRef != "" {
 		chkExecMsg := CheckExecutionMsgFromRef(step.ParamsRef, t)
-		txhash, err := inttest.TestTxWithMsgWithNonce(t, chkExecMsg, chkExecMsg.Sender.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, &chkExecMsg, chkExecMsg.Sender, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -387,8 +415,15 @@ func RunCheckExecution(step FixtureStep, t *testing.T) {
 		}
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
-		resp := handlers.CheckExecutionResponse{}
-		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		txMsgData := &sdk.TxMsgData{
+			Data: make([]*sdk.MsgData, 0, 1),
+		}
+		err = proto.Unmarshal(txHandleResBytes, txMsgData)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		t.MustTrue(len(txMsgData.Data) == 1, "number of msgs should be 1")
+		t.MustTrue(txMsgData.Data[0].MsgType == (msgs.MsgCheckExecution{}).Type(), "MsgType should be accurate")
+		resp := msgs.MsgCheckExecutionResponse{}
+		err = proto.Unmarshal(txMsgData.Data[0].Data, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
 	}
@@ -403,10 +438,10 @@ func FiatItemMsgFromRef(ref string, t *testing.T) msgs.MsgFiatItem {
 	newByteValue = UpdateCBNameToID(newByteValue, t)
 
 	var itemType types.Item
-	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &itemType)
+	err := inttest.GetJSONMarshaler().UnmarshalJSON(newByteValue, &itemType)
 	t.WithFields(testing.Fields{
 		"itemType": inttest.AminoCodecFormatter(itemType),
-	}).MustNil(err, "error reading using GetAminoCdc")
+	}).MustNil(err, "error reading using JSONMarshaler")
 
 	return msgs.NewMsgFiatItem(
 		itemType.CookbookID,
@@ -426,7 +461,7 @@ func RunFiatItem(step FixtureStep, t *testing.T) {
 	}
 	if step.ParamsRef != "" {
 		itmMsg := FiatItemMsgFromRef(step.ParamsRef, t)
-		txhash, err := inttest.TestTxWithMsgWithNonce(t, itmMsg, itmMsg.Sender.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, &itmMsg, itmMsg.Sender, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -440,8 +475,15 @@ func RunFiatItem(step FixtureStep, t *testing.T) {
 		}
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
-		resp := handlers.FiatItemResponse{}
-		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		txMsgData := &sdk.TxMsgData{
+			Data: make([]*sdk.MsgData, 0, 1),
+		}
+		err = proto.Unmarshal(txHandleResBytes, txMsgData)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		t.MustTrue(len(txMsgData.Data) == 1, "number of msgs should be 1")
+		t.MustTrue(txMsgData.Data[0].MsgType == (msgs.MsgFiatItem{}).Type(), "MsgType should be accurate")
+		resp := msgs.MsgFiatItemResponse{}
+		err = proto.Unmarshal(txMsgData.Data[0].Data, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(resp.ItemID != "", "item id shouldn't be empty")
 	}
@@ -455,19 +497,19 @@ func SendItemsMsgFromRef(ref string, t *testing.T) msgs.MsgSendItems {
 	newByteValue = UpdateReceiverKeyToAddress(newByteValue, t)
 
 	var siType struct {
-		Sender   sdk.AccAddress
-		Receiver sdk.AccAddress
+		Sender   string
+		Receiver string
 		ItemIDs  []string `json:"ItemIDs"`
 	}
 
-	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &siType)
+	err := json.Unmarshal(newByteValue, &siType)
 	t.WithFields(testing.Fields{
 		"siType":    inttest.AminoCodecFormatter(siType),
 		"new_bytes": string(newByteValue),
-	}).MustNil(err, "error reading using GetAminoCdc")
+	}).MustNil(err, "error reading using GetJSONMarshaler")
 
 	// translate itemNames to itemIDs
-	ItemIDs := GetItemIDsFromNames(newByteValue, siType.Sender.String(), false, false, t)
+	ItemIDs := GetItemIDsFromNames(newByteValue, siType.Sender, false, false, t)
 
 	return msgs.NewMsgSendItems(ItemIDs, siType.Sender, siType.Receiver)
 }
@@ -480,7 +522,7 @@ func RunSendItems(step FixtureStep, t *testing.T) {
 	}
 	if step.ParamsRef != "" {
 		siMsg := SendItemsMsgFromRef(step.ParamsRef, t)
-		txhash, err := inttest.TestTxWithMsgWithNonce(t, siMsg, siMsg.Sender.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, &siMsg, siMsg.Sender, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -494,8 +536,15 @@ func RunSendItems(step FixtureStep, t *testing.T) {
 		}
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
-		resp := handlers.SendItemsResponse{}
-		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		txMsgData := &sdk.TxMsgData{
+			Data: make([]*sdk.MsgData, 0, 1),
+		}
+		err = proto.Unmarshal(txHandleResBytes, txMsgData)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		t.MustTrue(len(txMsgData.Data) == 1, "number of msgs should be 1")
+		t.MustTrue(txMsgData.Data[0].MsgType == (msgs.MsgSendItems{}).Type(), "MsgType should be accurate")
+		resp := msgs.MsgSendItemsResponse{}
+		err = proto.Unmarshal(txMsgData.Data[0].Data, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
 	}
@@ -526,7 +575,7 @@ func RunUpdateItemString(step FixtureStep, t *testing.T) {
 	}
 	if step.ParamsRef != "" {
 		sTypeMsg := UpdateItemStringMsgFromRef(step.ParamsRef, t)
-		txhash, err := inttest.TestTxWithMsgWithNonce(t, sTypeMsg, sTypeMsg.Sender.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, &sTypeMsg, sTypeMsg.Sender, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -539,8 +588,15 @@ func RunUpdateItemString(step FixtureStep, t *testing.T) {
 		}
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
-		resp := handlers.UpdateItemStringResponse{}
-		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		txMsgData := &sdk.TxMsgData{
+			Data: make([]*sdk.MsgData, 0, 1),
+		}
+		err = proto.Unmarshal(txHandleResBytes, txMsgData)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		t.MustTrue(len(txMsgData.Data) == 1, "number of msgs should be 1")
+		t.MustTrue(txMsgData.Data[0].MsgType == (msgs.MsgUpdateItemString{}).Type(), "MsgType should be accurate")
+		resp := msgs.MsgUpdateItemStringResponse{}
+		err = proto.Unmarshal(txMsgData.Data[0].Data, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 	}
 }
@@ -552,11 +608,11 @@ func CreateCookbookMsgFromRef(ref string, t *testing.T) msgs.MsgCreateCookbook {
 	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
 
 	var cbType types.Cookbook
-	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &cbType)
+	err := inttest.GetJSONMarshaler().UnmarshalJSON(newByteValue, &cbType)
 	t.WithFields(testing.Fields{
 		"cbType":    inttest.AminoCodecFormatter(cbType),
 		"new_bytes": string(newByteValue),
-	}).MustNil(err, "error reading using GetAminoCdc")
+	}).MustNil(err, "error reading using GetJSONMarshaler")
 
 	return msgs.NewMsgCreateCookbook(
 		cbType.Name,
@@ -579,7 +635,7 @@ func RunCreateCookbook(step FixtureStep, t *testing.T) {
 	if step.ParamsRef != "" {
 		cbMsg := CreateCookbookMsgFromRef(step.ParamsRef, t)
 
-		txhash, err := inttest.TestTxWithMsgWithNonce(t, cbMsg, cbMsg.Sender.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, &cbMsg, cbMsg.Sender, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -593,8 +649,15 @@ func RunCreateCookbook(step FixtureStep, t *testing.T) {
 		}
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
-		resp := handlers.CreateCookbookResponse{}
-		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		txMsgData := &sdk.TxMsgData{
+			Data: make([]*sdk.MsgData, 0, 1),
+		}
+		err = proto.Unmarshal(txHandleResBytes, txMsgData)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		t.MustTrue(len(txMsgData.Data) == 1, "number of msgs should be 1")
+		t.MustTrue(txMsgData.Data[0].MsgType == (msgs.MsgCreateCookbook{}).Type(), "MsgType should be accurate")
+		resp := msgs.MsgCreateCookbookResponse{}
+		err = proto.Unmarshal(txMsgData.Data[0].Data, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(resp.CookbookID != "", "coookbook id shouldn't be empty")
 	}
@@ -607,11 +670,11 @@ func UpdateCookbookMsgFromRef(ref string, t *testing.T) msgs.MsgUpdateCookbook {
 	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
 
 	var cbType types.Cookbook
-	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &cbType)
+	err := inttest.GetJSONMarshaler().UnmarshalJSON(newByteValue, &cbType)
 	t.WithFields(testing.Fields{
 		"cbType":    inttest.AminoCodecFormatter(cbType),
 		"new_bytes": string(newByteValue),
-	}).MustNil(err, "error reading using GetAminoCdc")
+	}).MustNil(err, "error reading using GetJSONMarshaler")
 
 	return msgs.NewMsgUpdateCookbook(
 		cbType.ID,
@@ -631,7 +694,7 @@ func RunUpdateCookbook(step FixtureStep, t *testing.T) {
 	if step.ParamsRef != "" {
 		cbMsg := UpdateCookbookMsgFromRef(step.ParamsRef, t)
 
-		txhash, err := inttest.TestTxWithMsgWithNonce(t, cbMsg, cbMsg.Sender.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, &cbMsg, cbMsg.Sender, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -645,8 +708,15 @@ func RunUpdateCookbook(step FixtureStep, t *testing.T) {
 		}
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
-		resp := handlers.UpdateCookbookResponse{}
-		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		txMsgData := &sdk.TxMsgData{
+			Data: make([]*sdk.MsgData, 0, 1),
+		}
+		err = proto.Unmarshal(txHandleResBytes, txMsgData)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		t.MustTrue(len(txMsgData.Data) == 1, "number of msgs should be 1")
+		t.MustTrue(txMsgData.Data[0].MsgType == (msgs.MsgUpdateCookbook{}).Type(), "MsgType should be accurate")
+		resp := msgs.MsgUpdateCookbookResponse{}
+		err = proto.Unmarshal(txMsgData.Data[0].Data, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(resp.CookbookID != "", "coookbook id shouldn't be empty")
 	}
@@ -677,11 +747,10 @@ func CreateRecipeMsgFromRef(ref string, t *testing.T) msgs.MsgCreateRecipe {
 	entries := GetEntriesFromBytes(newByteValue, t)
 
 	var rcpTempl types.Recipe
-	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &rcpTempl)
+	err := json.Unmarshal(newByteValue, &rcpTempl)
 	t.WithFields(testing.Fields{
-		"rcpTempl":  inttest.AminoCodecFormatter(rcpTempl),
 		"new_bytes": string(newByteValue),
-	}).MustNil(err, "error reading using GetAminoCdc")
+	}).MustNil(err, "error reading using GetJSONMarshaler")
 
 	return msgs.NewMsgCreateRecipe(
 		rcpTempl.Name,
@@ -708,7 +777,7 @@ func RunCreateRecipe(step FixtureStep, t *testing.T) {
 			"parsed_recipe": string(inttest.GetAminoCdc().MustMarshalJSON(rcpMsg)),
 		}).Info("recipe info")
 
-		txhash, err := inttest.TestTxWithMsgWithNonce(t, rcpMsg, rcpMsg.Sender.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, &rcpMsg, rcpMsg.Sender, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -722,8 +791,15 @@ func RunCreateRecipe(step FixtureStep, t *testing.T) {
 		}
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
-		resp := handlers.CreateRecipeResponse{}
-		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		txMsgData := &sdk.TxMsgData{
+			Data: make([]*sdk.MsgData, 0, 1),
+		}
+		err = proto.Unmarshal(txHandleResBytes, txMsgData)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		t.MustTrue(len(txMsgData.Data) == 1, "number of msgs should be 1")
+		t.MustTrue(txMsgData.Data[0].MsgType == (msgs.MsgCreateRecipe{}).Type(), "MsgType should be accurate")
+		resp := msgs.MsgCreateRecipeResponse{}
+		err = proto.Unmarshal(txMsgData.Data[0].Data, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(resp.RecipeID != "", "recipe id shouldn't be empty")
 	}
@@ -742,11 +818,10 @@ func UpdateRecipeMsgFromRef(ref string, t *testing.T) msgs.MsgUpdateRecipe {
 	entries := GetEntriesFromBytes(newByteValue, t)
 
 	var rcpTempl types.Recipe
-	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &rcpTempl)
+	err := json.Unmarshal(newByteValue, &rcpTempl)
 	t.WithFields(testing.Fields{
-		"rcpTempl":  inttest.AminoCodecFormatter(rcpTempl),
 		"new_bytes": string(newByteValue),
-	}).MustNil(err, "error reading using GetAminoCdc")
+	}).MustNil(err, "error reading using json.Unmarshal")
 
 	return msgs.NewMsgUpdateRecipe(
 		rcpTempl.ID,
@@ -770,7 +845,7 @@ func RunUpdateRecipe(step FixtureStep, t *testing.T) {
 	if step.ParamsRef != "" {
 		rcpMsg := UpdateRecipeMsgFromRef(step.ParamsRef, t)
 
-		txhash, err := inttest.TestTxWithMsgWithNonce(t, rcpMsg, rcpMsg.Sender.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, &rcpMsg, rcpMsg.Sender, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -784,8 +859,15 @@ func RunUpdateRecipe(step FixtureStep, t *testing.T) {
 		}
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
-		resp := handlers.UpdateRecipeResponse{}
-		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		txMsgData := &sdk.TxMsgData{
+			Data: make([]*sdk.MsgData, 0, 1),
+		}
+		err = proto.Unmarshal(txHandleResBytes, txMsgData)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		t.MustTrue(len(txMsgData.Data) == 1, "number of msgs should be 1")
+		t.MustTrue(txMsgData.Data[0].MsgType == (msgs.MsgUpdateRecipe{}).Type(), "MsgType should be accurate")
+		resp := msgs.MsgUpdateRecipeResponse{}
+		err = proto.Unmarshal(txMsgData.Data[0].Data, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(resp.RecipeID != "", "recipe id shouldn't be empty")
 	}
@@ -801,14 +883,14 @@ func EnableRecipeMsgFromRef(ref string, t *testing.T) msgs.MsgEnableRecipe {
 
 	var recipeType struct {
 		RecipeID string
-		Sender   sdk.AccAddress
+		Sender   string
 	}
 
-	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &recipeType)
+	err := json.Unmarshal(newByteValue, &recipeType)
 	t.WithFields(testing.Fields{
 		"rcpTempl":  inttest.AminoCodecFormatter(recipeType),
 		"new_bytes": string(newByteValue),
-	}).MustNil(err, "error reading using GetAminoCdc")
+	}).MustNil(err, "error reading using GetJSONMarshaler")
 
 	return msgs.NewMsgEnableRecipe(recipeType.RecipeID, recipeType.Sender)
 }
@@ -821,7 +903,7 @@ func RunEnableRecipe(step FixtureStep, t *testing.T) {
 	if step.ParamsRef != "" {
 		rcpMsg := EnableRecipeMsgFromRef(step.ParamsRef, t)
 
-		txhash, err := inttest.TestTxWithMsgWithNonce(t, rcpMsg, rcpMsg.Sender.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, &rcpMsg, rcpMsg.Sender, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -835,8 +917,15 @@ func RunEnableRecipe(step FixtureStep, t *testing.T) {
 		}
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
-		resp := handlers.EnableRecipeResponse{}
-		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		txMsgData := &sdk.TxMsgData{
+			Data: make([]*sdk.MsgData, 0, 1),
+		}
+		err = proto.Unmarshal(txHandleResBytes, txMsgData)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		t.MustTrue(len(txMsgData.Data) == 1, "number of msgs should be 1")
+		t.MustTrue(txMsgData.Data[0].MsgType == (msgs.MsgEnableRecipe{}).Type(), "MsgType should be accurate")
+		resp := msgs.MsgEnableRecipeResponse{}
+		err = proto.Unmarshal(txMsgData.Data[0].Data, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
 	}
@@ -852,10 +941,10 @@ func DisableRecipeMsgFromRef(ref string, t *testing.T) msgs.MsgDisableRecipe {
 
 	var recipeType struct {
 		RecipeID string
-		Sender   sdk.AccAddress
+		Sender   string
 	}
 
-	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &recipeType)
+	err := json.Unmarshal(newByteValue, &recipeType)
 	t.WithFields(testing.Fields{
 		"rcpTempl":  inttest.AminoCodecFormatter(recipeType),
 		"new_bytes": string(newByteValue),
@@ -872,7 +961,7 @@ func RunDisableRecipe(step FixtureStep, t *testing.T) {
 	if step.ParamsRef != "" {
 		rcpMsg := DisableRecipeMsgFromRef(step.ParamsRef, t)
 
-		txhash, err := inttest.TestTxWithMsgWithNonce(t, rcpMsg, rcpMsg.Sender.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, &rcpMsg, rcpMsg.Sender, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -886,8 +975,15 @@ func RunDisableRecipe(step FixtureStep, t *testing.T) {
 		}
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
-		resp := handlers.DisableRecipeResponse{}
-		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		txMsgData := &sdk.TxMsgData{
+			Data: make([]*sdk.MsgData, 0, 1),
+		}
+		err = proto.Unmarshal(txHandleResBytes, txMsgData)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		t.MustTrue(len(txMsgData.Data) == 1, "number of msgs should be 1")
+		t.MustTrue(txMsgData.Data[0].MsgType == (msgs.MsgDisableRecipe{}).Type(), "MsgType should be accurate")
+		resp := msgs.MsgDisableRecipeResponse{}
+		err = proto.Unmarshal(txMsgData.Data[0].Data, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
 	}
@@ -903,17 +999,17 @@ func ExecuteRecipeMsgFromRef(ref string, t *testing.T) msgs.MsgExecuteRecipe {
 
 	var execType struct {
 		RecipeID string
-		Sender   sdk.AccAddress
+		Sender   string
 		ItemIDs  []string `json:"ItemIDs"`
 	}
 
-	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &execType)
+	err := json.Unmarshal(newByteValue, &execType)
 	t.WithFields(testing.Fields{
 		"execType":  inttest.AminoCodecFormatter(execType),
 		"new_bytes": string(newByteValue),
-	}).MustNil(err, "error reading using GetAminoCdc")
+	}).MustNil(err, "error reading using GetJSONMarshaler")
 	// translate itemNames to itemIDs
-	ItemIDs := GetItemIDsFromNames(newByteValue, execType.Sender.String(), false, false, t)
+	ItemIDs := GetItemIDsFromNames(newByteValue, execType.Sender, false, false, t)
 
 	return msgs.NewMsgExecuteRecipe(execType.RecipeID, execType.Sender, ItemIDs)
 }
@@ -928,7 +1024,7 @@ func RunExecuteRecipe(step FixtureStep, t *testing.T) {
 	}
 	if step.ParamsRef != "" {
 		execMsg := ExecuteRecipeMsgFromRef(step.ParamsRef, t)
-		txhash, err := inttest.TestTxWithMsgWithNonce(t, execMsg, execMsg.Sender.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, &execMsg, execMsg.Sender, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -942,8 +1038,15 @@ func RunExecuteRecipe(step FixtureStep, t *testing.T) {
 		}
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
-		resp := handlers.ExecuteRecipeResponse{}
-		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		txMsgData := &sdk.TxMsgData{
+			Data: make([]*sdk.MsgData, 0, 1),
+		}
+		err = proto.Unmarshal(txHandleResBytes, txMsgData)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		t.MustTrue(len(txMsgData.Data) == 1, "number of msgs should be 1")
+		t.MustTrue(txMsgData.Data[0].MsgType == (msgs.MsgExecuteRecipe{}).Type(), "MsgType should be accurate")
+		resp := msgs.MsgExecuteRecipeResponse{}
+		err = proto.Unmarshal(txMsgData.Data[0].Data, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
 
@@ -984,14 +1087,14 @@ func CreateTradeMsgFromRef(ref string, t *testing.T) msgs.MsgCreateTrade {
 	// get item inputs from fileNames
 	tradeItemInputs := GetTradeItemInputsFromBytes(newByteValue, t)
 	var trdType types.Trade
-	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &trdType)
+	err := json.Unmarshal(newByteValue, &trdType)
 	t.WithFields(testing.Fields{
 		"trdType":   inttest.AminoCodecFormatter(trdType),
 		"new_bytes": string(newByteValue),
-	}).MustNil(err, "error reading using GetAminoCdc")
+	}).MustNil(err, "error reading using GetJSONMarshaler")
 
 	// get ItemOutputs from ItemOutputNames
-	itemOutputs := GetItemOutputsFromBytes(newByteValue, trdType.Sender.String(), t)
+	itemOutputs := GetItemOutputsFromBytes(newByteValue, trdType.Sender, t)
 
 	return msgs.NewMsgCreateTrade(
 		trdType.CoinInputs,
@@ -1012,8 +1115,8 @@ func RunCreateTrade(step FixtureStep, t *testing.T) {
 		createTrd := CreateTradeMsgFromRef(step.ParamsRef, t)
 		t.WithFields(testing.Fields{
 			"tx_msgs": inttest.AminoCodecFormatter(createTrd),
-		}).AddFields(inttest.GetLogFieldsFromMsgs([]sdk.Msg{createTrd})).Debug("createTrd")
-		txhash, err := inttest.TestTxWithMsgWithNonce(t, createTrd, createTrd.Sender.String(), true)
+		}).AddFields(inttest.GetLogFieldsFromMsgs([]sdk.Msg{&createTrd})).Debug("createTrd")
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, &createTrd, createTrd.Sender, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -1027,8 +1130,15 @@ func RunCreateTrade(step FixtureStep, t *testing.T) {
 		}
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
-		resp := handlers.CreateTradeResponse{}
-		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		txMsgData := &sdk.TxMsgData{
+			Data: make([]*sdk.MsgData, 0, 1),
+		}
+		err = proto.Unmarshal(txHandleResBytes, txMsgData)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		t.MustTrue(len(txMsgData.Data) == 1, "number of msgs should be 1")
+		t.MustTrue(txMsgData.Data[0].MsgType == (msgs.MsgCreateTrade{}).Type(), "MsgType should be accurate")
+		resp := msgs.MsgCreateTradeResponse{}
+		err = proto.Unmarshal(txMsgData.Data[0].Data, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(resp.TradeID != "", "trade id shouldn't be empty")
 	}
@@ -1048,15 +1158,15 @@ func FulfillTradeMsgFromRef(ref string, t *testing.T) msgs.MsgFulfillTrade {
 		ItemIDs []string `json:"ItemIDs"`
 	}
 
-	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &trdType)
+	err := json.Unmarshal(newByteValue, &trdType)
 	t.WithFields(testing.Fields{
 		"trdType":   inttest.AminoCodecFormatter(trdType),
 		"new_bytes": string(newByteValue),
-	}).MustNil(err, "error reading using GetAminoCdc")
+	}).MustNil(err, "error reading using GetJSONMarshaler")
 	// translate itemNames to itemIDs
 	ItemIDs := GetItemIDsFromNames(newByteValue, trdType.Sender.String(), false, false, t)
 
-	return msgs.NewMsgFulfillTrade(trdType.TradeID, trdType.Sender, ItemIDs)
+	return msgs.NewMsgFulfillTrade(trdType.TradeID, trdType.Sender.String(), ItemIDs)
 }
 
 // RunFulfillTrade is a function to fulfill trade
@@ -1067,7 +1177,7 @@ func RunFulfillTrade(step FixtureStep, t *testing.T) {
 	}
 	if step.ParamsRef != "" {
 		ffTrdMsg := FulfillTradeMsgFromRef(step.ParamsRef, t)
-		txhash, err := inttest.TestTxWithMsgWithNonce(t, ffTrdMsg, ffTrdMsg.Sender.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, &ffTrdMsg, ffTrdMsg.Sender, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -1081,8 +1191,15 @@ func RunFulfillTrade(step FixtureStep, t *testing.T) {
 		}
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
-		resp := handlers.FulfillTradeResponse{}
-		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		txMsgData := &sdk.TxMsgData{
+			Data: make([]*sdk.MsgData, 0, 1),
+		}
+		err = proto.Unmarshal(txHandleResBytes, txMsgData)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		t.MustTrue(len(txMsgData.Data) == 1, "number of msgs should be 1")
+		t.MustTrue(txMsgData.Data[0].MsgType == (msgs.MsgFulfillTrade{}).Type(), "MsgType should be accurate")
+		resp := msgs.MsgFulfillTradeResponse{}
+		err = proto.Unmarshal(txMsgData.Data[0].Data, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
 	}
@@ -1098,14 +1215,14 @@ func DisableTradeMsgFromRef(ref string, t *testing.T) msgs.MsgDisableTrade {
 
 	var trdType struct {
 		TradeID string
-		Sender  sdk.AccAddress
+		Sender  string
 	}
 
-	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &trdType)
+	err := json.Unmarshal(newByteValue, &trdType)
 	t.WithFields(testing.Fields{
 		"trdType":   inttest.AminoCodecFormatter(trdType),
 		"new_bytes": string(newByteValue),
-	}).MustNil(err, "error reading using GetAminoCdc")
+	}).MustNil(err, "error reading using GetJSONMarshaler")
 
 	return msgs.NewMsgDisableTrade(trdType.TradeID, trdType.Sender)
 }
@@ -1118,7 +1235,7 @@ func RunDisableTrade(step FixtureStep, t *testing.T) {
 	}
 	if step.ParamsRef != "" {
 		dsTrdMsg := DisableTradeMsgFromRef(step.ParamsRef, t)
-		txhash, err := inttest.TestTxWithMsgWithNonce(t, dsTrdMsg, dsTrdMsg.Sender.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, &dsTrdMsg, dsTrdMsg.Sender, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -1132,8 +1249,15 @@ func RunDisableTrade(step FixtureStep, t *testing.T) {
 		}
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
-		resp := handlers.DisableTradeResponse{}
-		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		txMsgData := &sdk.TxMsgData{
+			Data: make([]*sdk.MsgData, 0, 1),
+		}
+		err = proto.Unmarshal(txHandleResBytes, txMsgData)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		t.MustTrue(len(txMsgData.Data) == 1, "number of msgs should be 1")
+		t.MustTrue(txMsgData.Data[0].MsgType == (msgs.MsgDisableTrade{}).Type(), "MsgType should be accurate")
+		resp := msgs.MsgDisableTradeResponse{}
+		err = proto.Unmarshal(txMsgData.Data[0].Data, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
 	}
@@ -1149,14 +1273,14 @@ func EnableTradeMsgFromRef(ref string, t *testing.T) msgs.MsgEnableTrade {
 
 	var trdType struct {
 		TradeID string
-		Sender  sdk.AccAddress
+		Sender  string
 	}
 
-	err := inttest.GetAminoCdc().UnmarshalJSON(newByteValue, &trdType)
+	err := json.Unmarshal(newByteValue, &trdType)
 	t.WithFields(testing.Fields{
 		"trdType":   inttest.AminoCodecFormatter(trdType),
 		"new_bytes": string(newByteValue),
-	}).MustNil(err, "error reading using GetAminoCdc")
+	}).MustNil(err, "error reading using GetJSONMarshaler")
 
 	return msgs.NewMsgEnableTrade(trdType.TradeID, trdType.Sender)
 }
@@ -1169,7 +1293,7 @@ func RunEnableTrade(step FixtureStep, t *testing.T) {
 	}
 	if step.ParamsRef != "" {
 		dsTrdMsg := EnableTradeMsgFromRef(step.ParamsRef, t)
-		txhash, err := inttest.TestTxWithMsgWithNonce(t, dsTrdMsg, dsTrdMsg.Sender.String(), true)
+		txhash, err := inttest.TestTxWithMsgWithNonce(t, &dsTrdMsg, dsTrdMsg.Sender, true)
 		if err != nil {
 			TxBroadcastErrorCheck(err, txhash, step, t)
 			return
@@ -1183,8 +1307,15 @@ func RunEnableTrade(step FixtureStep, t *testing.T) {
 		}
 
 		txHandleResBytes := GetTxHandleResult(txhash, t)
-		resp := handlers.EnableTradeResponse{}
-		err = inttest.GetAminoCdc().UnmarshalJSON(txHandleResBytes, &resp)
+		txMsgData := &sdk.TxMsgData{
+			Data: make([]*sdk.MsgData, 0, 1),
+		}
+		err = proto.Unmarshal(txHandleResBytes, txMsgData)
+		TxResultDecodingErrorCheck(err, txhash, t)
+		t.MustTrue(len(txMsgData.Data) == 1, "number of msgs should be 1")
+		t.MustTrue(txMsgData.Data[0].MsgType == (msgs.MsgEnableTrade{}).Type(), "MsgType should be accurate")
+		resp := msgs.MsgEnableTradeResponse{}
+		err = proto.Unmarshal(txMsgData.Data[0].Data, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
 	}
