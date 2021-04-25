@@ -110,13 +110,15 @@ func TestGoogleIAPGetPylonsViaCLI(originT *originT.T) {
 			}
 
 			if tc.tryReuseOrderID {
-				_, err := inttestSDK.TestTxWithMsgWithNonce(t,
+				hash, err := inttestSDK.TestTxWithMsgWithNonce(t,
 					&msgGoogleIAPGetPylons,
 					getPylonsKey,
 					false,
 				)
-				t.MustTrue(err != nil, err)
-				t.MustContain(err.Error(), tc.tryReuseErr)
+				t.MustNil(err, hash)
+				errdata, err := inttestSDK.WaitAndGetTxError(hash, inttestSDK.GetMaxWaitBlock(), t)
+				t.MustNil(err, hash)
+				t.MustContain(string(errdata), tc.tryReuseErr)
 			}
 		})
 	}
