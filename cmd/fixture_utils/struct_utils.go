@@ -54,7 +54,7 @@ func GetAccountKeyFromTempName(tempName string, t *testing.T) string {
 	defer runtimeKeyGenMux.Unlock()
 	key, ok := runtimeAccountKeys[tempName]
 	if !ok {
-		key = fmt.Sprintf("FixtureRuntime_%s_%d", tempName, time.Now().Unix())
+		key = fmt.Sprintf("fixture_runtime_%s_%d", tempName, time.Now().Unix())
 		runtimeAccountKeys[tempName] = key
 	}
 	return key

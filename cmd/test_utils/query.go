@@ -338,12 +338,12 @@ func GetRecipeByGUID(guid string) (types.Recipe, error) {
 }
 
 // GetExecutionByGUID is to get Execution from ID
-func GetExecutionByGUID(guid string) (types.Execution, error) {
+func GetExecutionByGUID(guid string) (types.GetExecutionResponse, error) {
 	output, _, err := RunPylonsd([]string{"query", "pylons", "get_execution", guid}, "")
 	if err != nil {
-		return types.Execution{}, err
+		return types.GetExecutionResponse{}, err
 	}
-	var exec types.Execution
+	var exec types.GetExecutionResponse
 	err = GetJSONMarshaler().UnmarshalJSON(output, &exec)
 	return exec, err
 }
