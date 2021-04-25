@@ -445,7 +445,7 @@ Sample transaction is similar to the following.
               "Weight": "1"
             }
           ],
-          "BlockInterval": "2",
+          "BlockInterval": 2,
           "Sender": "<Address of the sender account>",
           "Description": "<Recipe description>"
         }
@@ -528,7 +528,7 @@ The content of the `tx_recipe_signed.json` will be like the following.
               "Weight": "1"
             }
           ],
-          "BlockInterval": "2",
+          "BlockInterval": 2,
           "Sender": "cosmos1fun8le2dxrclr633psv7gke6wtlycunnm8dlm7",
           "Description": "test recipe from test suite"
         }
@@ -626,7 +626,7 @@ The result of this command will be like the following:
         }
       ],
       "Description": "test recipe from test suite",
-      "BlockInterval": "2",
+      "BlockInterval": 2,
       "Sender": "cosmos1fun8le2dxrclr633psv7gke6wtlycunnm8dlm7",
       "Disabled": false
     }

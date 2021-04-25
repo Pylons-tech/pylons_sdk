@@ -87,7 +87,7 @@ Sample item JSON
   "OwnerTradeID": "",
   "Tradable": true,
   "LastUpdate": "5649",
-  "TransferFee": "0"
+  "TransferFee": 0
 }
 ```
 
@@ -145,7 +145,7 @@ Sample Recipe JSON
     "Name": "Knife Shield Generation Recipe",
     "CookbookID": "submarine-3942525",
     "Description": "this recipe is merging level 1 knife and level 1 shield into level 1 knife-shield.",
-    "BlockInterval":"0"
+    "BlockInterval":0
 }
 ```
 
@@ -178,10 +178,10 @@ Sample ItemInputs JSON
 ```json
 [{
     "ID": "monster",
-    "Doubles": [{"Key": "attack", "MinValue": "1", "MaxValue": "2000"}],
-    "Longs": [{"Key": "level", "MinValue": "1", "MaxValue": "2000"}],
+    "Doubles": [{"Key": "attack", "MinValue": "1.0", "MaxValue": "2000.0"}],
+    "Longs": [{"Key": "level", "MinValue": 1, "MaxValue": 2000}],
     "Strings": [{"Key": "Name", "Value": "Monster"}],
-    "TransferFee": {"MinValue": "1", "MaxValue": "2000"}
+    "TransferFee": {"MinValue": 1, "MaxValue": 2000}
 }]
 ```
 

@@ -5,5 +5,5 @@
   "Strings": [{ "Key": "Name","Value": "send_items_item1"}],
   "CookbookID": "send-items-cb-1589853709",
   "Sender": "si_account2",
-  "TransferFee": "2323"
+  "TransferFee": 2323
 }

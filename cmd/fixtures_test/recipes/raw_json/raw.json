@@ -44,6 +44,6 @@
     "CookbookID": "raw-json-cb-1589853709",
     "Description": "test recipe from test suite",
     "Name": "Raw json test recipe",
-    "BlockInterval": "0",
+    "BlockInterval": 0,
     "Sender": "rj_account1"
   }

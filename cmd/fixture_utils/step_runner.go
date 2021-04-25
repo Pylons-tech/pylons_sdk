@@ -1087,7 +1087,7 @@ func CreateTradeMsgFromRef(ref string, t *testing.T) msgs.MsgCreateTrade {
 	// get item inputs from fileNames
 	tradeItemInputs := GetTradeItemInputsFromBytes(newByteValue, t)
 	var trdType types.Trade
-	err := inttest.GetJSONMarshaler().UnmarshalJSON(newByteValue, &trdType)
+	err := json.Unmarshal(newByteValue, &trdType)
 	t.WithFields(testing.Fields{
 		"trdType":   inttest.AminoCodecFormatter(trdType),
 		"new_bytes": string(newByteValue),
