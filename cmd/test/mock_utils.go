@@ -4,7 +4,6 @@ import (
 	testing "github.com/Pylons-tech/pylons_sdk/cmd/evtesting"
 
 	"github.com/Pylons-tech/pylons_sdk/x/pylons/handlers"
-	"github.com/Pylons-tech/pylons_sdk/x/pylons/msgs"
 	"github.com/Pylons-tech/pylons_sdk/x/pylons/types"
 
 	inttestSDK "github.com/Pylons-tech/pylons_sdk/cmd/test_utils"
@@ -50,7 +49,7 @@ func MockAccount(key string, t *testing.T) {
 	// get initial balance
 	sdkAddr, err := sdk.AccAddressFromBech32(addr)
 	t.MustNil(err, "error converting string cosmos address to sdk struct")
-	getPylonsMsg := msgs.NewMsgGetPylons(types.PremiumTier.Fee, sdkAddr.String())
+	getPylonsMsg := types.NewMsgGetPylons(types.PremiumTier.Fee, sdkAddr.String())
 	txhash, err := inttestSDK.TestTxWithMsgWithNonce(t, &getPylonsMsg, key, false)
 	t.WithFields(testing.Fields{
 		"txhash": txhash,
@@ -91,7 +90,7 @@ func MockCookbook(ownerKey string, createNew bool, t *testing.T) string {
 		return guid
 	}
 	cbOwnerSdkAddr := GetSDKAddressFromKey(ownerKey, t)
-	cbMsg := msgs.NewMsgCreateCookbook(
+	cbMsg := types.NewMsgCreateCookbook(
 		"COOKBOOK_MOCK_001_"+ownerKey,
 		"",
 		"this has to meet character limits lol",
@@ -99,7 +98,7 @@ func MockCookbook(ownerKey string, createNew bool, t *testing.T) string {
 		"1.0.0",
 		"example@example.com",
 		0,
-		msgs.DefaultCostPerBlock,
+		types.DefaultCostPerBlock,
 		cbOwnerSdkAddr.String())
 	txhash, err := inttestSDK.TestTxWithMsgWithNonce(t, &cbMsg, ownerKey, false)
 	if err != nil {
@@ -110,7 +109,7 @@ func MockCookbook(ownerKey string, createNew bool, t *testing.T) string {
 	WaitOneBlockWithErrorCheck(t)
 
 	txHandleResBytes := GetTxHandleResult(txhash, t)
-	resp := msgs.MsgCreateCookbookResponse{}
+	resp := types.MsgCreateCookbookResponse{}
 	err = inttestSDK.GetJSONMarshaler().UnmarshalJSON(txHandleResBytes, &resp)
 	TxResBytesUnmarshalErrorCheck(txhash, err, txHandleResBytes, t)
 	return resp.CookbookID
@@ -199,7 +198,7 @@ func MockDetailedRecipeGUID(
 	mCB := GetMockedCookbook(cbOwnerKey, false, t)
 
 	sdkAddr := GetSDKAddressFromKey(cbOwnerKey, t)
-	createRecipeMsg := msgs.NewMsgCreateRecipe(
+	createRecipeMsg := types.NewMsgCreateRecipe(
 		rcpName,
 		mCB.ID,
 		"",
@@ -220,7 +219,7 @@ func MockDetailedRecipeGUID(
 	WaitOneBlockWithErrorCheck(t)
 
 	txHandleResBytes := GetTxHandleResult(txhash, t)
-	resp := msgs.MsgCreateRecipeResponse{}
+	resp := types.MsgCreateRecipeResponse{}
 	err = inttestSDK.GetJSONMarshaler().UnmarshalJSON(txHandleResBytes, &resp)
 	TxResBytesUnmarshalErrorCheck(txhash, err, txHandleResBytes, t)
 
@@ -232,7 +231,7 @@ func MockItemGUID(cbID, sender, name string, t *testing.T) string {
 
 	sdkAddr := GetSDKAddressFromKey(sender, t)
 
-	fiatItemMsg := msgs.NewMsgFiatItem(
+	fiatItemMsg := types.NewMsgFiatItem(
 		cbID,
 		types.DoubleKeyValueList{},
 		types.LongKeyValueList{},
@@ -254,7 +253,7 @@ func MockItemGUID(cbID, sender, name string, t *testing.T) string {
 	WaitOneBlockWithErrorCheck(t)
 
 	txHandleResBytes := GetTxHandleResult(txhash, t)
-	resp := msgs.MsgFiatItemResponse{}
+	resp := types.MsgFiatItemResponse{}
 	err = inttestSDK.GetJSONMarshaler().UnmarshalJSON(txHandleResBytes, &resp)
 	TxResBytesUnmarshalErrorCheck(txhash, err, txHandleResBytes, t)
 
@@ -265,7 +264,7 @@ func MockItemGUID(cbID, sender, name string, t *testing.T) string {
 func MockItemGUIDWithFee(cbID, sender, name string, transferFee int64, t *testing.T) string {
 	itemOwnerSdkAddr := GetSDKAddressFromKey(sender, t)
 
-	fiatItemMsg := msgs.NewMsgFiatItem(
+	fiatItemMsg := types.NewMsgFiatItem(
 		cbID,
 		types.DoubleKeyValueList{},
 		types.LongKeyValueList{},
@@ -287,7 +286,7 @@ func MockItemGUIDWithFee(cbID, sender, name string, transferFee int64, t *testin
 	WaitOneBlockWithErrorCheck(t)
 
 	txHandleResBytes := GetTxHandleResult(txhash, t)
-	resp := msgs.MsgFiatItemResponse{}
+	resp := types.MsgFiatItemResponse{}
 	err = inttestSDK.GetJSONMarshaler().UnmarshalJSON(txHandleResBytes, &resp)
 	TxResBytesUnmarshalErrorCheck(txhash, err, txHandleResBytes, t)
 
@@ -321,7 +320,7 @@ func MockDetailedTradeGUID(
 		outputItems = types.ItemList{outputItem}
 	}
 
-	createTradeMsg := msgs.NewMsgCreateTrade(
+	createTradeMsg := types.NewMsgCreateTrade(
 		inputCoinList,
 		inputItemList,
 		outputCoins,

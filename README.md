@@ -128,9 +128,6 @@ github.com/Pylons-tech/pylons_sdk/x/pylons/handlers
 | 9  | Struct | PopularRecipeType           | PopularRecipeType is a type for popular recipes                                             |
 | 10 | Struct | UpdateItemStringResponse    | UpdateItemStringResponse is a struct to control update item string response                 |
 
-## Msgs package
-github.com/Pylons-tech/pylons_sdk/x/pylons/msgs
-
 ### Msg structs
 
 | No | Type   | Name                | Description                                                                              |

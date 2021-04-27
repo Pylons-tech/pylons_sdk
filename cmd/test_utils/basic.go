@@ -16,7 +16,7 @@ import (
 
 	"github.com/Pylons-tech/pylons_sdk/app"
 	testing "github.com/Pylons-tech/pylons_sdk/cmd/evtesting"
-	"github.com/Pylons-tech/pylons_sdk/x/pylons/msgs"
+	"github.com/Pylons-tech/pylons_sdk/x/pylons/types"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -341,50 +341,50 @@ func GetLogFieldsFromMsgs(txMsgs []sdk.Msg) log.Fields {
 			ikeypref = "tx_msg_"
 		}
 		switch msg := msg.(type) {
-		case *msgs.MsgCreateCookbook:
+		case *types.MsgCreateCookbook:
 			fields[ikeypref+"type"] = "MsgCreateCookbook"
 			fields[ikeypref+"cb_name"] = msg.Name
 			fields[ikeypref+"sender"] = msg.Sender
-		case *msgs.MsgUpdateCookbook:
+		case *types.MsgUpdateCookbook:
 			fields[ikeypref+"type"] = "MsgUpdateCookbook"
 			fields[ikeypref+"cb_ID"] = msg.ID
 			fields[ikeypref+"sender"] = msg.Sender
-		case *msgs.MsgCreateRecipe:
+		case *types.MsgCreateRecipe:
 			fields[ikeypref+"type"] = "MsgCreateRecipe"
 			fields[ikeypref+"rcp_name"] = msg.Name
 			fields[ikeypref+"sender"] = msg.Sender
-		case *msgs.MsgUpdateRecipe:
+		case *types.MsgUpdateRecipe:
 			fields[ikeypref+"type"] = "MsgUpdateRecipe"
 			fields[ikeypref+"rcp_name"] = msg.Name
 			fields[ikeypref+"sender"] = msg.Sender
-		case *msgs.MsgExecuteRecipe:
+		case *types.MsgExecuteRecipe:
 			fields[ikeypref+"type"] = "MsgExecuteRecipe"
 			fields[ikeypref+"rcp_id"] = msg.RecipeID
 			fields[ikeypref+"sender"] = msg.Sender
-		case *msgs.MsgEnableRecipe:
+		case *types.MsgEnableRecipe:
 			fields[ikeypref+"type"] = "MsgEnableRecipe"
 			fields[ikeypref+"rcp_id"] = msg.RecipeID
 			fields[ikeypref+"sender"] = msg.Sender
-		case *msgs.MsgDisableRecipe:
+		case *types.MsgDisableRecipe:
 			fields[ikeypref+"type"] = "MsgDisableRecipe"
 			fields[ikeypref+"rcp_id"] = msg.RecipeID
 			fields[ikeypref+"sender"] = msg.Sender
-		case *msgs.MsgCheckExecution:
+		case *types.MsgCheckExecution:
 			fields[ikeypref+"type"] = "MsgCheckExecution"
 			fields[ikeypref+"exec_id"] = msg.ExecID
 			fields[ikeypref+"sender"] = msg.Sender
-		case *msgs.MsgCreateTrade:
+		case *types.MsgCreateTrade:
 			fields[ikeypref+"type"] = "MsgCreateTrade"
 			fields[ikeypref+"trade_info"] = msg.ExtraInfo
 			fields[ikeypref+"sender"] = msg.Sender
-		case *msgs.MsgFulfillTrade:
+		case *types.MsgFulfillTrade:
 			fields[ikeypref+"type"] = "MsgFulfillTrade"
 			fields[ikeypref+"trade_id"] = msg.TradeID
 			fields[ikeypref+"sender"] = msg.Sender
-		case *msgs.MsgFiatItem:
+		case *types.MsgFiatItem:
 			fields[ikeypref+"type"] = "MsgFiatItem"
 			fields[ikeypref+"sender"] = msg.Sender
-		case *msgs.MsgUpdateItemString:
+		case *types.MsgUpdateItemString:
 			fields[ikeypref+"type"] = "MsgUpdateItemString"
 			fields[ikeypref+"item_id"] = msg.ItemID
 			fields[ikeypref+"sender"] = msg.Sender

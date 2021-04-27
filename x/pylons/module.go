@@ -3,7 +3,7 @@ package pylons
 import (
 	"encoding/json"
 
-	"github.com/Pylons-tech/pylons_sdk/x/pylons/msgs"
+	"github.com/Pylons-tech/pylons_sdk/x/pylons/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdktypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -51,28 +51,28 @@ func (AppModuleBasic) RegisterLegacyAminoCodec(amino *codec.LegacyAmino) {
 func (AppModuleBasic) RegisterInterfaces(registry sdktypes.InterfaceRegistry) {
 	registry.RegisterImplementations(
 		(*sdk.Msg)(nil),
-		&msgs.MsgCreateAccount{},
-		&msgs.MsgGetPylons{},
-		&msgs.MsgGoogleIAPGetPylons{},
-		&msgs.MsgSendCoins{},
-		&msgs.MsgSendItems{},
-		&msgs.MsgCreateCookbook{},
-		&msgs.MsgUpdateCookbook{},
-		&msgs.MsgCreateRecipe{},
-		&msgs.MsgUpdateRecipe{},
-		&msgs.MsgExecuteRecipe{},
-		&msgs.MsgDisableRecipe{},
-		&msgs.MsgEnableRecipe{},
-		&msgs.MsgCheckExecution{},
-		&msgs.MsgFiatItem{},
-		&msgs.MsgUpdateItemString{},
-		&msgs.MsgCreateTrade{},
-		&msgs.MsgFulfillTrade{},
-		&msgs.MsgDisableTrade{},
-		&msgs.MsgEnableTrade{},
+		&types.MsgCreateAccount{},
+		&types.MsgGetPylons{},
+		&types.MsgGoogleIAPGetPylons{},
+		&types.MsgSendCoins{},
+		&types.MsgSendItems{},
+		&types.MsgCreateCookbook{},
+		&types.MsgUpdateCookbook{},
+		&types.MsgCreateRecipe{},
+		&types.MsgUpdateRecipe{},
+		&types.MsgExecuteRecipe{},
+		&types.MsgDisableRecipe{},
+		&types.MsgEnableRecipe{},
+		&types.MsgCheckExecution{},
+		&types.MsgFiatItem{},
+		&types.MsgUpdateItemString{},
+		&types.MsgCreateTrade{},
+		&types.MsgFulfillTrade{},
+		&types.MsgDisableTrade{},
+		&types.MsgEnableTrade{},
 	)
 
-	msgs.RegisterMsgServiceDesc(registry)
+	types.RegisterMsgServiceDesc(registry)
 }
 
 // RegisterRESTRoutes rest routes
