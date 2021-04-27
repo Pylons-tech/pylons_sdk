@@ -7,7 +7,6 @@ import (
 	testing "github.com/Pylons-tech/pylons_sdk/cmd/evtesting"
 	inttest "github.com/Pylons-tech/pylons_sdk/cmd/test_utils"
 	"github.com/Pylons-tech/pylons_sdk/x/pylons/handlers"
-	"github.com/Pylons-tech/pylons_sdk/x/pylons/msgs"
 	"github.com/Pylons-tech/pylons_sdk/x/pylons/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gogo/protobuf/proto"
@@ -114,13 +113,13 @@ func RunCreateAccount(step FixtureStep, t *testing.T) {
 }
 
 // GetPylonsMsgFromRef is a function to get GetPylons message from reference
-func GetPylonsMsgFromRef(ref string, t *testing.T) msgs.MsgGetPylons {
+func GetPylonsMsgFromRef(ref string, t *testing.T) types.MsgGetPylons {
 	gpAddr := GetAccountAddressFromTempName(ref, t)
 	sdkAddr, err := sdk.AccAddressFromBech32(gpAddr)
 	t.WithFields(testing.Fields{
 		"temp_name": ref,
 	}).MustNil(err, "error converting key to address")
-	return msgs.NewMsgGetPylons(
+	return types.NewMsgGetPylons(
 		types.NewPylon(55000),
 		sdkAddr.String(),
 	)
@@ -148,8 +147,8 @@ func RunGetPylons(step FixtureStep, t *testing.T) {
 		err = proto.Unmarshal(txHandleResBytes, txMsgData)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(len(txMsgData.Data) == 1, "number of msgs should be 1")
-		t.MustTrue(txMsgData.Data[0].MsgType == (msgs.MsgGetPylons{}).Type(), "MsgType should be accurate")
-		resp := msgs.MsgGetPylonsResponse{}
+		t.MustTrue(txMsgData.Data[0].MsgType == (types.MsgGetPylons{}).Type(), "MsgType should be accurate")
+		resp := types.MsgGetPylonsResponse{}
 		err = proto.Unmarshal(txMsgData.Data[0].Data, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
@@ -157,7 +156,7 @@ func RunGetPylons(step FixtureStep, t *testing.T) {
 }
 
 // GoogleIAPGetPylonsMsgFromRef is a function to get GoogleIAPGetPylons message from reference
-func GoogleIAPGetPylonsMsgFromRef(ref string, t *testing.T) msgs.MsgGoogleIAPGetPylons {
+func GoogleIAPGetPylonsMsgFromRef(ref string, t *testing.T) types.MsgGoogleIAPGetPylons {
 	byteValue := ReadFile(ref, t)
 	// translate requester from account name to account address
 	newByteValue := UpdateRequesterKeyToAddress(byteValue, t)
@@ -178,7 +177,7 @@ func GoogleIAPGetPylonsMsgFromRef(ref string, t *testing.T) msgs.MsgGoogleIAPGet
 
 	receiptDataBase64 := base64.StdEncoding.EncodeToString([]byte(gigpType.ReceiptData))
 
-	return msgs.NewMsgGoogleIAPGetPylons(
+	return types.NewMsgGoogleIAPGetPylons(
 		gigpType.ProductID,
 		gigpType.PurchaseToken,
 		receiptDataBase64,
@@ -209,8 +208,8 @@ func RunGoogleIAPGetPylons(step FixtureStep, t *testing.T) {
 		err = proto.Unmarshal(txHandleResBytes, txMsgData)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(len(txMsgData.Data) == 1, "number of msgs should be 1")
-		t.MustTrue(txMsgData.Data[0].MsgType == (msgs.MsgGoogleIAPGetPylons{}).Type(), "MsgType should be accurate")
-		resp := msgs.MsgGoogleIAPGetPylonsResponse{}
+		t.MustTrue(txMsgData.Data[0].MsgType == (types.MsgGoogleIAPGetPylons{}).Type(), "MsgType should be accurate")
+		resp := types.MsgGoogleIAPGetPylonsResponse{}
 		err = proto.Unmarshal(txMsgData.Data[0].Data, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
@@ -218,7 +217,7 @@ func RunGoogleIAPGetPylons(step FixtureStep, t *testing.T) {
 }
 
 // SendCoinsMsgFromRef is a function to SendCoins message from reference
-func SendCoinsMsgFromRef(ref string, t *testing.T) msgs.MsgSendCoins {
+func SendCoinsMsgFromRef(ref string, t *testing.T) types.MsgSendCoins {
 	byteValue := ReadFile(ref, t)
 	// translate sender from account name to account address
 	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
@@ -239,12 +238,8 @@ func SendCoinsMsgFromRef(ref string, t *testing.T) msgs.MsgSendCoins {
 	t.WithFields(testing.Fields{
 		"amount": siType.Amount,
 	}).MustNil(err, "error parsing amount")
-	sender, err := sdk.AccAddressFromBech32(siType.Sender)
-	t.WithFields(testing.Fields{
-		"sender": siType.Sender,
-	}).MustNil(err, "error parsing sender")
 
-	return msgs.NewMsgSendCoins(amount, sender, siType.Receiver)
+	return types.NewMsgSendCoins(amount, siType.Sender, siType.Receiver)
 }
 
 // RunSendCoins is a function to send coins from one address to another
@@ -274,8 +269,8 @@ func RunSendCoins(step FixtureStep, t *testing.T) {
 		err = proto.Unmarshal(txHandleResBytes, txMsgData)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(len(txMsgData.Data) == 1, "number of msgs should be 1")
-		t.MustTrue(txMsgData.Data[0].MsgType == (msgs.MsgSendCoins{}).Type(), "MsgType should be accurate")
-		resp := msgs.MsgGetPylonsResponse{}
+		t.MustTrue(txMsgData.Data[0].MsgType == (types.MsgSendCoins{}).Type(), "MsgType should be accurate")
+		resp := types.MsgGetPylonsResponse{}
 		err = proto.Unmarshal(txMsgData.Data[0].Data, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
@@ -369,7 +364,7 @@ func RunMultiMsgTx(step FixtureStep, t *testing.T) {
 }
 
 // CheckExecutionMsgFromRef collect check execution message from reference string
-func CheckExecutionMsgFromRef(ref string, t *testing.T) msgs.MsgCheckExecution {
+func CheckExecutionMsgFromRef(ref string, t *testing.T) types.MsgCheckExecution {
 	byteValue := ReadFile(ref, t)
 	// translate sender from account name to account address
 	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
@@ -386,7 +381,7 @@ func CheckExecutionMsgFromRef(ref string, t *testing.T) msgs.MsgCheckExecution {
 		"bytes": string(newByteValue),
 	}).MustNil(err, "error reading using json Unmarshaler")
 
-	return msgs.NewMsgCheckExecution(
+	return types.NewMsgCheckExecution(
 		execType.ExecID,
 		execType.PayToComplete,
 		execType.Sender,
@@ -421,8 +416,8 @@ func RunCheckExecution(step FixtureStep, t *testing.T) {
 		err = proto.Unmarshal(txHandleResBytes, txMsgData)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(len(txMsgData.Data) == 1, "number of msgs should be 1")
-		t.MustTrue(txMsgData.Data[0].MsgType == (msgs.MsgCheckExecution{}).Type(), "MsgType should be accurate")
-		resp := msgs.MsgCheckExecutionResponse{}
+		t.MustTrue(txMsgData.Data[0].MsgType == (types.MsgCheckExecution{}).Type(), "MsgType should be accurate")
+		resp := types.MsgCheckExecutionResponse{}
 		err = proto.Unmarshal(txMsgData.Data[0].Data, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
@@ -430,7 +425,7 @@ func RunCheckExecution(step FixtureStep, t *testing.T) {
 }
 
 // FiatItemMsgFromRef collect check execution message from reference string
-func FiatItemMsgFromRef(ref string, t *testing.T) msgs.MsgFiatItem {
+func FiatItemMsgFromRef(ref string, t *testing.T) types.MsgFiatItem {
 	byteValue := ReadFile(ref, t)
 	// translate sender from account name to account address
 	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
@@ -443,7 +438,7 @@ func FiatItemMsgFromRef(ref string, t *testing.T) msgs.MsgFiatItem {
 		"itemType": inttest.AminoCodecFormatter(itemType),
 	}).MustNil(err, "error reading using JSONMarshaler")
 
-	return msgs.NewMsgFiatItem(
+	return types.NewMsgFiatItem(
 		itemType.CookbookID,
 		itemType.Doubles,
 		itemType.Longs,
@@ -481,8 +476,8 @@ func RunFiatItem(step FixtureStep, t *testing.T) {
 		err = proto.Unmarshal(txHandleResBytes, txMsgData)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(len(txMsgData.Data) == 1, "number of msgs should be 1")
-		t.MustTrue(txMsgData.Data[0].MsgType == (msgs.MsgFiatItem{}).Type(), "MsgType should be accurate")
-		resp := msgs.MsgFiatItemResponse{}
+		t.MustTrue(txMsgData.Data[0].MsgType == (types.MsgFiatItem{}).Type(), "MsgType should be accurate")
+		resp := types.MsgFiatItemResponse{}
 		err = proto.Unmarshal(txMsgData.Data[0].Data, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(resp.ItemID != "", "item id shouldn't be empty")
@@ -490,7 +485,7 @@ func RunFiatItem(step FixtureStep, t *testing.T) {
 }
 
 // SendItemsMsgFromRef is a function to collect SendItems from reference string
-func SendItemsMsgFromRef(ref string, t *testing.T) msgs.MsgSendItems {
+func SendItemsMsgFromRef(ref string, t *testing.T) types.MsgSendItems {
 	byteValue := ReadFile(ref, t)
 	// translate sender from account name to account address
 	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
@@ -511,7 +506,7 @@ func SendItemsMsgFromRef(ref string, t *testing.T) msgs.MsgSendItems {
 	// translate itemNames to itemIDs
 	ItemIDs := GetItemIDsFromNames(newByteValue, siType.Sender, false, false, t)
 
-	return msgs.NewMsgSendItems(ItemIDs, siType.Sender, siType.Receiver)
+	return types.NewMsgSendItems(ItemIDs, siType.Sender, siType.Receiver)
 }
 
 // RunSendItems is a function to send items to another user
@@ -542,8 +537,8 @@ func RunSendItems(step FixtureStep, t *testing.T) {
 		err = proto.Unmarshal(txHandleResBytes, txMsgData)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(len(txMsgData.Data) == 1, "number of msgs should be 1")
-		t.MustTrue(txMsgData.Data[0].MsgType == (msgs.MsgSendItems{}).Type(), "MsgType should be accurate")
-		resp := msgs.MsgSendItemsResponse{}
+		t.MustTrue(txMsgData.Data[0].MsgType == (types.MsgSendItems{}).Type(), "MsgType should be accurate")
+		resp := types.MsgSendItemsResponse{}
 		err = proto.Unmarshal(txMsgData.Data[0].Data, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
@@ -551,14 +546,14 @@ func RunSendItems(step FixtureStep, t *testing.T) {
 }
 
 // UpdateItemStringMsgFromRef is a function to collect UpdateItemStringMsg from reference string
-func UpdateItemStringMsgFromRef(ref string, t *testing.T) msgs.MsgUpdateItemString {
+func UpdateItemStringMsgFromRef(ref string, t *testing.T) types.MsgUpdateItemString {
 	byteValue := ReadFile(ref, t)
 	// translate sender from account name to account address
 	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
 	// translate item name to item ID
 	newByteValue = UpdateItemIDFromName(newByteValue, false, false, t)
 
-	var sTypeMsg msgs.MsgUpdateItemString
+	var sTypeMsg types.MsgUpdateItemString
 	err := json.Unmarshal(newByteValue, &sTypeMsg)
 	t.WithFields(testing.Fields{
 		"sTypeMsg":  inttest.AminoCodecFormatter(sTypeMsg),
@@ -594,15 +589,15 @@ func RunUpdateItemString(step FixtureStep, t *testing.T) {
 		err = proto.Unmarshal(txHandleResBytes, txMsgData)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(len(txMsgData.Data) == 1, "number of msgs should be 1")
-		t.MustTrue(txMsgData.Data[0].MsgType == (msgs.MsgUpdateItemString{}).Type(), "MsgType should be accurate")
-		resp := msgs.MsgUpdateItemStringResponse{}
+		t.MustTrue(txMsgData.Data[0].MsgType == (types.MsgUpdateItemString{}).Type(), "MsgType should be accurate")
+		resp := types.MsgUpdateItemStringResponse{}
 		err = proto.Unmarshal(txMsgData.Data[0].Data, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 	}
 }
 
 // CreateCookbookMsgFromRef is a function to get create cookbook message from reference
-func CreateCookbookMsgFromRef(ref string, t *testing.T) msgs.MsgCreateCookbook {
+func CreateCookbookMsgFromRef(ref string, t *testing.T) types.MsgCreateCookbook {
 	byteValue := ReadFile(ref, t)
 	// translate sender from account name to account address
 	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
@@ -614,7 +609,7 @@ func CreateCookbookMsgFromRef(ref string, t *testing.T) msgs.MsgCreateCookbook {
 		"new_bytes": string(newByteValue),
 	}).MustNil(err, "error reading using GetJSONMarshaler")
 
-	return msgs.NewMsgCreateCookbook(
+	return types.NewMsgCreateCookbook(
 		cbType.Name,
 		cbType.ID,
 		cbType.Description,
@@ -655,8 +650,8 @@ func RunCreateCookbook(step FixtureStep, t *testing.T) {
 		err = proto.Unmarshal(txHandleResBytes, txMsgData)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(len(txMsgData.Data) == 1, "number of msgs should be 1")
-		t.MustTrue(txMsgData.Data[0].MsgType == (msgs.MsgCreateCookbook{}).Type(), "MsgType should be accurate")
-		resp := msgs.MsgCreateCookbookResponse{}
+		t.MustTrue(txMsgData.Data[0].MsgType == (types.MsgCreateCookbook{}).Type(), "MsgType should be accurate")
+		resp := types.MsgCreateCookbookResponse{}
 		err = proto.Unmarshal(txMsgData.Data[0].Data, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(resp.CookbookID != "", "coookbook id shouldn't be empty")
@@ -664,7 +659,7 @@ func RunCreateCookbook(step FixtureStep, t *testing.T) {
 }
 
 // UpdateCookbookMsgFromRef is a function to get update cookbook message from reference
-func UpdateCookbookMsgFromRef(ref string, t *testing.T) msgs.MsgUpdateCookbook {
+func UpdateCookbookMsgFromRef(ref string, t *testing.T) types.MsgUpdateCookbook {
 	byteValue := ReadFile(ref, t)
 	// translate sender from account name to account address
 	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
@@ -676,7 +671,7 @@ func UpdateCookbookMsgFromRef(ref string, t *testing.T) msgs.MsgUpdateCookbook {
 		"new_bytes": string(newByteValue),
 	}).MustNil(err, "error reading using GetJSONMarshaler")
 
-	return msgs.NewMsgUpdateCookbook(
+	return types.NewMsgUpdateCookbook(
 		cbType.ID,
 		cbType.Description,
 		cbType.Developer,
@@ -714,8 +709,8 @@ func RunUpdateCookbook(step FixtureStep, t *testing.T) {
 		err = proto.Unmarshal(txHandleResBytes, txMsgData)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(len(txMsgData.Data) == 1, "number of msgs should be 1")
-		t.MustTrue(txMsgData.Data[0].MsgType == (msgs.MsgUpdateCookbook{}).Type(), "MsgType should be accurate")
-		resp := msgs.MsgUpdateCookbookResponse{}
+		t.MustTrue(txMsgData.Data[0].MsgType == (types.MsgUpdateCookbook{}).Type(), "MsgType should be accurate")
+		resp := types.MsgUpdateCookbookResponse{}
 		err = proto.Unmarshal(txMsgData.Data[0].Data, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(resp.CookbookID != "", "coookbook id shouldn't be empty")
@@ -735,7 +730,7 @@ func RunMockCookbook(step FixtureStep, t *testing.T) {
 }
 
 // CreateRecipeMsgFromRef is a function to get create cookbook message from reference
-func CreateRecipeMsgFromRef(ref string, t *testing.T) msgs.MsgCreateRecipe {
+func CreateRecipeMsgFromRef(ref string, t *testing.T) types.MsgCreateRecipe {
 	byteValue := ReadFile(ref, t)
 	// translate sender from account name to account address
 	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
@@ -752,7 +747,7 @@ func CreateRecipeMsgFromRef(ref string, t *testing.T) msgs.MsgCreateRecipe {
 		"new_bytes": string(newByteValue),
 	}).MustNil(err, "error reading using GetJSONMarshaler")
 
-	return msgs.NewMsgCreateRecipe(
+	return types.NewMsgCreateRecipe(
 		rcpTempl.Name,
 		rcpTempl.CookbookID,
 		rcpTempl.ID,
@@ -797,8 +792,8 @@ func RunCreateRecipe(step FixtureStep, t *testing.T) {
 		err = proto.Unmarshal(txHandleResBytes, txMsgData)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(len(txMsgData.Data) == 1, "number of msgs should be 1")
-		t.MustTrue(txMsgData.Data[0].MsgType == (msgs.MsgCreateRecipe{}).Type(), "MsgType should be accurate")
-		resp := msgs.MsgCreateRecipeResponse{}
+		t.MustTrue(txMsgData.Data[0].MsgType == (types.MsgCreateRecipe{}).Type(), "MsgType should be accurate")
+		resp := types.MsgCreateRecipeResponse{}
 		err = proto.Unmarshal(txMsgData.Data[0].Data, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(resp.RecipeID != "", "recipe id shouldn't be empty")
@@ -806,7 +801,7 @@ func RunCreateRecipe(step FixtureStep, t *testing.T) {
 }
 
 // UpdateRecipeMsgFromRef is a function to get update recipe message from reference
-func UpdateRecipeMsgFromRef(ref string, t *testing.T) msgs.MsgUpdateRecipe {
+func UpdateRecipeMsgFromRef(ref string, t *testing.T) types.MsgUpdateRecipe {
 	byteValue := ReadFile(ref, t)
 	// translate sender from account name to account address
 	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
@@ -823,7 +818,7 @@ func UpdateRecipeMsgFromRef(ref string, t *testing.T) msgs.MsgUpdateRecipe {
 		"new_bytes": string(newByteValue),
 	}).MustNil(err, "error reading using json.Unmarshal")
 
-	return msgs.NewMsgUpdateRecipe(
+	return types.NewMsgUpdateRecipe(
 		rcpTempl.ID,
 		rcpTempl.Name,
 		rcpTempl.CookbookID,
@@ -865,8 +860,8 @@ func RunUpdateRecipe(step FixtureStep, t *testing.T) {
 		err = proto.Unmarshal(txHandleResBytes, txMsgData)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(len(txMsgData.Data) == 1, "number of msgs should be 1")
-		t.MustTrue(txMsgData.Data[0].MsgType == (msgs.MsgUpdateRecipe{}).Type(), "MsgType should be accurate")
-		resp := msgs.MsgUpdateRecipeResponse{}
+		t.MustTrue(txMsgData.Data[0].MsgType == (types.MsgUpdateRecipe{}).Type(), "MsgType should be accurate")
+		resp := types.MsgUpdateRecipeResponse{}
 		err = proto.Unmarshal(txMsgData.Data[0].Data, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(resp.RecipeID != "", "recipe id shouldn't be empty")
@@ -874,7 +869,7 @@ func RunUpdateRecipe(step FixtureStep, t *testing.T) {
 }
 
 // EnableRecipeMsgFromRef is a function to get enable recipe message from reference
-func EnableRecipeMsgFromRef(ref string, t *testing.T) msgs.MsgEnableRecipe {
+func EnableRecipeMsgFromRef(ref string, t *testing.T) types.MsgEnableRecipe {
 	byteValue := ReadFile(ref, t)
 	// translate sender from account name to account address
 	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
@@ -892,7 +887,7 @@ func EnableRecipeMsgFromRef(ref string, t *testing.T) msgs.MsgEnableRecipe {
 		"new_bytes": string(newByteValue),
 	}).MustNil(err, "error reading using GetJSONMarshaler")
 
-	return msgs.NewMsgEnableRecipe(recipeType.RecipeID, recipeType.Sender)
+	return types.NewMsgEnableRecipe(recipeType.RecipeID, recipeType.Sender)
 }
 
 // RunEnableRecipe is a function to enable recipe
@@ -923,8 +918,8 @@ func RunEnableRecipe(step FixtureStep, t *testing.T) {
 		err = proto.Unmarshal(txHandleResBytes, txMsgData)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(len(txMsgData.Data) == 1, "number of msgs should be 1")
-		t.MustTrue(txMsgData.Data[0].MsgType == (msgs.MsgEnableRecipe{}).Type(), "MsgType should be accurate")
-		resp := msgs.MsgEnableRecipeResponse{}
+		t.MustTrue(txMsgData.Data[0].MsgType == (types.MsgEnableRecipe{}).Type(), "MsgType should be accurate")
+		resp := types.MsgEnableRecipeResponse{}
 		err = proto.Unmarshal(txMsgData.Data[0].Data, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
@@ -932,7 +927,7 @@ func RunEnableRecipe(step FixtureStep, t *testing.T) {
 }
 
 // DisableRecipeMsgFromRef is a function to get disable recipe message from reference
-func DisableRecipeMsgFromRef(ref string, t *testing.T) msgs.MsgDisableRecipe {
+func DisableRecipeMsgFromRef(ref string, t *testing.T) types.MsgDisableRecipe {
 	byteValue := ReadFile(ref, t)
 	// translate sender from account name to account address
 	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
@@ -950,7 +945,7 @@ func DisableRecipeMsgFromRef(ref string, t *testing.T) msgs.MsgDisableRecipe {
 		"new_bytes": string(newByteValue),
 	}).MustNil(err, "error reading using GetAminoCdc")
 
-	return msgs.NewMsgDisableRecipe(recipeType.RecipeID, recipeType.Sender)
+	return types.NewMsgDisableRecipe(recipeType.RecipeID, recipeType.Sender)
 }
 
 // RunDisableRecipe is a function to disable recipe
@@ -981,8 +976,8 @@ func RunDisableRecipe(step FixtureStep, t *testing.T) {
 		err = proto.Unmarshal(txHandleResBytes, txMsgData)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(len(txMsgData.Data) == 1, "number of msgs should be 1")
-		t.MustTrue(txMsgData.Data[0].MsgType == (msgs.MsgDisableRecipe{}).Type(), "MsgType should be accurate")
-		resp := msgs.MsgDisableRecipeResponse{}
+		t.MustTrue(txMsgData.Data[0].MsgType == (types.MsgDisableRecipe{}).Type(), "MsgType should be accurate")
+		resp := types.MsgDisableRecipeResponse{}
 		err = proto.Unmarshal(txMsgData.Data[0].Data, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
@@ -990,7 +985,7 @@ func RunDisableRecipe(step FixtureStep, t *testing.T) {
 }
 
 // ExecuteRecipeMsgFromRef collect execute recipe msg from reference string
-func ExecuteRecipeMsgFromRef(ref string, t *testing.T) msgs.MsgExecuteRecipe {
+func ExecuteRecipeMsgFromRef(ref string, t *testing.T) types.MsgExecuteRecipe {
 	byteValue := ReadFile(ref, t)
 	// translate sender from account name to account address
 	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
@@ -1011,7 +1006,7 @@ func ExecuteRecipeMsgFromRef(ref string, t *testing.T) msgs.MsgExecuteRecipe {
 	// translate itemNames to itemIDs
 	ItemIDs := GetItemIDsFromNames(newByteValue, execType.Sender, false, false, t)
 
-	return msgs.NewMsgExecuteRecipe(execType.RecipeID, execType.Sender, ItemIDs)
+	return types.NewMsgExecuteRecipe(execType.RecipeID, execType.Sender, ItemIDs)
 }
 
 // RunExecuteRecipe is executed when an action "execute_recipe" is called
@@ -1044,8 +1039,8 @@ func RunExecuteRecipe(step FixtureStep, t *testing.T) {
 		err = proto.Unmarshal(txHandleResBytes, txMsgData)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(len(txMsgData.Data) == 1, "number of msgs should be 1")
-		t.MustTrue(txMsgData.Data[0].MsgType == (msgs.MsgExecuteRecipe{}).Type(), "MsgType should be accurate")
-		resp := msgs.MsgExecuteRecipeResponse{}
+		t.MustTrue(txMsgData.Data[0].MsgType == (types.MsgExecuteRecipe{}).Type(), "MsgType should be accurate")
+		resp := types.MsgExecuteRecipeResponse{}
 		err = proto.Unmarshal(txMsgData.Data[0].Data, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
@@ -1080,7 +1075,7 @@ func RunExecuteRecipe(step FixtureStep, t *testing.T) {
 }
 
 // CreateTradeMsgFromRef collect create trade msg from reference
-func CreateTradeMsgFromRef(ref string, t *testing.T) msgs.MsgCreateTrade {
+func CreateTradeMsgFromRef(ref string, t *testing.T) types.MsgCreateTrade {
 	byteValue := ReadFile(ref, t)
 	// translate sender from account name to account address
 	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
@@ -1096,7 +1091,7 @@ func CreateTradeMsgFromRef(ref string, t *testing.T) msgs.MsgCreateTrade {
 	// get ItemOutputs from ItemOutputNames
 	itemOutputs := GetItemOutputsFromBytes(newByteValue, trdType.Sender, t)
 
-	return msgs.NewMsgCreateTrade(
+	return types.NewMsgCreateTrade(
 		trdType.CoinInputs,
 		tradeItemInputs,
 		trdType.CoinOutputs,
@@ -1136,8 +1131,8 @@ func RunCreateTrade(step FixtureStep, t *testing.T) {
 		err = proto.Unmarshal(txHandleResBytes, txMsgData)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(len(txMsgData.Data) == 1, "number of msgs should be 1")
-		t.MustTrue(txMsgData.Data[0].MsgType == (msgs.MsgCreateTrade{}).Type(), "MsgType should be accurate")
-		resp := msgs.MsgCreateTradeResponse{}
+		t.MustTrue(txMsgData.Data[0].MsgType == (types.MsgCreateTrade{}).Type(), "MsgType should be accurate")
+		resp := types.MsgCreateTradeResponse{}
 		err = proto.Unmarshal(txMsgData.Data[0].Data, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(resp.TradeID != "", "trade id shouldn't be empty")
@@ -1145,7 +1140,7 @@ func RunCreateTrade(step FixtureStep, t *testing.T) {
 }
 
 // FulfillTradeMsgFromRef collect fulfill trade message from reference string
-func FulfillTradeMsgFromRef(ref string, t *testing.T) msgs.MsgFulfillTrade {
+func FulfillTradeMsgFromRef(ref string, t *testing.T) types.MsgFulfillTrade {
 	byteValue := ReadFile(ref, t)
 	// translate sender from account name to account address
 	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
@@ -1166,7 +1161,7 @@ func FulfillTradeMsgFromRef(ref string, t *testing.T) msgs.MsgFulfillTrade {
 	// translate itemNames to itemIDs
 	ItemIDs := GetItemIDsFromNames(newByteValue, trdType.Sender.String(), false, false, t)
 
-	return msgs.NewMsgFulfillTrade(trdType.TradeID, trdType.Sender.String(), ItemIDs)
+	return types.NewMsgFulfillTrade(trdType.TradeID, trdType.Sender.String(), ItemIDs)
 }
 
 // RunFulfillTrade is a function to fulfill trade
@@ -1197,8 +1192,8 @@ func RunFulfillTrade(step FixtureStep, t *testing.T) {
 		err = proto.Unmarshal(txHandleResBytes, txMsgData)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(len(txMsgData.Data) == 1, "number of msgs should be 1")
-		t.MustTrue(txMsgData.Data[0].MsgType == (msgs.MsgFulfillTrade{}).Type(), "MsgType should be accurate")
-		resp := msgs.MsgFulfillTradeResponse{}
+		t.MustTrue(txMsgData.Data[0].MsgType == (types.MsgFulfillTrade{}).Type(), "MsgType should be accurate")
+		resp := types.MsgFulfillTradeResponse{}
 		err = proto.Unmarshal(txMsgData.Data[0].Data, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
@@ -1206,7 +1201,7 @@ func RunFulfillTrade(step FixtureStep, t *testing.T) {
 }
 
 // DisableTradeMsgFromRef collect disable trade msg from reference string
-func DisableTradeMsgFromRef(ref string, t *testing.T) msgs.MsgDisableTrade {
+func DisableTradeMsgFromRef(ref string, t *testing.T) types.MsgDisableTrade {
 	byteValue := ReadFile(ref, t)
 	// translate sender from account name to account address
 	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
@@ -1224,7 +1219,7 @@ func DisableTradeMsgFromRef(ref string, t *testing.T) msgs.MsgDisableTrade {
 		"new_bytes": string(newByteValue),
 	}).MustNil(err, "error reading using GetJSONMarshaler")
 
-	return msgs.NewMsgDisableTrade(trdType.TradeID, trdType.Sender)
+	return types.NewMsgDisableTrade(trdType.TradeID, trdType.Sender)
 }
 
 // RunDisableTrade is a function to disable trade
@@ -1255,8 +1250,8 @@ func RunDisableTrade(step FixtureStep, t *testing.T) {
 		err = proto.Unmarshal(txHandleResBytes, txMsgData)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(len(txMsgData.Data) == 1, "number of msgs should be 1")
-		t.MustTrue(txMsgData.Data[0].MsgType == (msgs.MsgDisableTrade{}).Type(), "MsgType should be accurate")
-		resp := msgs.MsgDisableTradeResponse{}
+		t.MustTrue(txMsgData.Data[0].MsgType == (types.MsgDisableTrade{}).Type(), "MsgType should be accurate")
+		resp := types.MsgDisableTradeResponse{}
 		err = proto.Unmarshal(txMsgData.Data[0].Data, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
@@ -1264,7 +1259,7 @@ func RunDisableTrade(step FixtureStep, t *testing.T) {
 }
 
 // EnableTradeMsgFromRef collect enable trade msg from reference string
-func EnableTradeMsgFromRef(ref string, t *testing.T) msgs.MsgEnableTrade {
+func EnableTradeMsgFromRef(ref string, t *testing.T) types.MsgEnableTrade {
 	byteValue := ReadFile(ref, t)
 	// translate sender from account name to account address
 	newByteValue := UpdateSenderKeyToAddress(byteValue, t)
@@ -1282,7 +1277,7 @@ func EnableTradeMsgFromRef(ref string, t *testing.T) msgs.MsgEnableTrade {
 		"new_bytes": string(newByteValue),
 	}).MustNil(err, "error reading using GetJSONMarshaler")
 
-	return msgs.NewMsgEnableTrade(trdType.TradeID, trdType.Sender)
+	return types.NewMsgEnableTrade(trdType.TradeID, trdType.Sender)
 }
 
 // RunEnableTrade is a function to enable trade
@@ -1313,8 +1308,8 @@ func RunEnableTrade(step FixtureStep, t *testing.T) {
 		err = proto.Unmarshal(txHandleResBytes, txMsgData)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		t.MustTrue(len(txMsgData.Data) == 1, "number of msgs should be 1")
-		t.MustTrue(txMsgData.Data[0].MsgType == (msgs.MsgEnableTrade{}).Type(), "MsgType should be accurate")
-		resp := msgs.MsgEnableTradeResponse{}
+		t.MustTrue(txMsgData.Data[0].MsgType == (types.MsgEnableTrade{}).Type(), "MsgType should be accurate")
+		resp := types.MsgEnableTradeResponse{}
 		err = proto.Unmarshal(txMsgData.Data[0].Data, &resp)
 		TxResultDecodingErrorCheck(err, txhash, t)
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
