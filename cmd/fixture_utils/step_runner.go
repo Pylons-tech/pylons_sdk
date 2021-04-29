@@ -6,7 +6,6 @@ import (
 
 	testing "github.com/Pylons-tech/pylons_sdk/cmd/evtesting"
 	inttest "github.com/Pylons-tech/pylons_sdk/cmd/test_utils"
-	"github.com/Pylons-tech/pylons_sdk/x/pylons/handlers"
 	"github.com/Pylons-tech/pylons_sdk/x/pylons/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gogo/protobuf/proto"
@@ -1046,7 +1045,7 @@ func RunExecuteRecipe(step FixtureStep, t *testing.T) {
 		TxResultStatusMessageCheck(resp.Status, resp.Message, txhash, step, t)
 
 		if resp.Message == "scheduled the recipe" { // delayed execution
-			var scheduleRes handlers.ExecuteRecipeScheduleOutput
+			var scheduleRes types.ExecuteRecipeScheduleOutput
 
 			err := json.Unmarshal(resp.Output, &scheduleRes)
 			t.WithFields(testing.Fields{
