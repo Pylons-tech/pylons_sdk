@@ -7,7 +7,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdktypes "github.com/cosmos/cosmos-sdk/codec/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
@@ -18,12 +17,16 @@ type AppModuleBasic struct{}
 
 // Name returns AppModuleBasic name
 func (AppModuleBasic) Name() string {
-	return ModuleName
+	return types.ModuleName
 }
 
 // DefaultGenesis return GenesisState in JSON
 func (AppModuleBasic) DefaultGenesis(cdc codec.JSONMarshaler) json.RawMessage {
-	return ModuleCdc.MustMarshalJSON(DefaultGenesisState())
+	return cdc.MustMarshalJSON(types.DefaultGenesis())
+}
+
+func (AppModuleBasic) RegisterLegacyAminoCodec(amino *codec.LegacyAmino) {
+	types.RegisterLegacyAminoCodec(amino)
 }
 
 // ValidateGenesis do validation check of the Genesis
@@ -44,35 +47,8 @@ func (AppModuleBasic) GetTxCmd() *cobra.Command {
 func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
 }
 
-func (AppModuleBasic) RegisterLegacyAminoCodec(amino *codec.LegacyAmino) {
-	RegisterCodec(amino)
-}
-
 func (AppModuleBasic) RegisterInterfaces(registry sdktypes.InterfaceRegistry) {
-	registry.RegisterImplementations(
-		(*sdk.Msg)(nil),
-		&types.MsgCreateAccount{},
-		&types.MsgGetPylons{},
-		&types.MsgGoogleIAPGetPylons{},
-		&types.MsgSendCoins{},
-		&types.MsgSendItems{},
-		&types.MsgCreateCookbook{},
-		&types.MsgUpdateCookbook{},
-		&types.MsgCreateRecipe{},
-		&types.MsgUpdateRecipe{},
-		&types.MsgExecuteRecipe{},
-		&types.MsgDisableRecipe{},
-		&types.MsgEnableRecipe{},
-		&types.MsgCheckExecution{},
-		&types.MsgFiatItem{},
-		&types.MsgUpdateItemString{},
-		&types.MsgCreateTrade{},
-		&types.MsgFulfillTrade{},
-		&types.MsgDisableTrade{},
-		&types.MsgEnableTrade{},
-	)
-
-	types.RegisterMsgServiceDesc(registry)
+	types.RegisterInterfaces(registry)
 }
 
 // RegisterRESTRoutes rest routes
