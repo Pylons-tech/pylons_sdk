@@ -3,13 +3,14 @@ package pylons
 import (
 	"encoding/json"
 
-	"github.com/Pylons-tech/pylons_sdk/x/pylons/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdktypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
+
+	"github.com/Pylons-tech/pylons_sdk/x/pylons/types"
 )
 
 // AppModuleBasic is app module basics object

@@ -14,13 +14,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Pylons-tech/pylons_sdk/app"
-	testing "github.com/Pylons-tech/pylons_sdk/cmd/evtesting"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+
+	"github.com/Pylons-tech/pylons_sdk/app"
+	testing "github.com/Pylons-tech/pylons_sdk/cmd/evtesting"
 )
 
 var nonceMux sync.Mutex

@@ -1,11 +1,12 @@
 package handlers
 
 import (
-	"github.com/Pylons-tech/pylons_sdk/x/pylons/types"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/go-bip39"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
+
+	"github.com/Pylons-tech/pylons_sdk/x/pylons/types"
 )
 
 const (

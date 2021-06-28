@@ -9,9 +9,10 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/Pylons-tech/pylons_sdk/x/pylons/config"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	"github.com/Pylons-tech/pylons_sdk/x/pylons/config"
 )
 
 // NewMsgCreateAccount is a function to get MsgCreateAccount msg from required params
