@@ -14,9 +14,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Pylons-tech/pylons_sdk/app"
-	testing "github.com/Pylons-tech/pylons_sdk/cmd/evtesting"
-	"github.com/Pylons-tech/pylons_sdk/x/pylons/types"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -30,6 +27,10 @@ import (
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/p2p"
 	ctypes "github.com/tendermint/tendermint/rpc/core/types"
+
+	"github.com/Pylons-tech/pylons_sdk/app"
+	testing "github.com/Pylons-tech/pylons_sdk/cmd/evtesting"
+	"github.com/Pylons-tech/pylons_sdk/x/pylons/types"
 )
 
 // CLIOptions is a struct to manage pylonsd options

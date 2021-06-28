@@ -1,8 +1,9 @@
 package app
 
 import (
-	"github.com/Pylons-tech/pylons_sdk/app/params"
 	"github.com/cosmos/cosmos-sdk/std"
+
+	"github.com/Pylons-tech/pylons_sdk/app/params"
 )
 
 // MakeEncodingConfig creates an EncodingConfig for testing

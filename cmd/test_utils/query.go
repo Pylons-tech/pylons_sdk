@@ -6,9 +6,10 @@ import (
 	"errors"
 	"fmt"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	testing "github.com/Pylons-tech/pylons_sdk/cmd/evtesting"
 	"github.com/Pylons-tech/pylons_sdk/x/pylons/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // ListTradeViaCLI is a function to get list of trades from cli
